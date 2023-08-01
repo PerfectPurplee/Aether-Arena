@@ -1,5 +1,7 @@
 package main;
 
+import scenes.playing.Playing;
+
 import java.awt.*;
 
 import static scenes.AllScenes.*;
@@ -8,14 +10,18 @@ public class GameEngine extends Thread {
 
     MainFrame mainFrame;
     MainPanel mainPanel;
+    static Playing playing;
 
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
 
     public GameEngine() {
 
+        playing = new Playing();
+
         mainPanel = new MainPanel();
         mainFrame = new MainFrame(mainPanel);
+
 
         this.start();
     }
@@ -29,6 +35,7 @@ public class GameEngine extends Thread {
         switch (Current_Scene) {
 
             case PLAYING -> {
+                playing.draw(g);
             }
             case MENU -> {
             }
