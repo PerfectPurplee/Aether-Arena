@@ -30,35 +30,52 @@ public class Player1 {
     public PlayerState Current_Player_State;
 
     public int playerPosX, playerPosY;
-    public int playerMoveSpeed;
+    public int playerVelX, playerVelY;
 
     public Player1(int playerPosX, int playerPosY) {
 
         this.playerPosX = playerPosX;
         this.playerPosY = playerPosY;
-        playerMoveSpeed = 1;
 
         Current_Player_State = PlayerState.IDLE_DOWN;
         getPlayerSprites();
     }
 
     public void moveController() {
-        if (Current_Player_State == PlayerState.MOVING_UP) {
-            playerPosY -= playerMoveSpeed;
+        playerPosX += playerVelX;
+        playerPosY += playerVelY;
+    }
 
+    public BufferedImage[] playerSpriteController() {
+        switch (Current_Player_State) {
+            case IDLE_UP -> {
+                return playerSpriteIDLE_UP;
+            }
+            case IDLE_DOWN -> {
+                return playerSpriteIDLE_DOWN;
+            }
+            case IDLE_LEFT -> {
+                return playerSpriteIDLE_LEFT;
+            }
+            case IDLE_RIGHT -> {
+                return playerSpriteIDLE_RIGHT;
+            }
+            case MOVING_UP -> {
+                return playerSpriteUP;
+            }
+            case MOVING_DOWN -> {
+                return playerSpriteDOWN;
+            }
+            case MOVING_LEFT -> {
+                return playerSpriteLEFT;
+            }
+            case MOVING_RIGHT -> {
+                return playerSpriteRIGHT;
+            }
+            default -> {
+                return null;
+            }
         }
-        if (Current_Player_State == PlayerState.MOVING_DOWN) {
-            playerPosY += playerMoveSpeed;
-
-        }
-        if (Current_Player_State == PlayerState.MOVING_LEFT) {
-            playerPosX -= playerMoveSpeed;
-
-        }
-        if (Current_Player_State == PlayerState.MOVING_RIGHT) {
-            playerPosX += playerMoveSpeed;
-        }
-
     }
 
 

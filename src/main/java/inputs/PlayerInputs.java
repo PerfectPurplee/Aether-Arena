@@ -7,6 +7,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.security.Key;
+import java.util.HashSet;
 
 import static entities.playercharacters.Player1.*;
 
@@ -14,6 +15,7 @@ public class PlayerInputs implements KeyListener, MouseListener {
 
 
     Player1 player1;
+    private HashSet<Integer> activeKeys = new HashSet<>();
 
     public PlayerInputs(Player1 player1) {
         this.player1 = player1;
@@ -28,44 +30,76 @@ public class PlayerInputs implements KeyListener, MouseListener {
     @Override
     public void keyPressed(KeyEvent e) {
 
-        if (e.getKeyCode() == (KeyEvent.VK_W)) {
+        int key = e.getKeyCode();
+        activeKeys.add(key); // Add the pressed key to the activeKeys set
+
+        // Update player velocity based on activeKeys
+        player1.playerVelX = 0;
+        player1.playerVelY = 0;
+
+        if (activeKeys.contains(KeyEvent.VK_W))
+            player1.playerVelY -= 1;
+
+        if (activeKeys.contains(KeyEvent.VK_S))
+            player1.playerVelY += 1;
+
+        if (activeKeys.contains(KeyEvent.VK_A))
+            player1.playerVelX -= 1;
+
+        if (activeKeys.contains(KeyEvent.VK_D))
+            player1.playerVelX += 1;
+
+        // Set the current player state based on the velocity
+        if (player1.playerVelY < 0)
             player1.Current_Player_State = PlayerState.MOVING_UP;
-
-        }
-        if (e.getKeyCode() == (KeyEvent.VK_S)) {
+        else if (player1.playerVelY > 0)
             player1.Current_Player_State = PlayerState.MOVING_DOWN;
-
-        }
-        if (e.getKeyCode() == (KeyEvent.VK_A)) {
+        else if (player1.playerVelX < 0)
             player1.Current_Player_State = PlayerState.MOVING_LEFT;
-
-        }
-        if (e.getKeyCode() == (KeyEvent.VK_D)) {
+        else if (player1.playerVelX > 0)
             player1.Current_Player_State = PlayerState.MOVING_RIGHT;
-
-        }
-
     }
+
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == (KeyEvent.VK_W)) {
+
+        int key = e.getKeyCode();
+        activeKeys.remove(key); // Remove the released key from the activeKeys set
+
+        // Update player velocity based on activeKeys (same as in keyPressed)
+        player1.playerVelX = 0;
+        player1.playerVelY = 0;
+
+        if (activeKeys.contains(KeyEvent.VK_W))
+            player1.playerVelY -= 1;
+
+        if (activeKeys.contains(KeyEvent.VK_S))
+            player1.playerVelY += 1;
+
+        if (activeKeys.contains(KeyEvent.VK_A))
+            player1.playerVelX -= 1;
+
+        if (activeKeys.contains(KeyEvent.VK_D))
+            player1.playerVelX += 1;
+
+        // Set the current player state based on the velocity (same as in keyPressed)
+        if (player1.playerVelY < 0)
+            player1.Current_Player_State = PlayerState.MOVING_UP;
+        else if (player1.playerVelY > 0)
+            player1.Current_Player_State = PlayerState.MOVING_DOWN;
+        else if (player1.playerVelX < 0)
+            player1.Current_Player_State = PlayerState.MOVING_LEFT;
+        else if (player1.playerVelX > 0)
+            player1.Current_Player_State = PlayerState.MOVING_RIGHT;
+        else if (key == KeyEvent.VK_W)
             player1.Current_Player_State = PlayerState.IDLE_UP;
-
-        }
-        if (e.getKeyCode() == (KeyEvent.VK_S)) {
+        else if (key == KeyEvent.VK_S)
             player1.Current_Player_State = PlayerState.IDLE_DOWN;
-
-        }
-        if (e.getKeyCode() == (KeyEvent.VK_A)) {
+        else if (key == KeyEvent.VK_A)
             player1.Current_Player_State = PlayerState.IDLE_LEFT;
-
-        }
-        if (e.getKeyCode() == (KeyEvent.VK_D)) {
+        else if (key == KeyEvent.VK_D)
             player1.Current_Player_State = PlayerState.IDLE_RIGHT;
-
-        }
-
     }
 
 
