@@ -28,6 +28,7 @@ public class Player1 {
     public BufferedImage[] playerSpriteRIGHT = new BufferedImage[4];
 
     public PlayerState Current_Player_State;
+//    public boolean isMoving;
 
     public int playerPosX, playerPosY;
     public int playerVelX, playerVelY;
@@ -39,6 +40,19 @@ public class Player1 {
 
         Current_Player_State = PlayerState.IDLE_DOWN;
         getPlayerSprites();
+    }
+
+    public boolean checkIsCharacterMoving() {
+
+        switch (Current_Player_State) {
+            case IDLE_UP, IDLE_DOWN, IDLE_LEFT, IDLE_RIGHT -> {
+                return false;
+            }
+            case MOVING_UP, MOVING_DOWN, MOVING_LEFT, MOVING_RIGHT -> {
+                return true;
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + Current_Player_State);
+        }
     }
 
     public void moveController() {
@@ -106,7 +120,7 @@ public class Player1 {
             spriteXpos += 72;
         }
 
-        spriteXpos = 72;
+        spriteXpos = 0;
 //       Assinging idle sprites for all directions
         for (int i = 0; i < 2; i++) {
             playerSpriteIDLE_DOWN[i] = allPlayer1Sprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
