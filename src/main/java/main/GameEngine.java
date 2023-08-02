@@ -1,5 +1,7 @@
 package main;
 
+import entities.playercharacters.Player1;
+import inputs.PlayerInputs;
 import scenes.playing.Playing;
 
 import java.awt.*;
@@ -8,19 +10,23 @@ import static scenes.AllScenes.*;
 
 public class GameEngine extends Thread {
 
+    static Playing playing;
     MainFrame mainFrame;
     MainPanel mainPanel;
-    static Playing playing;
+    Player1 player1;
+    PlayerInputs playerInputs;
 
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
 
     public GameEngine() {
 
-        playing = new Playing();
-
-        mainPanel = new MainPanel();
+        player1 = new Player1(100, 100);
+        playing = new Playing(player1);
+        playerInputs = new PlayerInputs(player1);
+        mainPanel = new MainPanel(playerInputs);
         mainFrame = new MainFrame(mainPanel);
+
 
 
         this.start();

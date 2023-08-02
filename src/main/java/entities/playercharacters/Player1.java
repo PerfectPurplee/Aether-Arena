@@ -1,6 +1,7 @@
 package entities.playercharacters;
 
 import javax.imageio.ImageIO;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,7 +10,7 @@ import java.util.Objects;
 
 public class Player1 {
 
-    enum PlayerState {
+    public enum PlayerState {
         IDLE_UP, IDLE_DOWN, IDLE_LEFT, IDLE_RIGHT,
         MOVING_UP, MOVING_DOWN, MOVING_LEFT, MOVING_RIGHT
 
@@ -26,22 +27,40 @@ public class Player1 {
     public BufferedImage[] playerSpriteLEFT = new BufferedImage[4];
     public BufferedImage[] playerSpriteRIGHT = new BufferedImage[4];
 
-    PlayerState Current_Player_State;
+    public PlayerState Current_Player_State;
 
-    int playerPosX, playerPosY;
+    public int playerPosX, playerPosY;
+    public int playerMoveSpeed;
 
     public Player1(int playerPosX, int playerPosY) {
 
         this.playerPosX = playerPosX;
         this.playerPosY = playerPosY;
+        playerMoveSpeed = 1;
 
         Current_Player_State = PlayerState.IDLE_DOWN;
         getPlayerSprites();
     }
 
     public void moveController() {
+        if (Current_Player_State == PlayerState.MOVING_UP) {
+            playerPosY -= playerMoveSpeed;
+
+        }
+        if (Current_Player_State == PlayerState.MOVING_DOWN) {
+            playerPosY += playerMoveSpeed;
+
+        }
+        if (Current_Player_State == PlayerState.MOVING_LEFT) {
+            playerPosX -= playerMoveSpeed;
+
+        }
+        if (Current_Player_State == PlayerState.MOVING_RIGHT) {
+            playerPosX += playerMoveSpeed;
+        }
 
     }
+
 
     private void getPlayerSprites() {
         InputStream inputStream = getClass().getResourceAsStream("/Player1.png");

@@ -8,17 +8,30 @@ public class Playing {
 
     Player1 player1;
 
-    public Playing() {
-        player1 = new Player1(100, 100);
+    int animationTick, animationSpeed = 40, animationIndex;
+
+    public Playing(Player1 player1) {
+        this.player1 = player1;
 
 
     }
 
     public void update() {
-
+        animationController();
+        player1.moveController();
     }
 
     public void draw(Graphics g) {
-        g.drawImage(player1.playerSpriteRIGHT[0], 0, 0, null);
+        g.drawImage(player1.playerSpriteRIGHT[animationIndex], player1.playerPosX, player1.playerPosY, null);
+    }
+
+    private void animationController() {
+        animationTick++;
+        if (animationTick >= animationSpeed) {
+            if (animationIndex < player1.playerSpriteRIGHT.length - 1)
+                animationIndex++;
+            else animationIndex = 0;
+            animationTick = 0;
+        }
     }
 }

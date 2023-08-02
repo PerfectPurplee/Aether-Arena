@@ -12,6 +12,9 @@ public class MainFrame extends JFrame {
         this.mainPanel = mainPanel;
         this.add(mainPanel);
 
+        mainPanel.setFocusable(true);
+        mainPanel.requestFocus();
+
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();
         this.setLocationRelativeTo(null);

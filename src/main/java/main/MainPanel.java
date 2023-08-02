@@ -1,5 +1,7 @@
 package main;
 
+import inputs.PlayerInputs;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -11,12 +13,18 @@ public class MainPanel extends JPanel {
 //    Trzeba napisac metode skalujaca, tak zeby kod dzialal na wqhd.
 //    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
+    PlayerInputs playerInputs;
 
+    public MainPanel(PlayerInputs playerInputs) {
+        this.playerInputs = playerInputs;
 
-    public MainPanel() {
+        this.addKeyListener(playerInputs);
+        this.addMouseListener(playerInputs);
+        this.setFocusable(true);
+        this.requestFocus();
 
         this.setBackground(Color.white);
-        this.setPreferredSize(new Dimension(1800,900));
+        this.setPreferredSize(new Dimension(1800, 900));
     }
 
 
