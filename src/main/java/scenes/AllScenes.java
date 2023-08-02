@@ -6,7 +6,8 @@ public enum AllScenes {
 
     PLAYING,
     MENU,
-    PAUSE;
+    PAUSE,
+    MAP_EDITOR;
 
    public static AllScenes Current_Scene = PLAYING;
 

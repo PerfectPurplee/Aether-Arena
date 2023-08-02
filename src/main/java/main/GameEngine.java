@@ -28,6 +28,10 @@ public class GameEngine extends Thread {
 
     private void update() {
 
+        if (Current_Scene == PLAYING) {
+            playing.update();
+        }
+
     }
 
     public static void render(Graphics g) {
@@ -40,6 +44,8 @@ public class GameEngine extends Thread {
             case MENU -> {
             }
             case PAUSE -> {
+            }
+            case MAP_EDITOR -> {
             }
         }
 

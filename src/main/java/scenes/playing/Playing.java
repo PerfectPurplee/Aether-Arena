@@ -9,8 +9,12 @@ public class Playing {
     Player1 player1;
 
     public Playing() {
-        player1 = new Player1();
+        player1 = new Player1(100, 100);
 
+
+    }
+
+    public void update() {
 
     }
 
