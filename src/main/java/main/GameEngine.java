@@ -1,7 +1,8 @@
 package main;
 
 import entities.playercharacters.Player1;
-import inputs.PlayerInputs;
+import inputs.PlayerKeyboardInputs;
+import inputs.PlayerMouseInputs;
 import scenes.playing.Playing;
 
 import java.awt.*;
@@ -14,7 +15,8 @@ public class GameEngine extends Thread {
     MainFrame mainFrame;
     MainPanel mainPanel;
     Player1 player1;
-    PlayerInputs playerInputs;
+    PlayerKeyboardInputs playerKeyboardInputs;
+    PlayerMouseInputs playerMouseInputs;
 
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
@@ -23,8 +25,9 @@ public class GameEngine extends Thread {
 
         player1 = new Player1(100, 100);
         playing = new Playing(player1);
-        playerInputs = new PlayerInputs(player1);
-        mainPanel = new MainPanel(playerInputs);
+        playerKeyboardInputs = new PlayerKeyboardInputs(player1);
+        playerMouseInputs = new PlayerMouseInputs(player1);
+        mainPanel = new MainPanel(playerKeyboardInputs, playerMouseInputs);
         mainFrame = new MainFrame(mainPanel);
 
 

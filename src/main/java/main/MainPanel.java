@@ -1,6 +1,7 @@
 package main;
 
-import inputs.PlayerInputs;
+import inputs.PlayerKeyboardInputs;
+import inputs.PlayerMouseInputs;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,13 +14,16 @@ public class MainPanel extends JPanel {
 //    Trzeba napisac metode skalujaca, tak zeby kod dzialal na wqhd.
 //    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-    PlayerInputs playerInputs;
+    PlayerKeyboardInputs playerKeyboardInputs;
+    PlayerMouseInputs playerMouseInputs;
 
-    public MainPanel(PlayerInputs playerInputs) {
-        this.playerInputs = playerInputs;
+    public MainPanel(PlayerKeyboardInputs playerKeyboardInputs,
+                     PlayerMouseInputs playerMouseInputs) {
+        this.playerKeyboardInputs = playerKeyboardInputs;
+        this.playerMouseInputs = playerMouseInputs;
 
-        this.addKeyListener(playerInputs);
-        this.addMouseListener(playerInputs);
+        this.addKeyListener(playerKeyboardInputs);
+        this.addMouseListener(playerMouseInputs);
         this.setFocusable(true);
         this.requestFocus();
 
