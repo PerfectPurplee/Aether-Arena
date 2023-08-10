@@ -1,6 +1,7 @@
 package entities.playercharacters;
 
 import javax.imageio.ImageIO;
+import javax.swing.plaf.ColorUIResource;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,21 +63,25 @@ public class Player1 {
 //        od tego zalezy gdzie sie zatrzyma
         if (playerMovementStartingPosX > mouseClickXPos && playerMovementStartingPosY > mouseClickYPos) {
             if (playerPosX > mouseClickXPos && playerPosY > mouseClickYPos) {
+                Current_Player_State = PlayerState.MOVING_UP;
                 playerPosX += (playerMovespeed * normalizedVectorX);
                 playerPosY += (playerMovespeed * normalizedVectorY);
             }
         } else if (playerMovementStartingPosX < mouseClickXPos && playerMovementStartingPosY < mouseClickYPos) {
             if (playerPosX < mouseClickXPos && playerPosY < mouseClickYPos) {
+                Current_Player_State = PlayerState.MOVING_DOWN;
                 playerPosX += (playerMovespeed * normalizedVectorX);
                 playerPosY += (playerMovespeed * normalizedVectorY);
             }
         } else if(playerMovementStartingPosX < mouseClickXPos && playerMovementStartingPosY > mouseClickYPos) {
             if (playerPosX < mouseClickXPos && playerPosY > mouseClickYPos) {
+                Current_Player_State = PlayerState.MOVING_RIGHT;
                 playerPosX += (playerMovespeed * normalizedVectorX);
                 playerPosY += (playerMovespeed * normalizedVectorY);
             }
         } else if(playerMovementStartingPosX > mouseClickXPos && playerMovementStartingPosY < mouseClickYPos) {
             if (playerPosX > mouseClickXPos && playerPosY < mouseClickYPos) {
+                Current_Player_State = PlayerState.MOVING_LEFT  ;
                 playerPosX += (playerMovespeed * normalizedVectorX);
                 playerPosY += (playerMovespeed * normalizedVectorY);
             }

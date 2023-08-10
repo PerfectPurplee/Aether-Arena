@@ -24,9 +24,9 @@ public class Playing {
 
     public void draw(Graphics g) {
         if (player1.checkIsCharacterMoving()) {
-            g.drawImage(player1.playerSpriteController()[animationIndexMoving], (int) player1.playerPosX, (int) player1.playerPosY, null);
+            g.drawImage(player1.playerSpriteController()[animationIndexMoving], (int) player1.playerPosX, (int) player1.playerPosY, 144, 144,  null);
         } else if (!player1.checkIsCharacterMoving()) {
-            g.drawImage(player1.playerSpriteController()[animationIndexIdle], (int) player1.playerPosX, (int) player1.playerPosY, null);
+            g.drawImage(player1.playerSpriteController()[animationIndexIdle], (int) player1.playerPosX, (int) player1.playerPosY, 144,144, null);
 
         }
 //        g.drawImage(player1.playerSpriteIDLE_DOWN[animationIndexIdle], player1.playerPosX, player1.playerPosY,null);
