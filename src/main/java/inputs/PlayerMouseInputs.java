@@ -31,7 +31,7 @@ public class PlayerMouseInputs implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        System.out.println("mouse pressed");
+        player1.playerMovementStartingPosition(player1.playerPosX, player1.playerPosY);
         player1.mouseClickXPos = e.getX();
         player1.mouseClickYPos = e.getY();
 

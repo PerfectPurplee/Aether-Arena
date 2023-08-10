@@ -1,11 +1,9 @@
 package entities.playercharacters;
 
 import javax.imageio.ImageIO;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Objects;
 
 public class Player1 {
@@ -35,6 +33,7 @@ public class Player1 {
     public float normalizedVectorX;
     public float normalizedVectorY;
     int playerMovespeed = 2;
+    public float playerMovementStartingPosX, playerMovementStartingPosY;
 
     public Player1(int playerPosX, int playerPosY) {
 
@@ -61,10 +60,17 @@ public class Player1 {
     public void moveController() {
 //        tu zrobic duzego ifa z tym czy postac idzie w lewo czy w prawo czy w gore itd.
 //        od tego zalezy gdzie sie zatrzyma
-        if (playerPosX != mouseClickXPos && playerPosY != mouseClickYPos) {
-            playerPosX +=  (playerMovespeed * normalizedVectorX);
-            playerPosY +=  (playerMovespeed * normalizedVectorY);
+        if (playerMovementStartingPosX > mouseClickXPos && playerMovementStartingPosY > mouseClickYPos) {
+            if (playerPosX > mouseClickXPos && playerPosY > mouseClickYPos) {
+                playerPosX += (playerMovespeed * normalizedVectorX);
+                playerPosY += (playerMovespeed * normalizedVectorY);
+            }
         }
+    }
+
+    public void playerMovementStartingPosition(float playerMovementStartingPosX, float playerMovementStartingPosY) {
+        this.playerMovementStartingPosX = playerMovementStartingPosX;
+        this.playerMovementStartingPosY = playerMovementStartingPosY;
     }
 
     public BufferedImage[] playerSpriteController() {
