@@ -65,6 +65,21 @@ public class Player1 {
                 playerPosX += (playerMovespeed * normalizedVectorX);
                 playerPosY += (playerMovespeed * normalizedVectorY);
             }
+        } else if (playerMovementStartingPosX < mouseClickXPos && playerMovementStartingPosY < mouseClickYPos) {
+            if (playerPosX < mouseClickXPos && playerPosY < mouseClickYPos) {
+                playerPosX += (playerMovespeed * normalizedVectorX);
+                playerPosY += (playerMovespeed * normalizedVectorY);
+            }
+        } else if(playerMovementStartingPosX < mouseClickXPos && playerMovementStartingPosY > mouseClickYPos) {
+            if (playerPosX < mouseClickXPos && playerPosY > mouseClickYPos) {
+                playerPosX += (playerMovespeed * normalizedVectorX);
+                playerPosY += (playerMovespeed * normalizedVectorY);
+            }
+        } else if(playerMovementStartingPosX > mouseClickXPos && playerMovementStartingPosY < mouseClickYPos) {
+            if (playerPosX > mouseClickXPos && playerPosY < mouseClickYPos) {
+                playerPosX += (playerMovespeed * normalizedVectorX);
+                playerPosY += (playerMovespeed * normalizedVectorY);
+            }
         }
     }
 
