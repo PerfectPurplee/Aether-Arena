@@ -87,7 +87,7 @@ public class PlayerClass {
         }
     }
 
-    public void playerMovementStartingPosition(float playerMovementStartingPosX, float playerMovementStartingPosY) {
+    public void setPlayerMovementStartingPosition(float playerMovementStartingPosX, float playerMovementStartingPosY) {
         this.playerMovementStartingPosX = playerMovementStartingPosX;
         this.playerMovementStartingPosY = playerMovementStartingPosY;
     }

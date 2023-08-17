@@ -1,7 +1,6 @@
 package inputs;
 
 import entities.playercharacters.PlayerClass;
-import entities.spells.BasicSpell;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -26,7 +25,7 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        playerClass.playerMovementStartingPosition(playerClass.playerPosX, playerClass.playerPosY);
+        playerClass.setPlayerMovementStartingPosition(playerClass.playerPosX, playerClass.playerPosY);
         playerClass.mouseClickXPos = e.getX();
         playerClass.mouseClickYPos = e.getY();
 
@@ -56,7 +55,8 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        playerClass.playerMovementStartingPosition(playerClass.playerPosX, playerClass.playerPosY);
+        CurrentMousePosition = e.getPoint();
+        playerClass.setPlayerMovementStartingPosition(playerClass.playerPosX, playerClass.playerPosY);
         playerClass.mouseClickXPos = e.getX();
         playerClass.mouseClickYPos = e.getY();
 
