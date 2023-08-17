@@ -1,6 +1,6 @@
 package main;
 
-import entities.playercharacters.Player1;
+import entities.playercharacters.PlayerClass;
 import inputs.PlayerKeyboardInputs;
 import inputs.PlayerMouseInputs;
 import scenes.playing.Playing;
@@ -14,7 +14,7 @@ public class GameEngine extends Thread {
     static Playing playing;
     MainFrame mainFrame;
     MainPanel mainPanel;
-    Player1 player1;
+    PlayerClass playerClass;
     PlayerKeyboardInputs playerKeyboardInputs;
     PlayerMouseInputs playerMouseInputs;
 
@@ -23,10 +23,10 @@ public class GameEngine extends Thread {
 
     public GameEngine() {
 
-        player1 = new Player1(100, 100);
-        playing = new Playing(player1);
-        playerKeyboardInputs = new PlayerKeyboardInputs(player1);
-        playerMouseInputs = new PlayerMouseInputs(player1);
+        playerClass = new PlayerClass(100, 100);
+        playing = new Playing(playerClass);
+        playerKeyboardInputs = new PlayerKeyboardInputs(playerClass);
+        playerMouseInputs = new PlayerMouseInputs(playerClass);
         mainPanel = new MainPanel(playerKeyboardInputs, playerMouseInputs);
         mainFrame = new MainFrame(mainPanel);
 

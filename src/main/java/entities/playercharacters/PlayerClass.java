@@ -1,13 +1,12 @@
 package entities.playercharacters;
 
 import javax.imageio.ImageIO;
-import javax.swing.plaf.ColorUIResource;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-public class Player1 {
+public class PlayerClass {
 
     public enum PlayerState {
         IDLE_UP, IDLE_DOWN, IDLE_LEFT, IDLE_RIGHT,
@@ -36,7 +35,7 @@ public class Player1 {
     int playerMovespeed = 2;
     public float playerMovementStartingPosX, playerMovementStartingPosY;
 
-    public Player1(int playerPosX, int playerPosY) {
+    public PlayerClass(int playerPosX, int playerPosY) {
 
         this.playerPosX = playerPosX;
         this.playerPosY = playerPosY;

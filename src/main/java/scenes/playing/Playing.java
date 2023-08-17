@@ -1,32 +1,32 @@
 package scenes.playing;
 
-import entities.playercharacters.Player1;
+import entities.playercharacters.PlayerClass;
 
 import java.awt.*;
 
 public class Playing {
 
-    Player1 player1;
+    PlayerClass playerClass;
 
     int animationTick, animationSpeed = 60, animationIndexMoving, animationIndexIdle;
 
-    public Playing(Player1 player1) {
-        this.player1 = player1;
+    public Playing(PlayerClass playerClass) {
+        this.playerClass = playerClass;
 
 
     }
 
     public void update() {
-        player1.moveController();
-        player1.playerSpriteController();
+        playerClass.moveController();
+        playerClass.playerSpriteController();
         animationController();
     }
 
     public void draw(Graphics g) {
-        if (player1.checkIsCharacterMoving()) {
-            g.drawImage(player1.playerSpriteController()[animationIndexMoving], (int) player1.playerPosX, (int) player1.playerPosY, 144, 144,  null);
-        } else if (!player1.checkIsCharacterMoving()) {
-            g.drawImage(player1.playerSpriteController()[animationIndexIdle], (int) player1.playerPosX, (int) player1.playerPosY, 144,144, null);
+        if (playerClass.checkIsCharacterMoving()) {
+            g.drawImage(playerClass.playerSpriteController()[animationIndexMoving], (int) playerClass.playerPosX, (int) playerClass.playerPosY, 144, 144,  null);
+        } else if (!playerClass.checkIsCharacterMoving()) {
+            g.drawImage(playerClass.playerSpriteController()[animationIndexIdle], (int) playerClass.playerPosX, (int) playerClass.playerPosY, 144,144, null);
 
         }
 //        g.drawImage(player1.playerSpriteIDLE_DOWN[animationIndexIdle], player1.playerPosX, player1.playerPosY,null);
@@ -35,17 +35,17 @@ public class Playing {
     private void animationController() {
         animationTick++;
         if (animationTick >= animationSpeed) {
-            if (player1.playerSpriteController() == player1.playerSpriteIDLE_UP |
-                    player1.playerSpriteController() == player1.playerSpriteIDLE_DOWN |
-                    player1.playerSpriteController() == player1.playerSpriteIDLE_LEFT |
-                    player1.playerSpriteController() == player1.playerSpriteIDLE_RIGHT)
+            if (playerClass.playerSpriteController() == playerClass.playerSpriteIDLE_UP |
+                    playerClass.playerSpriteController() == playerClass.playerSpriteIDLE_DOWN |
+                    playerClass.playerSpriteController() == playerClass.playerSpriteIDLE_LEFT |
+                    playerClass.playerSpriteController() == playerClass.playerSpriteIDLE_RIGHT)
                 if (animationIndexIdle < 1)
                     animationIndexIdle++;
                 else animationIndexIdle = 0;
-            else if (player1.playerSpriteController() == player1.playerSpriteUP |
-                    player1.playerSpriteController() == player1.playerSpriteDOWN |
-                    player1.playerSpriteController() == player1.playerSpriteLEFT |
-                    player1.playerSpriteController() == player1.playerSpriteRIGHT)
+            else if (playerClass.playerSpriteController() == playerClass.playerSpriteUP |
+                    playerClass.playerSpriteController() == playerClass.playerSpriteDOWN |
+                    playerClass.playerSpriteController() == playerClass.playerSpriteLEFT |
+                    playerClass.playerSpriteController() == playerClass.playerSpriteRIGHT)
                 if (animationIndexMoving < 3)
                     animationIndexMoving++;
                 else animationIndexMoving = 0;

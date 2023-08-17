@@ -24,6 +24,7 @@ public class MainPanel extends JPanel {
 
         this.addKeyListener(playerKeyboardInputs);
         this.addMouseListener(playerMouseInputs);
+        this.addMouseMotionListener(playerMouseInputs);
         this.setFocusable(true);
         this.requestFocus();
 
