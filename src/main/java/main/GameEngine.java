@@ -1,11 +1,17 @@
 package main;
 
 import entities.playercharacters.PlayerClass;
+import entities.spells.BasicSpell;
 import inputs.PlayerKeyboardInputs;
 import inputs.PlayerMouseInputs;
 import scenes.playing.Playing;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
 
 import static scenes.AllScenes.*;
 
@@ -21,7 +27,11 @@ public class GameEngine extends Thread {
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
 
+    public static BufferedImage BasicSpellsSpriteSheet;
+
     public GameEngine() {
+
+        BasicSpellsSpriteSheet = getAllBasicSpellsSpriteSheet();
 
         playerClass = new PlayerClass(100, 100);
         playing = new Playing(playerClass);
@@ -29,7 +39,6 @@ public class GameEngine extends Thread {
         playerMouseInputs = new PlayerMouseInputs(playerClass);
         mainPanel = new MainPanel(playerKeyboardInputs, playerMouseInputs);
         mainFrame = new MainFrame(mainPanel);
-
 
 
         this.start();
@@ -103,6 +112,15 @@ public class GameEngine extends Thread {
             }
         }
 
+    }
+
+    private BufferedImage getAllBasicSpellsSpriteSheet() {
+        InputStream inputStream = getClass().getResourceAsStream("/AttackSprites.png");
+        try {
+            return ImageIO.read(Objects.requireNonNull(inputStream));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
