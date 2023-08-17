@@ -1,11 +1,10 @@
 package entities.playercharacters;
 
 import javax.imageio.ImageIO;
-import java.awt.event.KeyEvent;
+import javax.swing.plaf.ColorUIResource;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Objects;
 
 public class Player1 {
@@ -28,17 +27,21 @@ public class Player1 {
     public BufferedImage[] playerSpriteRIGHT = new BufferedImage[4];
 
     public PlayerState Current_Player_State;
-//    public boolean isMoving;
 
-    public int playerPosX, playerPosY;
-    public int playerVelX, playerVelY;
+    public float playerPosX, playerPosY;
+    public int mouseClickXPos;
+    public int mouseClickYPos;
+    public float normalizedVectorX;
+    public float normalizedVectorY;
+    int playerMovespeed = 2;
+    public float playerMovementStartingPosX, playerMovementStartingPosY;
 
     public Player1(int playerPosX, int playerPosY) {
 
         this.playerPosX = playerPosX;
         this.playerPosY = playerPosY;
 
-        Current_Player_State = PlayerState.IDLE_DOWN;
+        Current_Player_State = PlayerState.MOVING_UP;
         getPlayerSprites();
     }
 
@@ -56,8 +59,38 @@ public class Player1 {
     }
 
     public void moveController() {
-        playerPosX += playerVelX;
-        playerPosY += playerVelY;
+//        tu zrobic duzego ifa z tym czy postac idzie w lewo czy w prawo czy w gore itd.
+//        od tego zalezy gdzie sie zatrzyma
+        if (playerMovementStartingPosX > mouseClickXPos && playerMovementStartingPosY > mouseClickYPos) {
+            if (playerPosX > mouseClickXPos && playerPosY > mouseClickYPos) {
+                Current_Player_State = PlayerState.MOVING_UP;
+                playerPosX += (playerMovespeed * normalizedVectorX);
+                playerPosY += (playerMovespeed * normalizedVectorY);
+            }
+        } else if (playerMovementStartingPosX < mouseClickXPos && playerMovementStartingPosY < mouseClickYPos) {
+            if (playerPosX < mouseClickXPos && playerPosY < mouseClickYPos) {
+                Current_Player_State = PlayerState.MOVING_DOWN;
+                playerPosX += (playerMovespeed * normalizedVectorX);
+                playerPosY += (playerMovespeed * normalizedVectorY);
+            }
+        } else if(playerMovementStartingPosX < mouseClickXPos && playerMovementStartingPosY > mouseClickYPos) {
+            if (playerPosX < mouseClickXPos && playerPosY > mouseClickYPos) {
+                Current_Player_State = PlayerState.MOVING_RIGHT;
+                playerPosX += (playerMovespeed * normalizedVectorX);
+                playerPosY += (playerMovespeed * normalizedVectorY);
+            }
+        } else if(playerMovementStartingPosX > mouseClickXPos && playerMovementStartingPosY < mouseClickYPos) {
+            if (playerPosX > mouseClickXPos && playerPosY < mouseClickYPos) {
+                Current_Player_State = PlayerState.MOVING_LEFT  ;
+                playerPosX += (playerMovespeed * normalizedVectorX);
+                playerPosY += (playerMovespeed * normalizedVectorY);
+            }
+        }
+    }
+
+    public void playerMovementStartingPosition(float playerMovementStartingPosX, float playerMovementStartingPosY) {
+        this.playerMovementStartingPosX = playerMovementStartingPosX;
+        this.playerMovementStartingPosY = playerMovementStartingPosY;
     }
 
     public BufferedImage[] playerSpriteController() {
@@ -134,3 +167,4 @@ public class Player1 {
 
     }
 }
+
