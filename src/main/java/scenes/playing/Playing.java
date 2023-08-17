@@ -1,6 +1,8 @@
 package scenes.playing;
 
 import entities.playercharacters.PlayerClass;
+import entities.spells.BasicSpell;
+import entities.spells.basicspells.FirstSpell;
 
 import java.awt.*;
 
@@ -23,13 +25,24 @@ public class Playing {
     }
 
     public void draw(Graphics g) {
+
+
+//        Rysowanie postaci
         if (playerClass.checkIsCharacterMoving()) {
             g.drawImage(playerClass.playerSpriteController()[animationIndexMoving], (int) playerClass.playerPosX - 72, (int) playerClass.playerPosY - 132, 144, 144,  null);
         } else if (!playerClass.checkIsCharacterMoving()) {
             g.drawImage(playerClass.playerSpriteController()[animationIndexIdle], (int) playerClass.playerPosX, (int) playerClass.playerPosY, 144,144, null);
 
         }
-//        g.drawImage(player1.playerSpriteIDLE_DOWN[animationIndexIdle], player1.playerPosX, player1.playerPosY,null);
+//        Rysowanie Spelli
+        BasicSpell.AllActiveSpells.stream()
+                .filter(basicSpell -> basicSpell instanceof FirstSpell)
+                .map(basicSpell -> (FirstSpell) basicSpell)
+                .forEach(firstSpell -> g.drawImage(firstSpell.spellSprites,
+                        (int) firstSpell.spellStartingPosX, (int) firstSpell.spellStartingPosY, 100, 100, null));
+
+
+
     }
 
     private void animationController() {

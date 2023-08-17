@@ -27,7 +27,7 @@ public class PlayerClass {
 
     public PlayerState Current_Player_State;
 
-    public float playerPosX, playerPosY;
+    public static float playerPosX, playerPosY;
     public int mouseClickXPos;
     public int mouseClickYPos;
     public float normalizedVectorX;
@@ -37,8 +37,8 @@ public class PlayerClass {
 
     public PlayerClass(int playerPosX, int playerPosY) {
 
-        this.playerPosX = playerPosX;
-        this.playerPosY = playerPosY;
+        PlayerClass.playerPosX = playerPosX;
+        PlayerClass.playerPosY = playerPosY;
 
         Current_Player_State = PlayerState.MOVING_UP;
         getPlayerSprites();

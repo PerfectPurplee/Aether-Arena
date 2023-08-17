@@ -1,6 +1,7 @@
 package inputs;
 
 import entities.playercharacters.PlayerClass;
+import entities.spells.basicspells.FirstSpell;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -24,6 +25,9 @@ public class PlayerKeyboardInputs implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_Q) {
+            new FirstSpell();
+        }
 
     }
 

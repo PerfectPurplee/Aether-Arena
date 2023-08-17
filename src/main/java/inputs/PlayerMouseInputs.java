@@ -1,7 +1,9 @@
 package inputs;
 
 import entities.playercharacters.PlayerClass;
+import entities.spells.BasicSpell;
 
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -10,10 +12,11 @@ import java.awt.event.MouseMotionListener;
 public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
     PlayerClass playerClass;
-
+    public static Point CurrentMousePosition;
 
     public PlayerMouseInputs(PlayerClass playerClass) {
         this.playerClass = playerClass;
+
     }
 
     @Override
@@ -31,8 +34,8 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
         float vectorY = playerClass.mouseClickYPos - playerClass.playerPosY;
         float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
 
-        playerClass.normalizedVectorX =  (vectorX / magnitude);
-        playerClass.normalizedVectorY =  (vectorY / magnitude);
+        playerClass.normalizedVectorX = (vectorX / magnitude);
+        playerClass.normalizedVectorY = (vectorY / magnitude);
 
     }
 
@@ -62,12 +65,12 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
         float vectorY = playerClass.mouseClickYPos - playerClass.playerPosY;
         float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
 
-        playerClass.normalizedVectorX =  (vectorX / magnitude);
-        playerClass.normalizedVectorY =  (vectorY / magnitude);
+        playerClass.normalizedVectorX = (vectorX / magnitude);
+        playerClass.normalizedVectorY = (vectorY / magnitude);
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        CurrentMousePosition = e.getPoint();
     }
 }

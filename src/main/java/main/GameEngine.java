@@ -2,6 +2,7 @@ package main;
 
 import entities.playercharacters.PlayerClass;
 import entities.spells.BasicSpell;
+import entities.spells.basicspells.FirstSpell;
 import inputs.PlayerKeyboardInputs;
 import inputs.PlayerMouseInputs;
 import scenes.playing.Playing;
@@ -31,8 +32,7 @@ public class GameEngine extends Thread {
 
     public GameEngine() {
 
-        BasicSpellsSpriteSheet = getAllBasicSpellsSpriteSheet();
-
+        getAllBasicSpellsSpriteSheet();
         playerClass = new PlayerClass(100, 100);
         playing = new Playing(playerClass);
         playerKeyboardInputs = new PlayerKeyboardInputs(playerClass);
@@ -114,10 +114,10 @@ public class GameEngine extends Thread {
 
     }
 
-    private BufferedImage getAllBasicSpellsSpriteSheet() {
+    private void getAllBasicSpellsSpriteSheet() {
         InputStream inputStream = getClass().getResourceAsStream("/AttackSprites.png");
         try {
-            return ImageIO.read(Objects.requireNonNull(inputStream));
+            BasicSpellsSpriteSheet = ImageIO.read(Objects.requireNonNull(inputStream));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
