@@ -25,12 +25,12 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        playerClass.setPlayerMovementStartingPosition(playerClass.playerPosX, playerClass.playerPosY);
+        playerClass.setPlayerMovementStartingPosition(PlayerClass.playerPosX, PlayerClass.playerPosY);
         playerClass.mouseClickXPos = e.getX();
         playerClass.mouseClickYPos = e.getY();
 
-        float vectorX = playerClass.mouseClickXPos - playerClass.playerPosX;
-        float vectorY = playerClass.mouseClickYPos - playerClass.playerPosY;
+        float vectorX = playerClass.mouseClickXPos - PlayerClass.playerPosX;
+        float vectorY = playerClass.mouseClickYPos - PlayerClass.playerPosY;
         float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
 
         playerClass.normalizedVectorX = (vectorX / magnitude);
@@ -56,13 +56,13 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
     @Override
     public void mouseDragged(MouseEvent e) {
         CurrentMousePosition = e.getPoint();
-        playerClass.setPlayerMovementStartingPosition(playerClass.playerPosX, playerClass.playerPosY);
+        playerClass.setPlayerMovementStartingPosition(PlayerClass.playerPosX, PlayerClass.playerPosY);
         playerClass.mouseClickXPos = e.getX();
         playerClass.mouseClickYPos = e.getY();
 
 
-        float vectorX = playerClass.mouseClickXPos - playerClass.playerPosX;
-        float vectorY = playerClass.mouseClickYPos - playerClass.playerPosY;
+        float vectorX = playerClass.mouseClickXPos - PlayerClass.playerPosX;
+        float vectorY = playerClass.mouseClickYPos - PlayerClass.playerPosY;
         float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
 
         playerClass.normalizedVectorX = (vectorX / magnitude);
