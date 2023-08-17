@@ -58,8 +58,8 @@ public class PlayerClass {
     }
 
     public void moveController() {
-//        tu zrobic duzego ifa z tym czy postac idzie w lewo czy w prawo czy w gore itd.
-//        od tego zalezy gdzie sie zatrzyma
+//
+//        Ruch na lewej gornej cwiartce liczac od postaci
         if (playerMovementStartingPosX > mouseClickXPos && playerMovementStartingPosY > mouseClickYPos) {
             if (playerPosX > mouseClickXPos && playerPosY > mouseClickYPos) {
                 Current_Player_State = PlayerState.MOVING_UP;

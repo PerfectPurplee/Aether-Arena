@@ -24,7 +24,7 @@ public class Playing {
 
     public void draw(Graphics g) {
         if (playerClass.checkIsCharacterMoving()) {
-            g.drawImage(playerClass.playerSpriteController()[animationIndexMoving], (int) playerClass.playerPosX, (int) playerClass.playerPosY, 144, 144,  null);
+            g.drawImage(playerClass.playerSpriteController()[animationIndexMoving], (int) playerClass.playerPosX - 72, (int) playerClass.playerPosY - 132, 144, 144,  null);
         } else if (!playerClass.checkIsCharacterMoving()) {
             g.drawImage(playerClass.playerSpriteController()[animationIndexIdle], (int) playerClass.playerPosX, (int) playerClass.playerPosY, 144,144, null);
 
