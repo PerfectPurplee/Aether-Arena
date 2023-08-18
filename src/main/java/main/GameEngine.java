@@ -5,6 +5,7 @@ import entities.spells.BasicSpell;
 import entities.spells.basicspells.FirstSpell;
 import inputs.PlayerKeyboardInputs;
 import inputs.PlayerMouseInputs;
+import scenes.playing.Camera;
 import scenes.playing.Playing;
 
 import javax.imageio.ImageIO;
@@ -24,6 +25,7 @@ public class GameEngine extends Thread {
     PlayerClass playerClass;
     PlayerKeyboardInputs playerKeyboardInputs;
     PlayerMouseInputs playerMouseInputs;
+    Camera camera;
 
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
@@ -33,8 +35,10 @@ public class GameEngine extends Thread {
     public GameEngine() {
 
         getAllBasicSpellsSpriteSheet();
+
         playerClass = new PlayerClass(100, 100);
-        playing = new Playing(playerClass);
+        camera = new Camera();
+        playing = new Playing(playerClass, camera);
         playerKeyboardInputs = new PlayerKeyboardInputs(playerClass);
         playerMouseInputs = new PlayerMouseInputs(playerClass);
         mainPanel = new MainPanel(playerKeyboardInputs, playerMouseInputs);

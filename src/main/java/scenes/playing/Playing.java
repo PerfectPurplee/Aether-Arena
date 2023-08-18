@@ -3,17 +3,21 @@ package scenes.playing;
 import entities.playercharacters.PlayerClass;
 import entities.spells.BasicSpell;
 import entities.spells.basicspells.FirstSpell;
+import main.MainPanel;
 
+import javax.swing.*;
 import java.awt.*;
 
 public class Playing {
 
     PlayerClass playerClass;
+    Camera camera;
 
     int animationTick, animationSpeed = 60, animationIndexMoving, animationIndexIdle;
 
-    public Playing(PlayerClass playerClass) {
+    public Playing(PlayerClass playerClass, Camera camera) {
         this.playerClass = playerClass;
+        this.camera = camera;
 
 
     }
@@ -23,22 +27,31 @@ public class Playing {
         playerClass.playerSpriteController();
         animationController();
         FirstSpell.updateFirstSpells();
+        camera.updateCameraPosition();
     }
 
     public void draw(Graphics g) {
 
+//        Rysowanie Kamery
+        g.drawImage(camera.WHOLE_MAP.getSubimage(camera.cameraPosX, camera.cameraPosY, camera.Camera_Width,
+                camera.Camera_Height), 0, 0, MainPanel.gameSize.width, MainPanel.gameSize.height, null);
+
+
 
 //        Rysowanie postaci
         if (playerClass.checkIsCharacterMoving()) {
-            g.drawImage(playerClass.playerSpriteController()[animationIndexMoving], (int) PlayerClass.playerPosX, (int) PlayerClass.playerPosY, 144,144,null);
+            g.drawImage(playerClass.playerSpriteController()[animationIndexMoving],
+                    (int) PlayerClass.playerPosX, (int) PlayerClass.playerPosY, 144, 144, null);
         } else if (!playerClass.checkIsCharacterMoving()) {
-            g.drawImage(playerClass.playerSpriteController()[animationIndexIdle], (int) PlayerClass.playerPosX, (int) PlayerClass.playerPosY, 144, 144, null);
+            g.drawImage(playerClass.playerSpriteController()[animationIndexIdle],
+                    (int) PlayerClass.playerPosX, (int) PlayerClass.playerPosY, 144, 144, null);
 
         }
-//        Rysowanie Spelli
+//        Rysowanie Zaklec
         FirstSpell.ListOfActiveFirstSpells.forEach(firstSpell ->
                 g.drawImage(firstSpell.spellSprites[firstSpell.animationIndex], (int) firstSpell.spellStartingPosX,
-                        (int) firstSpell.spellStartingPosY,64,64, null));
+                        (int) firstSpell.spellStartingPosY, 64, 64, null));
+
 
     }
 

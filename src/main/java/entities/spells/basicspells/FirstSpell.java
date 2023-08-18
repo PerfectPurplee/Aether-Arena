@@ -24,7 +24,7 @@ public class FirstSpell {
     public float normalizedVectorX;
     public float normalizedVectorY;
 
-    public static  List<FirstSpell> ListOfActiveFirstSpells = new ArrayList<>();
+    public static List<FirstSpell> ListOfActiveFirstSpells = new ArrayList<>();
 
     public FirstSpell() {
         getVector();

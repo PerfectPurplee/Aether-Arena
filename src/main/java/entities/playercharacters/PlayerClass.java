@@ -124,7 +124,6 @@ public class PlayerClass {
         }
     }
 
-
     private void getPlayerSprites() {
         InputStream inputStream = getClass().getResourceAsStream("/Player1.png");
         try {

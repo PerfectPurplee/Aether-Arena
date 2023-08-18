@@ -1,6 +1,7 @@
 package inputs;
 
 import entities.playercharacters.PlayerClass;
+import scenes.playing.Camera;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -72,5 +73,6 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
     @Override
     public void mouseMoved(MouseEvent e) {
         CurrentMousePosition = e.getPoint();
+        Camera.updateCameraState(e);
     }
 }

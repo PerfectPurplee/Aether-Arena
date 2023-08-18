@@ -10,15 +10,14 @@ import static main.GameEngine.*;
 
 public class MainPanel extends JPanel {
 
-//    sposob na pobranie rozmiaru glownego ekranu.
+    //    sposob na pobranie rozmiaru glownego ekranu.
 //    Trzeba napisac metode skalujaca, tak zeby kod dzialal na wqhd.
-//    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
+    public static Dimension gameSize;
     PlayerKeyboardInputs playerKeyboardInputs;
     PlayerMouseInputs playerMouseInputs;
 
-    public MainPanel(PlayerKeyboardInputs playerKeyboardInputs,
-                     PlayerMouseInputs playerMouseInputs) {
+    public MainPanel(PlayerKeyboardInputs playerKeyboardInputs, PlayerMouseInputs playerMouseInputs) {
+        gameSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.playerKeyboardInputs = playerKeyboardInputs;
         this.playerMouseInputs = playerMouseInputs;
 
@@ -27,15 +26,16 @@ public class MainPanel extends JPanel {
         this.addMouseMotionListener(playerMouseInputs);
         this.setFocusable(true);
         this.requestFocus();
-
         this.setBackground(Color.white);
-        this.setPreferredSize(new Dimension(1800, 900));
+        this.setPreferredSize(gameSize);
     }
 
 
     @Override
-    public void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         render(g);
     }
 }
+
+
