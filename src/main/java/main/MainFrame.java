@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public class MainFrame extends JFrame {
 
-
+//Why you do this to meeee!
 
     MainPanel mainPanel;
 
