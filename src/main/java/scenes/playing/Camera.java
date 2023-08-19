@@ -1,6 +1,6 @@
 package scenes.playing;
 
-import entities.playercharacters.PlayerClass;
+import main.MainFrame;
 import main.MainPanel;
 
 import javax.imageio.ImageIO;
@@ -18,14 +18,12 @@ public class Camera {
     private static boolean cameraMovingLeft;
     private static boolean cameraMovingRight;
 
-    private final int tileSize = 16;
-    public final int Camera_Width = 30 * tileSize;
-    public final int Camera_Height = 16 * tileSize;
+    public static final int Camera_Width = MainFrame.SCREEN_WIDTH;
+    public static final int Camera_Height = MainFrame.SCREEN_HEIGHT;
     public int cameraPosX;
     public int cameraPosY;
     public int cameraSpeed = 2;
-    private static int distanceToEdgeToMoveCamera = 50;
-    public BufferedImage WHOLE_MAP;
+    private static int distanceToEdgeToMoveCamera;
 
     public Camera() {
 
@@ -33,8 +31,9 @@ public class Camera {
         cameraMovingDown = false;
         cameraMovingLeft = false;
         cameraMovingRight = false;
-        getWholeMapImage();
         distanceToEdgeToMoveCamera = 200;
+        cameraPosX = 0;
+        cameraPosY = 0;
 
     }
 
@@ -43,7 +42,7 @@ public class Camera {
             cameraPosY -= cameraSpeed;
 
         }
-        if (cameraMovingDown && cameraPosY + Camera_Height < WHOLE_MAP.getHeight() - cameraSpeed) {
+        if (cameraMovingDown && cameraPosY + Camera_Height < MainPanel.worldSize.height - cameraSpeed) {
             cameraPosY += cameraSpeed;
 
 
@@ -53,19 +52,18 @@ public class Camera {
 
 
         }
-        if (cameraMovingRight && cameraPosX + Camera_Width < WHOLE_MAP.getWidth() - cameraSpeed) {
+        if (cameraMovingRight && cameraPosX + Camera_Width < MainPanel.worldSize.width - cameraSpeed) {
             cameraPosX += cameraSpeed;
 
 
         }
     }
 
-
     public static void updateCameraState(MouseEvent e) {
-        cameraMovingDown = e.getY() >= MainPanel.gameSize.getHeight() - distanceToEdgeToMoveCamera;
+        cameraMovingDown = e.getY() >= Camera_Height - distanceToEdgeToMoveCamera;
         cameraMovingUP = e.getY() <= distanceToEdgeToMoveCamera;
         cameraMovingLeft = e.getX() <= distanceToEdgeToMoveCamera;
-        cameraMovingRight = e.getX() >= MainPanel.gameSize.getWidth() - distanceToEdgeToMoveCamera;
+        cameraMovingRight = e.getX() >= Camera_Width - distanceToEdgeToMoveCamera;
 
 
     }
@@ -75,12 +73,4 @@ public class Camera {
 
     }
 
-    public void getWholeMapImage() {
-        InputStream inputStream = getClass().getResourceAsStream("/Map.png");
-        try {
-            WHOLE_MAP = ImageIO.read(Objects.requireNonNull(inputStream));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

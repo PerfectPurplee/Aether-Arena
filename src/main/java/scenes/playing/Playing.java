@@ -1,11 +1,9 @@
 package scenes.playing;
 
 import entities.playercharacters.PlayerClass;
-import entities.spells.BasicSpell;
 import entities.spells.basicspells.FirstSpell;
 import main.MainPanel;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class Playing {
@@ -33,11 +31,13 @@ public class Playing {
     public void draw(Graphics g) {
 
 //        Rysowanie Kamery
-        g.drawImage(camera.WHOLE_MAP.getSubimage(camera.cameraPosX, camera.cameraPosY, camera.Camera_Width,
-                camera.Camera_Height), 0, 0, MainPanel.gameSize.width, MainPanel.gameSize.height, null);
+//        g.drawImage(camera.WHOLE_MAP.getSubimage(camera.cameraPosX, camera.cameraPosY, camera.Camera_Width,
+//                camera.Camera_Height), 0, 0, MainPanel.worldSize.width, MainPanel.worldSize.height, null);
 
+        //  g.drawImage(MainPanel.worldMap, 0, 0, Camera.Camera_Width, Camera.Camera_Height,
+//                camera.cameraPosX, camera.cameraPosY, camera.cameraPosX + Camera.Camera_Width, camera.cameraPosY + Camera.Camera_Height, null);
 
-
+        g.drawImage(MainPanel.worldMap, 0, 0, null);
 //        Rysowanie postaci
         if (playerClass.checkIsCharacterMoving()) {
             g.drawImage(playerClass.playerSpriteController()[animationIndexMoving],

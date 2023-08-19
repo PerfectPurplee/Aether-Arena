@@ -4,7 +4,8 @@ import javax.swing.*;
 
 public class MainFrame extends JFrame {
 
-//Why you do this to meeee!
+    public static int SCREEN_WIDTH;
+    public static int SCREEN_HEIGHT;
 
     MainPanel mainPanel;
 
@@ -17,7 +18,9 @@ public class MainFrame extends JFrame {
 
         this.setUndecorated(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.pack();
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        SCREEN_WIDTH = this.getWidth();
+        SCREEN_HEIGHT = this.getHeight();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
