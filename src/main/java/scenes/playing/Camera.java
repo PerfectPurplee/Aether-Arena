@@ -23,8 +23,8 @@ public class Camera {
     public final int Camera_Height = MainPanel.gameSize.height;
     public static int cameraPosX;
     public static int cameraPosY;
-    public int cameraSpeed = 2;
-    private static int distanceToEdgeToMoveCamera = 50;
+    public int cameraSpeed = 4;
+    private static int distanceToEdgeToMoveCamera;
     public BufferedImage WHOLE_MAP;
 
     public Camera() {
@@ -34,7 +34,7 @@ public class Camera {
         cameraMovingLeft = false;
         cameraMovingRight = false;
         getWholeMapImage();
-        distanceToEdgeToMoveCamera = 200;
+        distanceToEdgeToMoveCamera = 100;
 
     }
 

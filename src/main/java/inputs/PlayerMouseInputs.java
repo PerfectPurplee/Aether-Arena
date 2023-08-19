@@ -68,6 +68,8 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
         playerClass.normalizedVectorX = (vectorX / magnitude);
         playerClass.normalizedVectorY = (vectorY / magnitude);
+
+        Camera.updateCameraState(e);
     }
 
     @Override
