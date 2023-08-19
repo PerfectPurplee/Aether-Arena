@@ -19,10 +19,10 @@ public class Camera {
     private static boolean cameraMovingRight;
 
     private final int tileSize = 16;
-    public final int Camera_Width = 30 * tileSize;
-    public final int Camera_Height = 16 * tileSize;
-    public int cameraPosX;
-    public int cameraPosY;
+    public final int Camera_Width = MainPanel.gameSize.width;
+    public final int Camera_Height = MainPanel.gameSize.height;
+    public static int cameraPosX;
+    public static int cameraPosY;
     public int cameraSpeed = 2;
     private static int distanceToEdgeToMoveCamera = 50;
     public BufferedImage WHOLE_MAP;
@@ -76,7 +76,7 @@ public class Camera {
     }
 
     public void getWholeMapImage() {
-        InputStream inputStream = getClass().getResourceAsStream("/Map.png");
+        InputStream inputStream = getClass().getResourceAsStream("/Map2.png");
         try {
             WHOLE_MAP = ImageIO.read(Objects.requireNonNull(inputStream));
         } catch (IOException e) {

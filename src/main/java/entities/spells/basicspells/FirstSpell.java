@@ -1,8 +1,8 @@
 package entities.spells.basicspells;
 
 import entities.playercharacters.PlayerClass;
-import entities.spells.BasicSpell;
 import main.GameEngine;
+import scenes.playing.Camera;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -15,7 +15,8 @@ public class FirstSpell {
     private final int NUMBER_OF_SPRITES = 4;
     private final int SPEED = 2;
     //  object starting position on screen. Character pos + (vector * int)
-    public float spellStartingPosX, spellStartingPosY;
+    public float spellPosXWorld, spellPosYWorld;
+    public float spellPosXScreen, spellPosYScreen;
 
     public BufferedImage[] spellSprites = new BufferedImage[NUMBER_OF_SPRITES];
     public final BufferedImage BasicSpellsSpriteSheet = GameEngine.BasicSpellsSpriteSheet;
@@ -23,6 +24,7 @@ public class FirstSpell {
     public int animationTick, animationSpeed = 35, animationIndex;
     public float normalizedVectorX;
     public float normalizedVectorY;
+    public int mousePosXWorld, mousePosYWorld;
 
     public static List<FirstSpell> ListOfActiveFirstSpells = new ArrayList<>();
 
@@ -30,8 +32,8 @@ public class FirstSpell {
         getVector();
         getSpellSprites();
 
-        spellStartingPosX = (PlayerClass.playerPosX + 62) + (normalizedVectorX * 150);
-        spellStartingPosY = (PlayerClass.playerPosY + 62) + (normalizedVectorY * 150);
+        spellPosXWorld = (PlayerClass.playerPosXWorld + 62) + (normalizedVectorX * 150);
+        spellPosYWorld = (PlayerClass.playerPosYWorld + 62) + (normalizedVectorY * 150);
 
         ListOfActiveFirstSpells.add(this);
     }
@@ -44,10 +46,10 @@ public class FirstSpell {
     }
 
     private void getVector() {
-        CurrentMousePosition.getX();
-        CurrentMousePosition.getY();
-        float vectorX = (float) (CurrentMousePosition.getX() - (PlayerClass.playerPosX + 72));
-        float vectorY = (float) (CurrentMousePosition.getY() - (PlayerClass.playerPosY + 72));
+        mousePosXWorld = (int) (CurrentMousePosition.getX() + Camera.cameraPosX);
+        mousePosYWorld = (int) (CurrentMousePosition.getY() + Camera.cameraPosY);
+        float vectorX = (float) (mousePosXWorld - (PlayerClass.playerPosXWorld + 72));
+        float vectorY = (float) (mousePosYWorld - (PlayerClass.playerPosYWorld + 72));
         float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
         normalizedVectorX = (vectorX / magnitude);
         normalizedVectorY = (vectorY / magnitude);
@@ -63,15 +65,17 @@ public class FirstSpell {
         }
     }
 
-    private void moveSpell() {
-        spellStartingPosX += (normalizedVectorX * SPEED);
-        spellStartingPosY += (normalizedVectorY * SPEED);
+    private void moveSpellAndUpdatePosOnScreen() {
+        spellPosXWorld += (normalizedVectorX * SPEED);
+        spellPosYWorld += (normalizedVectorY * SPEED);
+        spellPosXScreen = spellPosXWorld - Camera.cameraPosX;
+        spellPosYScreen = spellPosYWorld - Camera.cameraPosY;
     }
 
     public static void updateFirstSpells() {
         ListOfActiveFirstSpells.forEach(firstSpell -> {
             firstSpell.animationController();
-            firstSpell.moveSpell();
+            firstSpell.moveSpellAndUpdatePosOnScreen();
         });
     }
 }
