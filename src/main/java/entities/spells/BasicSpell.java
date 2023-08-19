@@ -1,10 +1,8 @@
 package entities.spells;
 
 import entities.playercharacters.PlayerClass;
-import inputs.PlayerMouseInputs;
 import main.GameEngine;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,8 +52,8 @@ public abstract class BasicSpell {
     public void getVector() {
         CurrentMousePosition.getX();
         CurrentMousePosition.getY();
-        float vectorX = (float) (CurrentMousePosition.getX() - PlayerClass.playerPosX);
-        float vectorY = (float) (CurrentMousePosition.getY() - PlayerClass.playerPosY);
+        float vectorX = (float) (CurrentMousePosition.getX() - PlayerClass.playerPosXWorld);
+        float vectorY = (float) (CurrentMousePosition.getY() - PlayerClass.playerPosYWorld);
         float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
         normalizedVectorX = (vectorX / magnitude);
         normalizedVectorY = (vectorY / magnitude);

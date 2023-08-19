@@ -1,11 +1,8 @@
 package scenes.playing;
 
 import entities.playercharacters.PlayerClass;
-import entities.spells.BasicSpell;
 import entities.spells.basicspells.FirstSpell;
-import main.MainPanel;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class Playing {
@@ -28,29 +25,30 @@ public class Playing {
         animationController();
         FirstSpell.updateFirstSpells();
         camera.updateCameraPosition();
+        playerClass.updatePlayerPositionOnScreen();
     }
 
     public void draw(Graphics g) {
 
 //        Rysowanie Kamery
-        g.drawImage(camera.WHOLE_MAP.getSubimage(camera.cameraPosX, camera.cameraPosY, camera.Camera_Width,
-                camera.Camera_Height), 0, 0, MainPanel.gameSize.width, MainPanel.gameSize.height, null);
-
+        g.drawImage(camera.WHOLE_MAP.getSubimage(Camera.cameraPosX, Camera.cameraPosY, camera.Camera_Width,
+                camera.Camera_Height), 0, 0, null);
 
 
 //        Rysowanie postaci
         if (playerClass.checkIsCharacterMoving()) {
             g.drawImage(playerClass.playerSpriteController()[animationIndexMoving],
-                    (int) PlayerClass.playerPosX, (int) PlayerClass.playerPosY, 144, 144, null);
+                    (int) PlayerClass.playerPosXScreen, (int) PlayerClass.playerPosYScreen, 144, 144, null);
         } else if (!playerClass.checkIsCharacterMoving()) {
             g.drawImage(playerClass.playerSpriteController()[animationIndexIdle],
-                    (int) PlayerClass.playerPosX, (int) PlayerClass.playerPosY, 144, 144, null);
+                    (int) PlayerClass.playerPosXScreen, (int) PlayerClass.playerPosYScreen, 144, 144, null);
 
         }
 //        Rysowanie Zaklec
-        FirstSpell.ListOfActiveFirstSpells.forEach(firstSpell ->
-                g.drawImage(firstSpell.spellSprites[firstSpell.animationIndex], (int) firstSpell.spellStartingPosX,
-                        (int) firstSpell.spellStartingPosY, 64, 64, null));
+        FirstSpell.ListOfActiveFirstSpells.forEach(firstSpell -> {
+            g.drawImage(firstSpell.spellSprites[firstSpell.animationIndex], (int) firstSpell.spellPosXScreen,
+                    (int) firstSpell.spellPosYScreen, 64, 64, null);
+        });
 
 
     }

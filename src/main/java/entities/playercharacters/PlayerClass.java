@@ -1,5 +1,7 @@
 package entities.playercharacters;
 
+import scenes.playing.Camera;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -27,7 +29,8 @@ public class PlayerClass {
 
     public PlayerState Current_Player_State;
 
-    public static float playerPosX, playerPosY;
+    public static float playerPosXWorld, playerPosYWorld;
+    public static float playerPosXScreen, playerPosYScreen;
     public int mouseClickXPos;
     public int mouseClickYPos;
     public float normalizedVectorX;
@@ -35,10 +38,10 @@ public class PlayerClass {
     int playerMovespeed = 2;
     public float playerMovementStartingPosX, playerMovementStartingPosY;
 
-    public PlayerClass(int playerPosX, int playerPosY) {
+    public PlayerClass(int playerPosXWorld, int playerPosYWorld) {
 
-        PlayerClass.playerPosX = playerPosX;
-        PlayerClass.playerPosY = playerPosY;
+        PlayerClass.playerPosXWorld = playerPosXWorld;
+        PlayerClass.playerPosYWorld = playerPosYWorld;
 
         Current_Player_State = PlayerState.MOVING_UP;
         getPlayerSprites();
@@ -61,28 +64,28 @@ public class PlayerClass {
 //
 //        Ruch na lewej gornej cwiartce liczac od postaci
         if (playerMovementStartingPosX > mouseClickXPos && playerMovementStartingPosY > mouseClickYPos) {
-            if (playerPosX > mouseClickXPos && playerPosY > mouseClickYPos) {
+            if (playerPosXWorld > mouseClickXPos && playerPosYWorld > mouseClickYPos) {
                 Current_Player_State = PlayerState.MOVING_UP;
-                playerPosX += (playerMovespeed * normalizedVectorX);
-                playerPosY += (playerMovespeed * normalizedVectorY);
+                playerPosXWorld += (playerMovespeed * normalizedVectorX);
+                playerPosYWorld += (playerMovespeed * normalizedVectorY);
             }
         } else if (playerMovementStartingPosX < mouseClickXPos && playerMovementStartingPosY < mouseClickYPos) {
-            if (playerPosX < mouseClickXPos && playerPosY < mouseClickYPos) {
+            if (playerPosXWorld < mouseClickXPos && playerPosYWorld < mouseClickYPos) {
                 Current_Player_State = PlayerState.MOVING_DOWN;
-                playerPosX += (playerMovespeed * normalizedVectorX);
-                playerPosY += (playerMovespeed * normalizedVectorY);
+                playerPosXWorld += (playerMovespeed * normalizedVectorX);
+                playerPosYWorld += (playerMovespeed * normalizedVectorY);
             }
         } else if(playerMovementStartingPosX < mouseClickXPos && playerMovementStartingPosY > mouseClickYPos) {
-            if (playerPosX < mouseClickXPos && playerPosY > mouseClickYPos) {
+            if (playerPosXWorld < mouseClickXPos && playerPosYWorld > mouseClickYPos) {
                 Current_Player_State = PlayerState.MOVING_RIGHT;
-                playerPosX += (playerMovespeed * normalizedVectorX);
-                playerPosY += (playerMovespeed * normalizedVectorY);
+                playerPosXWorld += (playerMovespeed * normalizedVectorX);
+                playerPosYWorld += (playerMovespeed * normalizedVectorY);
             }
         } else if(playerMovementStartingPosX > mouseClickXPos && playerMovementStartingPosY < mouseClickYPos) {
-            if (playerPosX > mouseClickXPos && playerPosY < mouseClickYPos) {
+            if (playerPosXWorld > mouseClickXPos && playerPosYWorld < mouseClickYPos) {
                 Current_Player_State = PlayerState.MOVING_LEFT  ;
-                playerPosX += (playerMovespeed * normalizedVectorX);
-                playerPosY += (playerMovespeed * normalizedVectorY);
+                playerPosXWorld += (playerMovespeed * normalizedVectorX);
+                playerPosYWorld += (playerMovespeed * normalizedVectorY);
             }
         }
     }
@@ -90,6 +93,15 @@ public class PlayerClass {
     public void setPlayerMovementStartingPosition(float playerMovementStartingPosX, float playerMovementStartingPosY) {
         this.playerMovementStartingPosX = playerMovementStartingPosX;
         this.playerMovementStartingPosY = playerMovementStartingPosY;
+    }
+
+    public void checkIsPlayerOnCamera() {
+
+    }
+
+    public void updatePlayerPositionOnScreen() {
+        playerPosXScreen = playerPosXWorld - Camera.cameraPosX;
+        playerPosYScreen = playerPosYWorld - Camera.cameraPosY;
     }
 
     public BufferedImage[] playerSpriteController() {
@@ -164,5 +176,7 @@ public class PlayerClass {
 
 
     }
+
+
 }
 

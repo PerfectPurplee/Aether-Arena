@@ -37,11 +37,11 @@ public class GameEngine extends Thread {
         getAllBasicSpellsSpriteSheet();
 
         playerClass = new PlayerClass(100, 100);
-        camera = new Camera();
-        playing = new Playing(playerClass, camera);
         playerKeyboardInputs = new PlayerKeyboardInputs(playerClass);
         playerMouseInputs = new PlayerMouseInputs(playerClass);
         mainPanel = new MainPanel(playerKeyboardInputs, playerMouseInputs);
+        camera = new Camera();
+        playing = new Playing(playerClass, camera);
         mainFrame = new MainFrame(mainPanel);
 
 

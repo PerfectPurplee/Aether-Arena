@@ -26,12 +26,12 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        playerClass.setPlayerMovementStartingPosition(PlayerClass.playerPosX, PlayerClass.playerPosY);
-        playerClass.mouseClickXPos = e.getX();
-        playerClass.mouseClickYPos = e.getY();
+        playerClass.setPlayerMovementStartingPosition(PlayerClass.playerPosXWorld, PlayerClass.playerPosYWorld);
+        playerClass.mouseClickXPos = e.getX() + Camera.cameraPosX;
+        playerClass.mouseClickYPos = e.getY() + Camera.cameraPosY;
 
-        float vectorX = playerClass.mouseClickXPos - PlayerClass.playerPosX;
-        float vectorY = playerClass.mouseClickYPos - PlayerClass.playerPosY;
+        float vectorX = playerClass.mouseClickXPos - PlayerClass.playerPosXWorld;
+        float vectorY = playerClass.mouseClickYPos - PlayerClass.playerPosYWorld;
         float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
 
         playerClass.normalizedVectorX = (vectorX / magnitude);
@@ -57,17 +57,19 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
     @Override
     public void mouseDragged(MouseEvent e) {
         CurrentMousePosition = e.getPoint();
-        playerClass.setPlayerMovementStartingPosition(PlayerClass.playerPosX, PlayerClass.playerPosY);
-        playerClass.mouseClickXPos = e.getX();
-        playerClass.mouseClickYPos = e.getY();
+        playerClass.setPlayerMovementStartingPosition(PlayerClass.playerPosXWorld, PlayerClass.playerPosYWorld);
+        playerClass.mouseClickXPos = e.getX() + Camera.cameraPosX;
+        playerClass.mouseClickYPos = e.getY() + Camera.cameraPosY;
 
 
-        float vectorX = playerClass.mouseClickXPos - PlayerClass.playerPosX;
-        float vectorY = playerClass.mouseClickYPos - PlayerClass.playerPosY;
+        float vectorX = playerClass.mouseClickXPos - PlayerClass.playerPosXWorld;
+        float vectorY = playerClass.mouseClickYPos - PlayerClass.playerPosYWorld;
         float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
 
         playerClass.normalizedVectorX = (vectorX / magnitude);
         playerClass.normalizedVectorY = (vectorY / magnitude);
+
+        Camera.updateCameraState(e);
     }
 
     @Override
