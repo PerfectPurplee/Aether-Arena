@@ -15,7 +15,7 @@ public class MainFrame extends JFrame {
         mainPanel.setFocusable(true);
         mainPanel.requestFocus();
 
-        this.setUndecorated(true);
+//        this.setUndecorated(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();
         this.setLocationRelativeTo(null);

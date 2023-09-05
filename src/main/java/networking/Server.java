@@ -67,7 +67,7 @@ public class Server extends Thread {
             DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
 
             onlinePlayer.playerPosXWorld = dataInputStream.readFloat();
-            onlinePlayer.playerPosYScreen = dataInputStream.readFloat();
+            onlinePlayer.playerPosYWorld = dataInputStream.readFloat();
 
 
             port = packet.getPort();
@@ -90,7 +90,4 @@ public class Server extends Thread {
         }
     }
 
-    public static void main(String[] args) {
-        new Server();
-    }
 }
