@@ -1,5 +1,6 @@
 package main;
 
+import inputs.ActionListener;
 import inputs.PlayerKeyboardInputs;
 import inputs.PlayerMouseInputs;
 
@@ -15,12 +16,14 @@ public class MainPanel extends JPanel {
     public static Dimension gameSize;
     PlayerKeyboardInputs playerKeyboardInputs;
     PlayerMouseInputs playerMouseInputs;
+    ActionListener actionListener;
 
-    public MainPanel(PlayerKeyboardInputs playerKeyboardInputs, PlayerMouseInputs playerMouseInputs) {
+    public MainPanel(PlayerKeyboardInputs playerKeyboardInputs, PlayerMouseInputs playerMouseInputs, ActionListener actionListener) {
+        this.setLayout(new BorderLayout());
         gameSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.playerKeyboardInputs = playerKeyboardInputs;
         this.playerMouseInputs = playerMouseInputs;
-
+        this.actionListener = actionListener;
         this.addKeyListener(playerKeyboardInputs);
         this.addMouseListener(playerMouseInputs);
         this.addMouseMotionListener(playerMouseInputs);

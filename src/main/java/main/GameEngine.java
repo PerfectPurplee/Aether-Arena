@@ -3,8 +3,10 @@ package main;
 import entities.playercharacters.PlayerClass;
 import entities.spells.BasicSpell;
 import entities.spells.basicspells.FirstSpell;
+import inputs.ActionListener;
 import inputs.PlayerKeyboardInputs;
 import inputs.PlayerMouseInputs;
+import scenes.menu.Menu;
 import scenes.playing.Camera;
 import scenes.playing.Playing;
 
@@ -20,12 +22,15 @@ import static scenes.AllScenes.*;
 public class GameEngine extends Thread {
 
     static Playing playing;
+    static Menu menu;
     MainFrame mainFrame;
     MainPanel mainPanel;
     PlayerClass playerClass;
     PlayerKeyboardInputs playerKeyboardInputs;
     PlayerMouseInputs playerMouseInputs;
+    ActionListener actionListener;
     Camera camera;
+
 
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
@@ -39,7 +44,9 @@ public class GameEngine extends Thread {
         playerClass = new PlayerClass(100, 100);
         playerKeyboardInputs = new PlayerKeyboardInputs(playerClass);
         playerMouseInputs = new PlayerMouseInputs(playerClass);
-        mainPanel = new MainPanel(playerKeyboardInputs, playerMouseInputs);
+        actionListener = new ActionListener();
+        mainPanel = new MainPanel(playerKeyboardInputs, playerMouseInputs, actionListener);
+        menu = new Menu(mainPanel);
         camera = new Camera();
         playing = new Playing(playerClass, camera);
         mainFrame = new MainFrame(mainPanel);
@@ -64,6 +71,7 @@ public class GameEngine extends Thread {
                 playing.draw(g);
             }
             case MENU -> {
+                menu.draw(g);
             }
             case PAUSE -> {
             }
