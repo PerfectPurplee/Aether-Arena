@@ -147,7 +147,7 @@ public class GameEngine extends Thread {
     }
 
     public void createClient(String serverIPaddress) {
-        client = new Client(localPlayer, serverIPaddress);
+        client = new Client(localPlayer,onlinePlayer ,serverIPaddress);
     }
 
     public String getHostIpAddress() {

@@ -1,10 +1,9 @@
 package networking;
 
+import entities.playercharacters.LocalPlayer;
 import entities.playercharacters.OnlinePlayer;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
 
 public class Server extends Thread {
@@ -51,12 +50,13 @@ public class Server extends Thread {
     public void run() {
 
         while (true) {
-            receiveData();
+            receiveDataFromClient();
+            sendDataToClient();
 
         }
     }
 
-    private void receiveData() {
+    private void receiveDataFromClient() {
         byte[] buffer = new byte[1024];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
@@ -72,7 +72,6 @@ public class Server extends Thread {
 
             port = packet.getPort();
             clientIpAddress = packet.getAddress();
-            System.out.println("Data received");
 
 
         } catch (IOException e) {
@@ -80,14 +79,25 @@ public class Server extends Thread {
         }
     }
 
-    private void sendData() {
-        byte[] data = new byte[1024];
-        DatagramPacket packet = new DatagramPacket(data, data.length, clientIpAddress, port);
+    private void sendDataToClient() {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+
         try {
-            serverSocket.send(packet);
+            dataOutputStream.writeFloat(LocalPlayer.playerPosXWorld);
+            dataOutputStream.writeFloat(LocalPlayer.playerPosYWorld);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
+        byte[] data = byteArrayOutputStream.toByteArray();
+        DatagramPacket datagramPacket = new DatagramPacket(data, data.length, clientIpAddress, port);
 
+        try {
+            serverSocket.send(datagramPacket);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
 }

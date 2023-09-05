@@ -1,10 +1,9 @@
 package networking;
 
 import entities.playercharacters.LocalPlayer;
+import entities.playercharacters.OnlinePlayer;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
 
 public class Client extends Thread {
@@ -13,13 +12,15 @@ public class Client extends Thread {
     private DatagramSocket socket;
     private InetAddress serverIPaddress;
     LocalPlayer localPlayer;
+    OnlinePlayer onlinePlayer;
 
-    public Client(LocalPlayer localPlayer, String serverIPaddress) {
+    public Client(LocalPlayer localPlayer, OnlinePlayer onlinePlayer, String serverIPaddress) {
         this.localPlayer = localPlayer;
-
+        this.onlinePlayer = onlinePlayer;
         try {
             socket = new DatagramSocket();
-            this.serverIPaddress = InetAddress.getLocalHost();
+            this.serverIPaddress = InetAddress.getByName(serverIPaddress);
+//            this.serverIPaddress = InetAddress.getLocalHost();
         } catch (SocketException | UnknownHostException e) {
             throw new RuntimeException(e);
         }
@@ -32,6 +33,7 @@ public class Client extends Thread {
 
         while (true) {
             sendDataToServer();
+            receiveDataFromServer();
         }
 
     }
@@ -57,6 +59,25 @@ public class Client extends Thread {
             throw new RuntimeException(e);
         }
 
+
+    }
+
+    private void receiveDataFromServer() {
+        byte[] buffer = new byte[1024];
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+
+        try {
+            socket.receive(packet);
+
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer);
+            DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+
+            onlinePlayer.playerPosXWorld = dataInputStream.readFloat();
+            onlinePlayer.playerPosYWorld = dataInputStream.readFloat();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 }
