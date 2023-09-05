@@ -23,7 +23,7 @@ public class Server extends Thread {
 
         try {
             this.serverSocket = new DatagramSocket(1337);
-            this.ipAddress = InetAddress.getLocalHost();
+            this.ipAddress = InetAddress.getByName(InetAddress.getLocalHost().getHostAddress());
             System.out.println(ipAddress.getHostAddress());
         } catch (SocketException | UnknownHostException e) {
             throw new RuntimeException(e);
