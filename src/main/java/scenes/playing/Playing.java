@@ -1,34 +1,43 @@
 package scenes.playing;
 
-import entities.playercharacters.PlayerClass;
+import entities.playercharacters.LocalPlayer;
+import entities.playercharacters.OnlinePlayer;
 import entities.spells.basicspells.FirstSpell;
 
 import java.awt.*;
 
 public class Playing {
 
-    PlayerClass playerClass;
+    LocalPlayer localPlayer;
+    OnlinePlayer onlinePlayer;
     Camera camera;
 
-    int animationTick, animationSpeed = 60, animationIndexMoving, animationIndexIdle;
 
-    public Playing(PlayerClass playerClass, Camera camera) {
-        this.playerClass = playerClass;
+    public Playing(LocalPlayer localPlayer, OnlinePlayer onlinePlayer, Camera camera) {
+        this.localPlayer = localPlayer;
+        this.onlinePlayer = onlinePlayer;
         this.camera = camera;
 
 
     }
 
     public void update() {
-        playerClass.moveController();
-        playerClass.playerSpriteController();
-        animationController();
+
+//        Local player and spells update
+        localPlayer.moveController();
+        localPlayer.playerSpriteController();
+        localPlayer.animationController();
         FirstSpell.updateFirstSpells();
         camera.updateCameraPosition();
-        playerClass.updatePlayerPositionOnScreen();
+        localPlayer.updatePlayerPositionOnScreen();
+
+//        Online player update
+        onlinePlayer.updatePlayerPositionOnScreen();
     }
 
     public void draw(Graphics g) {
+
+//        RYSOWANIE LOKALNYCH OBIEKTOW
 
 //        Rysowanie Kamery
         g.drawImage(camera.WHOLE_MAP.getSubimage(Camera.cameraPosX, Camera.cameraPosY, camera.Camera_Width,
@@ -36,14 +45,20 @@ public class Playing {
 
 
 //        Rysowanie postaci
-        if (playerClass.checkIsCharacterMoving()) {
-            g.drawImage(playerClass.playerSpriteController()[animationIndexMoving],
-                    (int) PlayerClass.playerPosXScreen, (int) PlayerClass.playerPosYScreen, 144, 144, null);
-        } else if (!playerClass.checkIsCharacterMoving()) {
-            g.drawImage(playerClass.playerSpriteController()[animationIndexIdle],
-                    (int) PlayerClass.playerPosXScreen, (int) PlayerClass.playerPosYScreen, 144, 144, null);
+        if (localPlayer.checkIsCharacterMoving()) {
+            g.drawImage(localPlayer.playerSpriteController()[localPlayer.animationIndexMoving],
+                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, 144, 144, null);
+        } else if (!localPlayer.checkIsCharacterMoving()) {
+            g.drawImage(localPlayer.playerSpriteController()[localPlayer.animationIndexIdle],
+                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, 144, 144, null);
 
         }
+
+ //       Rysowanie ONLINE postaci
+
+        g.drawImage(onlinePlayer.playerSpriteDOWN[onlinePlayer.animationIndexMoving],
+                (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen, 144, 144, null);
+
 //        Rysowanie Zaklec
         FirstSpell.ListOfActiveFirstSpells.forEach(firstSpell -> {
             g.drawImage(firstSpell.spellSprites[firstSpell.animationIndex], (int) firstSpell.spellPosXScreen,
@@ -53,24 +68,4 @@ public class Playing {
 
     }
 
-    private void animationController() {
-        animationTick++;
-        if (animationTick >= animationSpeed) {
-            if (playerClass.playerSpriteController() == playerClass.playerSpriteIDLE_UP |
-                    playerClass.playerSpriteController() == playerClass.playerSpriteIDLE_DOWN |
-                    playerClass.playerSpriteController() == playerClass.playerSpriteIDLE_LEFT |
-                    playerClass.playerSpriteController() == playerClass.playerSpriteIDLE_RIGHT)
-                if (animationIndexIdle < 1)
-                    animationIndexIdle++;
-                else animationIndexIdle = 0;
-            else if (playerClass.playerSpriteController() == playerClass.playerSpriteUP |
-                    playerClass.playerSpriteController() == playerClass.playerSpriteDOWN |
-                    playerClass.playerSpriteController() == playerClass.playerSpriteLEFT |
-                    playerClass.playerSpriteController() == playerClass.playerSpriteRIGHT)
-                if (animationIndexMoving < 3)
-                    animationIndexMoving++;
-                else animationIndexMoving = 0;
-            animationTick = 0;
-        }
-    }
 }

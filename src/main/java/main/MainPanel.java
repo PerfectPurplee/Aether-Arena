@@ -3,6 +3,7 @@ package main;
 import inputs.ActionListener;
 import inputs.PlayerKeyboardInputs;
 import inputs.PlayerMouseInputs;
+import scenes.AllScenes;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,14 +17,13 @@ public class MainPanel extends JPanel {
     public static Dimension gameSize;
     PlayerKeyboardInputs playerKeyboardInputs;
     PlayerMouseInputs playerMouseInputs;
-    ActionListener actionListener;
 
-    public MainPanel(PlayerKeyboardInputs playerKeyboardInputs, PlayerMouseInputs playerMouseInputs, ActionListener actionListener) {
+
+    public MainPanel(PlayerKeyboardInputs playerKeyboardInputs, PlayerMouseInputs playerMouseInputs) {
         this.setLayout(new BorderLayout());
         gameSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.playerKeyboardInputs = playerKeyboardInputs;
         this.playerMouseInputs = playerMouseInputs;
-        this.actionListener = actionListener;
         this.addKeyListener(playerKeyboardInputs);
         this.addMouseListener(playerMouseInputs);
         this.addMouseMotionListener(playerMouseInputs);
@@ -38,6 +38,11 @@ public class MainPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         render(g);
+    }
+
+    public void changeScene(AllScenes scene) {
+        this.removeAll();
+        AllScenes.Current_Scene = scene;
     }
 }
 

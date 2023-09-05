@@ -1,6 +1,6 @@
 package entities.spells.basicspells;
 
-import entities.playercharacters.PlayerClass;
+import entities.playercharacters.LocalPlayer;
 import main.GameEngine;
 import scenes.playing.Camera;
 
@@ -32,8 +32,8 @@ public class FirstSpell {
         getVector();
         getSpellSprites();
 
-        spellPosXWorld = (PlayerClass.playerPosXWorld + 62) + (normalizedVectorX * 150);
-        spellPosYWorld = (PlayerClass.playerPosYWorld + 62) + (normalizedVectorY * 150);
+        spellPosXWorld = (LocalPlayer.playerPosXWorld + 62) + (normalizedVectorX * 150);
+        spellPosYWorld = (LocalPlayer.playerPosYWorld + 62) + (normalizedVectorY * 150);
 
         ListOfActiveFirstSpells.add(this);
     }
@@ -48,8 +48,8 @@ public class FirstSpell {
     private void getVector() {
         mousePosXWorld = (int) (CurrentMousePosition.getX() + Camera.cameraPosX);
         mousePosYWorld = (int) (CurrentMousePosition.getY() + Camera.cameraPosY);
-        float vectorX = (float) (mousePosXWorld - (PlayerClass.playerPosXWorld + 72));
-        float vectorY = (float) (mousePosYWorld - (PlayerClass.playerPosYWorld + 72));
+        float vectorX = (float) (mousePosXWorld - (LocalPlayer.playerPosXWorld + 72));
+        float vectorY = (float) (mousePosYWorld - (LocalPlayer.playerPosYWorld + 72));
         float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
         normalizedVectorX = (vectorX / magnitude);
         normalizedVectorY = (vectorY / magnitude);

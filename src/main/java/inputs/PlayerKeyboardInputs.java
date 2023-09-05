@@ -1,6 +1,6 @@
 package inputs;
 
-import entities.playercharacters.PlayerClass;
+import entities.playercharacters.LocalPlayer;
 import entities.spells.basicspells.FirstSpell;
 
 import java.awt.event.KeyEvent;
@@ -10,11 +10,11 @@ import java.util.HashSet;
 public class PlayerKeyboardInputs implements KeyListener {
 
 
-    PlayerClass playerClass;
+    LocalPlayer localPlayer;
     private HashSet<Integer> activeKeys = new HashSet<>();
 
-    public PlayerKeyboardInputs(PlayerClass playerClass) {
-        this.playerClass = playerClass;
+    public PlayerKeyboardInputs(LocalPlayer localPlayer) {
+        this.localPlayer = localPlayer;
     }
 
     //    Keys

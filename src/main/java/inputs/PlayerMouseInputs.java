@@ -1,6 +1,6 @@
 package inputs;
 
-import entities.playercharacters.PlayerClass;
+import entities.playercharacters.LocalPlayer;
 import scenes.playing.Camera;
 
 import java.awt.*;
@@ -11,11 +11,11 @@ import java.awt.event.MouseMotionListener;
 
 public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
-    PlayerClass playerClass;
+    LocalPlayer localPlayer;
     public static Point CurrentMousePosition;
 
-    public PlayerMouseInputs(PlayerClass playerClass) {
-        this.playerClass = playerClass;
+    public PlayerMouseInputs(LocalPlayer localPlayer) {
+        this.localPlayer = localPlayer;
 
     }
 
@@ -26,16 +26,16 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        playerClass.setPlayerMovementStartingPosition(PlayerClass.playerPosXWorld, PlayerClass.playerPosYWorld);
-        playerClass.mouseClickXPos = e.getX() + Camera.cameraPosX;
-        playerClass.mouseClickYPos = e.getY() + Camera.cameraPosY;
+        localPlayer.setPlayerMovementStartingPosition(LocalPlayer.playerPosXWorld, LocalPlayer.playerPosYWorld);
+        localPlayer.mouseClickXPos = e.getX() + Camera.cameraPosX;
+        localPlayer.mouseClickYPos = e.getY() + Camera.cameraPosY;
 
-        float vectorX = playerClass.mouseClickXPos - PlayerClass.playerPosXWorld;
-        float vectorY = playerClass.mouseClickYPos - PlayerClass.playerPosYWorld;
+        float vectorX = localPlayer.mouseClickXPos - LocalPlayer.playerPosXWorld;
+        float vectorY = localPlayer.mouseClickYPos - LocalPlayer.playerPosYWorld;
         float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
 
-        playerClass.normalizedVectorX = (vectorX / magnitude);
-        playerClass.normalizedVectorY = (vectorY / magnitude);
+        localPlayer.normalizedVectorX = (vectorX / magnitude);
+        localPlayer.normalizedVectorY = (vectorY / magnitude);
 
     }
 
@@ -57,17 +57,17 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
     @Override
     public void mouseDragged(MouseEvent e) {
         CurrentMousePosition = e.getPoint();
-        playerClass.setPlayerMovementStartingPosition(PlayerClass.playerPosXWorld, PlayerClass.playerPosYWorld);
-        playerClass.mouseClickXPos = e.getX() + Camera.cameraPosX;
-        playerClass.mouseClickYPos = e.getY() + Camera.cameraPosY;
+        localPlayer.setPlayerMovementStartingPosition(LocalPlayer.playerPosXWorld, LocalPlayer.playerPosYWorld);
+        localPlayer.mouseClickXPos = e.getX() + Camera.cameraPosX;
+        localPlayer.mouseClickYPos = e.getY() + Camera.cameraPosY;
 
 
-        float vectorX = playerClass.mouseClickXPos - PlayerClass.playerPosXWorld;
-        float vectorY = playerClass.mouseClickYPos - PlayerClass.playerPosYWorld;
+        float vectorX = localPlayer.mouseClickXPos - LocalPlayer.playerPosXWorld;
+        float vectorY = localPlayer.mouseClickYPos - LocalPlayer.playerPosYWorld;
         float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
 
-        playerClass.normalizedVectorX = (vectorX / magnitude);
-        playerClass.normalizedVectorY = (vectorY / magnitude);
+        localPlayer.normalizedVectorX = (vectorX / magnitude);
+        localPlayer.normalizedVectorY = (vectorY / magnitude);
 
         Camera.updateCameraState(e);
     }

@@ -1,16 +1,18 @@
 package main;
 
-import entities.playercharacters.PlayerClass;
-import entities.spells.BasicSpell;
-import entities.spells.basicspells.FirstSpell;
+import entities.playercharacters.LocalPlayer;
+import entities.playercharacters.OnlinePlayer;
 import inputs.ActionListener;
 import inputs.PlayerKeyboardInputs;
 import inputs.PlayerMouseInputs;
+import networking.Client;
+import networking.Server;
 import scenes.menu.Menu;
 import scenes.playing.Camera;
 import scenes.playing.Playing;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -25,11 +27,14 @@ public class GameEngine extends Thread {
     static Menu menu;
     MainFrame mainFrame;
     MainPanel mainPanel;
-    PlayerClass playerClass;
+    LocalPlayer localPlayer;
+    OnlinePlayer onlinePlayer;
     PlayerKeyboardInputs playerKeyboardInputs;
     PlayerMouseInputs playerMouseInputs;
     ActionListener actionListener;
     Camera camera;
+    Server server;
+    Client client;
 
 
     private final int FPS_SET = 120;
@@ -41,14 +46,16 @@ public class GameEngine extends Thread {
 
         getAllBasicSpellsSpriteSheet();
 
-        playerClass = new PlayerClass(100, 100);
-        playerKeyboardInputs = new PlayerKeyboardInputs(playerClass);
-        playerMouseInputs = new PlayerMouseInputs(playerClass);
-        actionListener = new ActionListener();
-        mainPanel = new MainPanel(playerKeyboardInputs, playerMouseInputs, actionListener);
-        menu = new Menu(mainPanel);
+        localPlayer = new LocalPlayer(100, 100);
+        onlinePlayer = new OnlinePlayer(200, 100);
+
+        playerKeyboardInputs = new PlayerKeyboardInputs(localPlayer);
+        playerMouseInputs = new PlayerMouseInputs(localPlayer);
+        mainPanel = new MainPanel(playerKeyboardInputs, playerMouseInputs);
+        actionListener = new ActionListener(mainPanel, this);
+        menu = new Menu(mainPanel, actionListener);
         camera = new Camera();
-        playing = new Playing(playerClass, camera);
+        playing = new Playing(localPlayer, onlinePlayer, camera);
         mainFrame = new MainFrame(mainPanel);
 
 
@@ -133,6 +140,21 @@ public class GameEngine extends Thread {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void createServer() {
+        server = new Server(onlinePlayer);
+    }
+
+    public void createClient(String serverIPaddress) {
+        client = new Client(localPlayer, serverIPaddress);
+    }
+
+    public String getHostIpAddress() {
+
+        String serverIPaddress = JOptionPane.showInputDialog(mainPanel, "Type in your host IP address to connect: ");
+
+        return serverIPaddress;
     }
 
 }

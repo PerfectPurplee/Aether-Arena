@@ -1,6 +1,5 @@
 package scenes.playing;
 
-import entities.playercharacters.PlayerClass;
 import main.MainPanel;
 
 import javax.imageio.ImageIO;
