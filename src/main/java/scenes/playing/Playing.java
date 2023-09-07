@@ -47,22 +47,22 @@ public class Playing {
 //        Rysowanie postaci
         if (localPlayer.checkIsCharacterMoving()) {
             g.drawImage(localPlayer.playerSpriteController()[localPlayer.animationIndexMoving],
-                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, 72, 72, null);
+                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen,  null);
         } else if (!localPlayer.checkIsCharacterMoving()) {
             g.drawImage(localPlayer.playerSpriteController()[localPlayer.animationIndexIdle],
-                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, 72, 72, null);
+                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen,  null);
 
         }
 
  //       Rysowanie ONLINE postaci
 
         g.drawImage(onlinePlayer.playerSpriteDOWN[onlinePlayer.animationIndexMoving],
-                (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen, 72, 72, null);
+                (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen,  null);
 
 //        Rysowanie Zaklec
         FirstSpell.ListOfActiveFirstSpells.forEach(firstSpell -> {
             g.drawImage(firstSpell.spellSprites[firstSpell.animationIndex], (int) firstSpell.spellPosXScreen,
-                    (int) firstSpell.spellPosYScreen, 64, 64, null);
+                    (int) firstSpell.spellPosYScreen, 32,32, null);
         });
 
 

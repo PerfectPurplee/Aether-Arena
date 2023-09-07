@@ -9,8 +9,8 @@ import java.net.*;
 public class Client extends Thread {
 
 
-    private DatagramSocket socket;
-    private InetAddress serverIPaddress;
+    public final DatagramSocket socket;
+    public static InetAddress serverIPaddress;
     LocalPlayer localPlayer;
     OnlinePlayer onlinePlayer;
 
@@ -19,12 +19,18 @@ public class Client extends Thread {
         this.onlinePlayer = onlinePlayer;
         try {
             socket = new DatagramSocket();
-            this.serverIPaddress = InetAddress.getByName(serverIPaddress);
-//            this.serverIPaddress = InetAddress.getLocalHost();
+//            this.serverIPaddress = InetAddress.getByName(serverIPaddress);
+            Client.serverIPaddress = InetAddress.getLocalHost();
         } catch (SocketException | UnknownHostException e) {
             throw new RuntimeException(e);
         }
         this.start();
+
+        try {
+            socket.send(PacketManager.LoginPacket());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
@@ -32,7 +38,6 @@ public class Client extends Thread {
     public void run() {
 
         while (true) {
-            sendDataToServer();
             receiveDataFromServer();
         }
 
@@ -68,12 +73,18 @@ public class Client extends Thread {
 
         try {
             socket.receive(packet);
+            System.out.println("Client received packet");
 
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer);
             DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
 
-            onlinePlayer.playerPosXWorld = dataInputStream.readFloat();
-            onlinePlayer.playerPosYWorld = dataInputStream.readFloat();
+            int packetType = dataInputStream.readInt();
+
+//           PACKET TYPE - IS SERVER ANSWER FOR LOGIN PACKET
+            if (packetType == 0) {
+                LocalPlayer.playerPosXWorld = dataInputStream.readFloat();
+                LocalPlayer.playerPosYWorld = dataInputStream.readFloat();
+            }
 
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -1,0 +1,37 @@
+package networking;
+
+import entities.playercharacters.LocalPlayer;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.DatagramPacket;
+
+public abstract class PacketManager {
+
+    public static DatagramPacket LoginPacket() {
+
+        int packetType = 0;
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+
+        try {
+            dataOutputStream.writeInt(packetType);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        byte[] data = byteArrayOutputStream.toByteArray();
+        DatagramPacket datagramPacket = new DatagramPacket(data, data.length, Client.serverIPaddress, 1337);
+
+
+        try {
+            byteArrayOutputStream.close();
+            dataOutputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return datagramPacket;
+    }
+}

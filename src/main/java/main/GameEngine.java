@@ -38,7 +38,7 @@ public class GameEngine extends Thread {
 
 
     private final int FPS_SET = 120;
-    private final int UPS_SET = 200;
+    private final int UPS_SET = 128;
 
     public static BufferedImage BasicSpellsSpriteSheet;
 
@@ -46,8 +46,8 @@ public class GameEngine extends Thread {
 
         getAllBasicSpellsSpriteSheet();
 
-        localPlayer = new LocalPlayer(100, 100);
-        onlinePlayer = new OnlinePlayer(200, 100);
+        localPlayer = new LocalPlayer(10000, 10000);
+        onlinePlayer = new OnlinePlayer(10000, 10000);
 
         playerKeyboardInputs = new PlayerKeyboardInputs(localPlayer);
         playerMouseInputs = new PlayerMouseInputs(localPlayer);
@@ -124,7 +124,7 @@ public class GameEngine extends Thread {
 
             if (System.currentTimeMillis() - lastCheck >= 1000) {
                 lastCheck = System.currentTimeMillis();
-                System.out.println("FPS: " + frames + " | UPS: " + updates);
+//                System.out.println("FPS: " + frames + " | UPS: " + updates);
                 frames = 0;
                 updates = 0;
 
