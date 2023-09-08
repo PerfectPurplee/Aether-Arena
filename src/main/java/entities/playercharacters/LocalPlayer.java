@@ -38,18 +38,17 @@ public class LocalPlayer {
     int playerMovespeed = 2;
     public float playerMovementStartingPosX, playerMovementStartingPosY;
 
+
+
     private int animationTick, animationSpeed = 60;
     public int animationIndexMoving, animationIndexIdle;
 
 
+
+
+
+
     public LocalPlayer() {
-
-    }
-
-    public LocalPlayer(int playerPosXWorld, int playerPosYWorld) {
-
-        LocalPlayer.playerPosXWorld = playerPosXWorld;
-        LocalPlayer.playerPosYWorld = playerPosYWorld;
 
         Current_Player_State = PlayerState.MOVING_DOWN;
         getPlayerSprites("/Player1.png");

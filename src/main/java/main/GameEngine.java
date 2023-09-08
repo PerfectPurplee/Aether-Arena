@@ -46,8 +46,7 @@ public class GameEngine extends Thread {
 
         getAllBasicSpellsSpriteSheet();
 
-        localPlayer = new LocalPlayer(10000, 10000);
-        onlinePlayer = new OnlinePlayer(10000, 10000);
+        localPlayer = new LocalPlayer();
 
         playerKeyboardInputs = new PlayerKeyboardInputs(localPlayer);
         playerMouseInputs = new PlayerMouseInputs(localPlayer);
@@ -55,7 +54,7 @@ public class GameEngine extends Thread {
         actionListener = new ActionListener(mainPanel, this);
         menu = new Menu(mainPanel, actionListener);
         camera = new Camera();
-        playing = new Playing(localPlayer, onlinePlayer, camera);
+        playing = new Playing(localPlayer, camera);
         mainFrame = new MainFrame(mainPanel);
 
 
@@ -147,7 +146,8 @@ public class GameEngine extends Thread {
     }
 
     public void createClient(String serverIPaddress) {
-        client = new Client(localPlayer,onlinePlayer ,serverIPaddress);
+        client = new Client(localPlayer, serverIPaddress);
+        playerMouseInputs.client = client;
     }
 
     public String getHostIpAddress() {

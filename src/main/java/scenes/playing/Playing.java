@@ -9,13 +9,12 @@ import java.awt.*;
 public class Playing {
 
     LocalPlayer localPlayer;
-    OnlinePlayer onlinePlayer;
     Camera camera;
 
 
-    public Playing(LocalPlayer localPlayer, OnlinePlayer onlinePlayer, Camera camera) {
+    public Playing(LocalPlayer localPlayer, Camera camera) {
         this.localPlayer = localPlayer;
-        this.onlinePlayer = onlinePlayer;
+
         this.camera = camera;
 
 
@@ -32,7 +31,7 @@ public class Playing {
         localPlayer.updatePlayerPositionOnScreen();
 
 //        Online player update
-        onlinePlayer.updatePlayerPositionOnScreen();
+//        onlinePlayer.updatePlayerPositionOnScreen();
     }
 
     public void draw(Graphics g) {
@@ -56,8 +55,8 @@ public class Playing {
 
  //       Rysowanie ONLINE postaci
 
-        g.drawImage(onlinePlayer.playerSpriteDOWN[onlinePlayer.animationIndexMoving],
-                (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen,  null);
+//        g.drawImage(onlinePlayer.playerSpriteDOWN[onlinePlayer.animationIndexMoving],
+//                (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen,  null);
 
 //        Rysowanie Zaklec
         FirstSpell.ListOfActiveFirstSpells.forEach(firstSpell -> {

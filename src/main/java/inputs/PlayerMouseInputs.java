@@ -1,18 +1,22 @@
 package inputs;
 
 import entities.playercharacters.LocalPlayer;
+import networking.Client;
+import networking.PacketManager;
 import scenes.playing.Camera;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.IOException;
 
 
 public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
     LocalPlayer localPlayer;
     public static Point CurrentMousePosition;
+    public Client client;
 
     public PlayerMouseInputs(LocalPlayer localPlayer) {
         this.localPlayer = localPlayer;
@@ -37,6 +41,11 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
         localPlayer.normalizedVectorX = (vectorX / magnitude);
         localPlayer.normalizedVectorY = (vectorY / magnitude);
 
+        try {
+            client.socket.send(PacketManager.movementRequestPacket(localPlayer.mouseClickXPos, localPlayer.mouseClickYPos));
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override
@@ -70,6 +79,12 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
         localPlayer.normalizedVectorY = (vectorY / magnitude);
 
         Camera.updateCameraState(e);
+
+        try {
+            client.socket.send(PacketManager.movementRequestPacket(localPlayer.mouseClickXPos, localPlayer.mouseClickYPos));
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override

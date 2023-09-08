@@ -5,6 +5,7 @@ import entities.playercharacters.OnlinePlayer;
 
 import java.io.*;
 import java.net.*;
+import java.util.Optional;
 
 public class Client extends Thread {
 
@@ -12,11 +13,13 @@ public class Client extends Thread {
     public final DatagramSocket socket;
     public static InetAddress serverIPaddress;
     LocalPlayer localPlayer;
-    OnlinePlayer onlinePlayer;
 
-    public Client(LocalPlayer localPlayer, OnlinePlayer onlinePlayer, String serverIPaddress) {
+    private int ClientID;
+
+
+    public Client(LocalPlayer localPlayer, String serverIPaddress) {
         this.localPlayer = localPlayer;
-        this.onlinePlayer = onlinePlayer;
+
         try {
             socket = new DatagramSocket();
 //            this.serverIPaddress = InetAddress.getByName(serverIPaddress);
@@ -80,10 +83,38 @@ public class Client extends Thread {
 
             int packetType = dataInputStream.readInt();
 
-//           PACKET TYPE - IS SERVER ANSWER FOR LOGIN PACKET
+
+//           PACKET TYPE 0 IS SERVER ANSWER FOR LOGIN PACKET
             if (packetType == 0) {
+                ClientID = dataInputStream.readInt();
                 LocalPlayer.playerPosXWorld = dataInputStream.readFloat();
                 LocalPlayer.playerPosYWorld = dataInputStream.readFloat();
+            }
+//          PACKET TYPE 1 IS FOR PLAYERS MOVEMENT
+            if (packetType == 1) {
+                int howManyPlayersToUpdate = dataInputStream.readInt();
+                for (int i = 0; i < howManyPlayersToUpdate; i++) {
+
+//                    Checks if received update is for local player
+                    int serverClientID = dataInputStream.readInt();
+                    Optional<OnlinePlayer> OptionalOnlinePlayer = OnlinePlayer.listOfAllConnectedOnlinePLayers.stream()
+                            .filter(element -> element.onlinePlayerID == serverClientID).findFirst();
+                    if (serverClientID == ClientID) {
+                        LocalPlayer.playerPosXWorld = dataInputStream.readFloat();
+                        LocalPlayer.playerPosYWorld = dataInputStream.readFloat();
+                    } else if (OptionalOnlinePlayer.isPresent()) {
+                        OptionalOnlinePlayer.get().playerPosXWorld = dataInputStream.readFloat();
+                        OptionalOnlinePlayer.get().playerPosYWorld = dataInputStream.readFloat();
+
+                    } else {
+                        OnlinePlayer onlinePlayer = new OnlinePlayer(serverClientID);
+                        onlinePlayer.playerPosXWorld = dataInputStream.readFloat();
+                        onlinePlayer.playerPosYWorld = dataInputStream.readFloat();
+
+                    }
+
+                }
+
             }
 
         } catch (IOException e) {

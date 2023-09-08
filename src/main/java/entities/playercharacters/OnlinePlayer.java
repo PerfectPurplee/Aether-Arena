@@ -2,6 +2,9 @@ package entities.playercharacters;
 
 import scenes.playing.Camera;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class OnlinePlayer extends LocalPlayer {
 
     public float playerPosXWorld, playerPosYWorld;
@@ -10,13 +13,17 @@ public class OnlinePlayer extends LocalPlayer {
     private int animationTick, animationSpeed = 60;
     public int animationIndexMoving, animationIndexIdle;
 
+    public int onlinePlayerID;
 
-    public OnlinePlayer(int playerPosXWorld, int playerPosYWorld) {
+    public static List<OnlinePlayer> listOfAllConnectedOnlinePLayers = new ArrayList<>();
 
-        this.playerPosXWorld = playerPosXWorld;
-        this.playerPosYWorld = playerPosYWorld;
+    public OnlinePlayer(int onlinePlayerID) {
+
+        this.onlinePlayerID = onlinePlayerID;
         Current_Player_State = PlayerState.MOVING_UP;
         getPlayerSprites("/Character02.png");
+
+        listOfAllConnectedOnlinePLayers.add(this);
 
     }
 
