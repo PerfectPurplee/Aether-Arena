@@ -14,7 +14,7 @@ public class Client extends Thread {
     public static InetAddress serverIPaddress;
     LocalPlayer localPlayer;
 
-    private int ClientID;
+    public int ClientID;
 
 
     public Client(LocalPlayer localPlayer, String serverIPaddress) {
@@ -70,19 +70,19 @@ public class Client extends Thread {
 
     }
 
-    private void receiveDataFromServer() {
+    private synchronized void receiveDataFromServer() {
         byte[] buffer = new byte[1024];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
         try {
             socket.receive(packet);
-            System.out.println("Client received packet");
+
 
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer);
             DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
 
             int packetType = dataInputStream.readInt();
-
+//            System.out.println("Client received packet of TYPE: " + packetType);
 
 //           PACKET TYPE 0 IS SERVER ANSWER FOR LOGIN PACKET
             if (packetType == 0) {

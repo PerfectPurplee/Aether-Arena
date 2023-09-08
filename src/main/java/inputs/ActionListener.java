@@ -27,10 +27,10 @@ public class ActionListener implements java.awt.event.ActionListener {
             }
             case MENU -> {
 
-                if (e.getSource() == Menu.startGameWithServer) {
-                    gameEngine.createServer();
-                    mainPanel.changeScene(PLAYING);
-                }
+//                if (e.getSource() == Menu.startGameWithServer) {
+////                    gameEngine.createServer();
+//                    mainPanel.changeScene(PLAYING);
+//                }
 
                 if (e.getSource() == Menu.joinExistingGame) {
 

@@ -9,7 +9,10 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.DatagramPacket;
 
 
 public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
@@ -42,10 +45,19 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
         localPlayer.normalizedVectorY = (vectorY / magnitude);
 
         try {
-            client.socket.send(PacketManager.movementRequestPacket(localPlayer.mouseClickXPos, localPlayer.mouseClickYPos));
+            DatagramPacket packet = PacketManager.movementRequestPacket(localPlayer.mouseClickXPos, localPlayer.mouseClickYPos, client.ClientID);
+            client.socket.send(packet);
+
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(packet.getData());
+            DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+
+            System.out.println("packet type: " + dataInputStream.readInt() + " Send X: " + dataInputStream.readInt() + " Send Y: " + dataInputStream.readInt());
+            System.out.println("Local X: " + localPlayer.mouseClickXPos + "Local Y" + localPlayer.mouseClickYPos);
+
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
+
     }
 
     @Override
@@ -81,7 +93,7 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
         Camera.updateCameraState(e);
 
         try {
-            client.socket.send(PacketManager.movementRequestPacket(localPlayer.mouseClickXPos, localPlayer.mouseClickYPos));
+            client.socket.send(PacketManager.movementRequestPacket(localPlayer.mouseClickXPos, localPlayer.mouseClickYPos, client.ClientID));
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }

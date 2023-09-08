@@ -20,7 +20,7 @@ public class Playing {
 
     }
 
-    public void update() {
+    public synchronized void update() {
 
 //        Local player and spells update
         localPlayer.moveController();
@@ -35,7 +35,7 @@ public class Playing {
 //        onlinePlayer.updatePlayerPositionOnScreen();
     }
 
-    public void draw(Graphics g) {
+    public synchronized void draw(Graphics g) {
 
 //        RYSOWANIE LOKALNYCH OBIEKTOW
 

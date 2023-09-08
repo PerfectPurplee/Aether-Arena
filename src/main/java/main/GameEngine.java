@@ -33,7 +33,7 @@ public class GameEngine extends Thread {
     PlayerMouseInputs playerMouseInputs;
     ActionListener actionListener;
     Camera camera;
-    Server server;
+//    Server server;
     Client client;
 
 
@@ -141,9 +141,9 @@ public class GameEngine extends Thread {
         }
     }
 
-    public void createServer() {
-        server = new Server(onlinePlayer);
-    }
+//    public void createServer() {
+//        server = new Server(onlinePlayer);
+//    }
 
     public void createClient(String serverIPaddress) {
         client = new Client(localPlayer, serverIPaddress);

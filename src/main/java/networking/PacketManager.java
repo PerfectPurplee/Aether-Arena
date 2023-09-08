@@ -1,7 +1,5 @@
 package networking;
 
-import entities.playercharacters.LocalPlayer;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -11,7 +9,7 @@ public abstract class PacketManager {
 
     public static DatagramPacket LoginPacket() {
 
-       final int packetType = 0;
+        final int packetType = 0;
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
@@ -35,7 +33,7 @@ public abstract class PacketManager {
         return datagramPacket;
     }
 
-    public static DatagramPacket movementRequestPacket(int mouseClickXPos,int mouseClickYPos) {
+    public static DatagramPacket movementRequestPacket(int mouseClickXPos, int mouseClickYPos, int clientID) {
 
         final int packetType = 1;
 
@@ -44,6 +42,7 @@ public abstract class PacketManager {
 
         try {
             dataOutputStream.writeInt(packetType);
+            dataOutputStream.writeInt(clientID);
             dataOutputStream.writeInt(mouseClickXPos);
             dataOutputStream.writeInt(mouseClickYPos);
         } catch (IOException e) {
