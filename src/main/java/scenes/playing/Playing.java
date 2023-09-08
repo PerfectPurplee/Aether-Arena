@@ -31,6 +31,7 @@ public class Playing {
         localPlayer.updatePlayerPositionOnScreen();
 
 //        Online player update
+        OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(OnlinePlayer::updatePlayerPositionOnScreen);
 //        onlinePlayer.updatePlayerPositionOnScreen();
     }
 
@@ -54,6 +55,11 @@ public class Playing {
         }
 
  //       Rysowanie ONLINE postaci
+
+        OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer ->
+                g.drawImage(onlinePlayer.playerSpriteDOWN[onlinePlayer.animationIndexMoving],
+          (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen,  null)
+                );
 
 //        g.drawImage(onlinePlayer.playerSpriteDOWN[onlinePlayer.animationIndexMoving],
 //                (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen,  null);
