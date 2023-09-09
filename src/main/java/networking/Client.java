@@ -2,6 +2,8 @@ package networking;
 
 import entities.playercharacters.LocalPlayer;
 import entities.playercharacters.OnlinePlayer;
+import main.EnumContainer;
+import main.PlayerState;
 
 import java.io.*;
 import java.net.*;
@@ -79,7 +81,7 @@ public class Client extends Thread {
 
 
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer);
-            DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+            ObjectInputStream dataInputStream = new ObjectInputStream(byteArrayInputStream);
 
             int packetType = dataInputStream.readInt();
 //            System.out.println("Client received packet of TYPE: " + packetType);
@@ -92,6 +94,7 @@ public class Client extends Thread {
             }
 //          PACKET TYPE 1 IS FOR PLAYERS MOVEMENT
             if (packetType == 1) {
+
                 int howManyPlayersToUpdate = dataInputStream.readInt();
                 for (int i = 0; i < howManyPlayersToUpdate; i++) {
 
@@ -99,15 +102,25 @@ public class Client extends Thread {
                     int serverClientID = dataInputStream.readInt();
                     Optional<OnlinePlayer> OptionalOnlinePlayer = OnlinePlayer.listOfAllConnectedOnlinePLayers.stream()
                             .filter(element -> element.onlinePlayerID == serverClientID).findFirst();
+
+//                    Local player
                     if (serverClientID == ClientID) {
+                        PlayerState.Current_Player_State_Shared = (EnumContainer.PlayerState) dataInputStream.readObject();
+//                        NO need for that just creates more lag, animation does not need to be server accurate
+//                        localPlayer.Current_Player_State_Shared = PlayerState.Current_Player_State_Shared;
                         LocalPlayer.playerPosXWorld = dataInputStream.readFloat();
                         LocalPlayer.playerPosYWorld = dataInputStream.readFloat();
+//                    Online player
                     } else if (OptionalOnlinePlayer.isPresent()) {
+                        PlayerState.Current_Player_State_Shared = (EnumContainer.PlayerState) dataInputStream.readObject();
+                        OptionalOnlinePlayer.get().Current_Player_State = PlayerState.Current_Player_State_Shared;
                         OptionalOnlinePlayer.get().playerPosXWorld = dataInputStream.readFloat();
                         OptionalOnlinePlayer.get().playerPosYWorld = dataInputStream.readFloat();
-
+//                    New online player
                     } else {
                         OnlinePlayer onlinePlayer = new OnlinePlayer(serverClientID);
+                        PlayerState.Current_Player_State_Shared = (EnumContainer.PlayerState) dataInputStream.readObject();
+                        onlinePlayer.Current_Player_State = PlayerState.Current_Player_State_Shared;
                         onlinePlayer.playerPosXWorld = dataInputStream.readFloat();
                         onlinePlayer.playerPosYWorld = dataInputStream.readFloat();
 
@@ -117,9 +130,10 @@ public class Client extends Thread {
 
             }
 
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
     }
+
 }

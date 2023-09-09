@@ -1,7 +1,9 @@
 package entities.playercharacters;
 
+import main.EnumContainer;
 import scenes.playing.Camera;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,22 +19,17 @@ public class OnlinePlayer extends LocalPlayer {
 
     public static List<OnlinePlayer> listOfAllConnectedOnlinePLayers = new ArrayList<>();
 
+    public EnumContainer.PlayerState Current_Player_State;
+
     public OnlinePlayer(int onlinePlayerID) {
 
         this.onlinePlayerID = onlinePlayerID;
-        Current_Player_State = PlayerState.MOVING_UP;
+        Current_Player_State = EnumContainer.PlayerState.MOVING_UP;
         getPlayerSprites("/Character02.png");
 
         listOfAllConnectedOnlinePLayers.add(this);
 
     }
-
-    @Override
-    public void updatePlayerPositionOnScreen() {
-        playerPosXScreen = playerPosXWorld - Camera.cameraPosX;
-        playerPosYScreen = playerPosYWorld - Camera.cameraPosY;
-    }
-
 
     public void animationController() {
         animationTick++;
@@ -54,4 +51,6 @@ public class OnlinePlayer extends LocalPlayer {
             animationTick = 0;
         }
     }
+
+
 }

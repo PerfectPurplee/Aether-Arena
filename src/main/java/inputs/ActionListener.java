@@ -6,7 +6,7 @@ import scenes.menu.Menu;
 
 import java.awt.event.ActionEvent;
 
-import static scenes.AllScenes.*;
+import static main.EnumContainer.AllScenes.*;
 
 public class ActionListener implements java.awt.event.ActionListener {
 

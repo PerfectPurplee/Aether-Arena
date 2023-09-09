@@ -48,11 +48,11 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
             DatagramPacket packet = PacketManager.movementRequestPacket(localPlayer.mouseClickXPos, localPlayer.mouseClickYPos, client.ClientID);
             client.socket.send(packet);
 
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(packet.getData());
-            DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
-
-            System.out.println("packet type: " + dataInputStream.readInt() + " Send X: " + dataInputStream.readInt() + " Send Y: " + dataInputStream.readInt());
-            System.out.println("Local X: " + localPlayer.mouseClickXPos + "Local Y" + localPlayer.mouseClickYPos);
+//            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(packet.getData());
+//            DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+//
+//            System.out.println("packet type: " + dataInputStream.readInt() + " Send X: " + dataInputStream.readInt() + " Send Y: " + dataInputStream.readInt());
+//            System.out.println("Local X: " + localPlayer.mouseClickXPos + "Local Y" + localPlayer.mouseClickYPos);
 
         } catch (IOException ex) {
             throw new RuntimeException(ex);

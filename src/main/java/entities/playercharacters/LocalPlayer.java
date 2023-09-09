@@ -1,5 +1,6 @@
 package entities.playercharacters;
 
+import main.EnumContainer;
 import scenes.playing.Camera;
 
 import javax.imageio.ImageIO;
@@ -9,12 +10,6 @@ import java.io.InputStream;
 import java.util.Objects;
 
 public class LocalPlayer {
-
-    public enum PlayerState {
-        IDLE_UP, IDLE_DOWN, IDLE_LEFT, IDLE_RIGHT,
-        MOVING_UP, MOVING_DOWN, MOVING_LEFT, MOVING_RIGHT
-
-    }
 
     public BufferedImage allPlayer1Sprites;
     public BufferedImage[] playerSpriteIDLE_UP = new BufferedImage[2];
@@ -27,7 +22,7 @@ public class LocalPlayer {
     public BufferedImage[] playerSpriteLEFT = new BufferedImage[4];
     public BufferedImage[] playerSpriteRIGHT = new BufferedImage[4];
 
-    public PlayerState Current_Player_State;
+    public EnumContainer.PlayerState Current_Player_State;
 
     public static float playerPosXWorld, playerPosYWorld;
     public static float playerPosXScreen, playerPosYScreen;
@@ -50,7 +45,7 @@ public class LocalPlayer {
 
     public LocalPlayer() {
 
-        Current_Player_State = PlayerState.MOVING_DOWN;
+        Current_Player_State = EnumContainer.PlayerState.MOVING_DOWN;
         getPlayerSprites("/Player1.png");
     }
 
@@ -72,25 +67,25 @@ public class LocalPlayer {
 //        Ruch na lewej gornej cwiartce liczac od postaci
         if (playerMovementStartingPosX > mouseClickXPos && playerMovementStartingPosY > mouseClickYPos) {
             if (playerPosXWorld > mouseClickXPos && playerPosYWorld > mouseClickYPos) {
-                Current_Player_State = PlayerState.MOVING_UP;
+                Current_Player_State = EnumContainer.PlayerState.MOVING_UP;
                 playerPosXWorld += (playerMovespeed * normalizedVectorX);
                 playerPosYWorld += (playerMovespeed * normalizedVectorY);
             }
         } else if (playerMovementStartingPosX < mouseClickXPos && playerMovementStartingPosY < mouseClickYPos) {
             if (playerPosXWorld < mouseClickXPos && playerPosYWorld < mouseClickYPos) {
-                Current_Player_State = PlayerState.MOVING_DOWN;
+                Current_Player_State = EnumContainer.PlayerState.MOVING_DOWN;
                 playerPosXWorld += (playerMovespeed * normalizedVectorX);
                 playerPosYWorld += (playerMovespeed * normalizedVectorY);
             }
         } else if (playerMovementStartingPosX < mouseClickXPos && playerMovementStartingPosY > mouseClickYPos) {
             if (playerPosXWorld < mouseClickXPos && playerPosYWorld > mouseClickYPos) {
-                Current_Player_State = PlayerState.MOVING_RIGHT;
+                Current_Player_State = EnumContainer.PlayerState.MOVING_RIGHT;
                 playerPosXWorld += (playerMovespeed * normalizedVectorX);
                 playerPosYWorld += (playerMovespeed * normalizedVectorY);
             }
         } else if (playerMovementStartingPosX > mouseClickXPos && playerMovementStartingPosY < mouseClickYPos) {
             if (playerPosXWorld > mouseClickXPos && playerPosYWorld < mouseClickYPos) {
-                Current_Player_State = PlayerState.MOVING_LEFT;
+                Current_Player_State = EnumContainer.PlayerState.MOVING_LEFT;
                 playerPosXWorld += (playerMovespeed * normalizedVectorX);
                 playerPosYWorld += (playerMovespeed * normalizedVectorY);
             }

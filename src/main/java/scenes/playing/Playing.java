@@ -31,8 +31,13 @@ public class Playing {
         localPlayer.updatePlayerPositionOnScreen();
 
 //        Online player update
-        OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(OnlinePlayer::updatePlayerPositionOnScreen);
-//        onlinePlayer.updatePlayerPositionOnScreen();
+        OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer ->  {
+
+            onlinePlayer.playerSpriteController();
+            onlinePlayer.animationController();
+            onlinePlayer.updatePlayerPositionOnScreen();
+        });
+
     }
 
     public synchronized void draw(Graphics g) {
@@ -57,7 +62,7 @@ public class Playing {
  //       Rysowanie ONLINE postaci
 
         OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer ->
-                g.drawImage(onlinePlayer.playerSpriteDOWN[onlinePlayer.animationIndexMoving],
+                g.drawImage(onlinePlayer.playerSpriteController()[onlinePlayer.animationIndexMoving],
           (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen,  null)
                 );
 

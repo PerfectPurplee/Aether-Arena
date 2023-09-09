@@ -6,7 +6,6 @@ import inputs.ActionListener;
 import inputs.PlayerKeyboardInputs;
 import inputs.PlayerMouseInputs;
 import networking.Client;
-import networking.Server;
 import scenes.menu.Menu;
 import scenes.playing.Camera;
 import scenes.playing.Playing;
@@ -19,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-import static scenes.AllScenes.*;
+import static main.EnumContainer.AllScenes.*;
 
 public class GameEngine extends Thread {
 

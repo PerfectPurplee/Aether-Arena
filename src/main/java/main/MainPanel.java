@@ -1,9 +1,7 @@
 package main;
 
-import inputs.ActionListener;
 import inputs.PlayerKeyboardInputs;
 import inputs.PlayerMouseInputs;
-import scenes.AllScenes;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,9 +39,9 @@ public class MainPanel extends JPanel {
         render(g);
     }
 
-    public void changeScene(AllScenes scene) {
+    public void changeScene(EnumContainer.AllScenes scene) {
         this.removeAll();
-        AllScenes.Current_Scene = scene;
+        EnumContainer.AllScenes.Current_Scene = scene;
     }
 }
 
