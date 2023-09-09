@@ -23,7 +23,7 @@ public class Playing {
     public synchronized void update() {
 
 //        Local player and spells update
-        localPlayer.moveController();
+        localPlayer.alternateMoveController();
         localPlayer.playerSpriteController();
         localPlayer.animationController();
         FirstSpell.updateFirstSpells();
@@ -50,11 +50,11 @@ public class Playing {
 
 
 //        Rysowanie postaci
-        if (localPlayer.checkIsCharacterMoving()) {
+        if (localPlayer.isPlayerMoving) {
             g.drawImage(localPlayer.playerSpriteController()[localPlayer.animationIndexMoving],
-                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen,  null);
-        } else if (!localPlayer.checkIsCharacterMoving()) {
-            g.drawImage(localPlayer.playerSpriteController()[localPlayer.animationIndexIdle],
+                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen,   null);
+        } else {
+            g.drawImage(localPlayer.playerSpriteController()[0],
                     (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen,  null);
 
         }
@@ -74,7 +74,9 @@ public class Playing {
             g.drawImage(firstSpell.spellSprites[firstSpell.animationIndex], (int) firstSpell.spellPosXScreen,
                     (int) firstSpell.spellPosYScreen, 32,32, null);
         });
-
+//        DEBUGGING
+//        g.drawRect((int) LocalPlayer.playerPosXWorld, (int) LocalPlayer.playerPosYWorld,
+//                localPlayer.playerSpriteUP[1].getWidth(),localPlayer.playerSpriteUP[1].getHeight());
 
     }
 

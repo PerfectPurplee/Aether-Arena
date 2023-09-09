@@ -24,8 +24,8 @@ public class Client extends Thread {
 
         try {
             socket = new DatagramSocket();
-//            this.serverIPaddress = InetAddress.getByName(serverIPaddress);
-            Client.serverIPaddress = InetAddress.getLocalHost();
+            Client.serverIPaddress = InetAddress.getByName("89.65.216.42");
+//            Client.serverIPaddress = InetAddress.getLocalHost();
         } catch (SocketException | UnknownHostException e) {
             throw new RuntimeException(e);
         }

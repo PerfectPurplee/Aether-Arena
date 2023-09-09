@@ -37,9 +37,11 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
         localPlayer.mouseClickXPos = e.getX() + Camera.cameraPosX;
         localPlayer.mouseClickYPos = e.getY() + Camera.cameraPosY;
 
-        float vectorX = localPlayer.mouseClickXPos - LocalPlayer.playerPosXWorld;
-        float vectorY = localPlayer.mouseClickYPos - LocalPlayer.playerPosYWorld;
+        float vectorX = localPlayer.mouseClickXPos - (LocalPlayer.playerPosXWorld + localPlayer.playerFeetX);
+        float vectorY = localPlayer.mouseClickYPos - (LocalPlayer.playerPosYWorld + localPlayer.playerFeetY);
         float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
+        localPlayer.distanceToTravel = magnitude;
+
 
         localPlayer.normalizedVectorX = (vectorX / magnitude);
         localPlayer.normalizedVectorY = (vectorY / magnitude);
@@ -82,10 +84,11 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
         localPlayer.mouseClickXPos = e.getX() + Camera.cameraPosX;
         localPlayer.mouseClickYPos = e.getY() + Camera.cameraPosY;
 
-
-        float vectorX = localPlayer.mouseClickXPos - LocalPlayer.playerPosXWorld;
-        float vectorY = localPlayer.mouseClickYPos - LocalPlayer.playerPosYWorld;
+        float vectorX = localPlayer.mouseClickXPos - (LocalPlayer.playerPosXWorld + localPlayer.playerFeetX);
+        float vectorY = localPlayer.mouseClickYPos - (LocalPlayer.playerPosYWorld + localPlayer.playerFeetY);
         float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
+        localPlayer.distanceToTravel = magnitude;
+
 
         localPlayer.normalizedVectorX = (vectorX / magnitude);
         localPlayer.normalizedVectorY = (vectorY / magnitude);
