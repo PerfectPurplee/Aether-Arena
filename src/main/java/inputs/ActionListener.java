@@ -34,8 +34,9 @@ public class ActionListener implements java.awt.event.ActionListener {
 
                 if (e.getSource() == Menu.joinExistingGame) {
 
-                    gameEngine.createClient(gameEngine.getHostIpAddress());
-                    mainPanel.changeScene(PLAYING);
+//                    gameEngine.createClient(gameEngine.getHostIpAddress());
+//                    mainPanel.changeScene(PLAYING);
+                    gameEngine.changeScene(CHAMPION_SELECT);
 
                 }
 

@@ -2,16 +2,20 @@ package scenes.menu;
 
 import inputs.ActionListener;
 import main.MainPanel;
+import scenes.SceneEssentials;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class Menu {
+public class Menu implements SceneEssentials {
 
     MainPanel mainPanel;
     ActionListener actionListener;
     public static JButton startGameWithServer;
     public static JButton joinExistingGame;
+
+
+    private JPanel panelForMenuButtons;
 
     public Menu(MainPanel mainPanel, ActionListener actionListener) {
         this.mainPanel = mainPanel;
@@ -21,7 +25,7 @@ public class Menu {
 
     public void initiateMenuComponents() {
         Dimension buttonMaxSize = new Dimension(600, 75);
-        JPanel panelForMenuButtons = new JPanel();
+        panelForMenuButtons = new JPanel();
         panelForMenuButtons.setLayout(new GridBagLayout());
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
@@ -64,6 +68,10 @@ public class Menu {
         panelForMenuButtons.add(buttonPanel);
         panelForMenuButtons.setOpaque(false);
 
+        addComponentsToMainPanel();
+    }
+
+    public void addComponentsToMainPanel() {
         mainPanel.add(panelForMenuButtons, BorderLayout.CENTER);
     }
 

@@ -4,6 +4,7 @@ import main.EnumContainer;
 import scenes.playing.Camera;
 
 import javax.imageio.ImageIO;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,15 +25,15 @@ public class LocalPlayer {
     public BufferedImage[] playerSpriteIDLE_DOWN_RIGHT = new BufferedImage[1];
 
 
-    public BufferedImage[] playerSpriteUP = new BufferedImage[4];
-    public BufferedImage[] playerSpriteDOWN = new BufferedImage[4];
-    public BufferedImage[] playerSpriteLEFT = new BufferedImage[4];
-    public BufferedImage[] playerSpriteRIGHT = new BufferedImage[4];
+    public BufferedImage[] playerSpriteUP = new BufferedImage[8];
+    public BufferedImage[] playerSpriteDOWN = new BufferedImage[8];
+    public BufferedImage[] playerSpriteLEFT = new BufferedImage[8];
+    public BufferedImage[] playerSpriteRIGHT = new BufferedImage[8];
 
-    public BufferedImage[] playerSpriteUP_LEFT = new BufferedImage[4];
-    public BufferedImage[] playerSpriteUP_RIGHT = new BufferedImage[4];
-    public BufferedImage[] playerSpriteDOWN_LEFT = new BufferedImage[4];
-    public BufferedImage[] playerSpriteDOWN_RIGHT = new BufferedImage[4];
+    public BufferedImage[] playerSpriteUP_LEFT = new BufferedImage[8];
+    public BufferedImage[] playerSpriteUP_RIGHT = new BufferedImage[8];
+    public BufferedImage[] playerSpriteDOWN_LEFT = new BufferedImage[8];
+    public BufferedImage[] playerSpriteDOWN_RIGHT = new BufferedImage[8];
 
     public BufferedImage[] currentPlayerSprite;
 
@@ -59,11 +60,29 @@ public class LocalPlayer {
         this.Current_Player_State = EnumContainer.AllPlayerStates.MOVING_DOWN;
         currentPlayerSprite = playerSpriteController();
 //        getPlayerSprites4Directional("/Player1.png");
-        localPlayerChampion = EnumContainer.AllPlayableChampions.DON_OHL;
-        getPlayerSprites8Directional(localPlayerChampion);
+
 
     }
 
+    public void setPlayerChampion(EnumContainer.AllPlayableChampions champion) {
+        localPlayerChampion = champion;
+        getPlayerSprites8Directional(localPlayerChampion);
+    }
+
+    public void getVectorForPlayerMovement(MouseEvent e) {
+        setPlayerMovementStartingPosition(LocalPlayer.playerPosXWorld, LocalPlayer.playerPosYWorld);
+        mouseClickXPos = e.getX() + Camera.cameraPosX;
+        mouseClickYPos = e.getY() + Camera.cameraPosY;
+
+        float vectorX = mouseClickXPos - (LocalPlayer.playerPosXWorld + playerFeetX);
+        float vectorY = mouseClickYPos - (LocalPlayer.playerPosYWorld + playerFeetY);
+        float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
+        distanceToTravel = magnitude;
+
+
+        normalizedVectorX = (vectorX / magnitude);
+        normalizedVectorY = (vectorY / magnitude);
+    }
 
     public void moveController() {
 //
@@ -224,7 +243,7 @@ public class LocalPlayer {
                     e.printStackTrace();
                 }
             }
-             spriteSize = 128;
+            spriteSize = 128;
             numberOfSpritesInRow = 8;
 //        Assigning moving sprites for all directions
             for (int i = 0; i < numberOfSpritesInRow; i++) {
@@ -378,7 +397,7 @@ public class LocalPlayer {
                     playerSpriteController() == playerSpriteDOWN_LEFT |
                     playerSpriteController() == playerSpriteDOWN_RIGHT) {
 
-                if (animationIndexMoving < 3)
+                if (animationIndexMoving < 7)
                     animationIndexMoving++;
                 else animationIndexMoving = 0;
             }

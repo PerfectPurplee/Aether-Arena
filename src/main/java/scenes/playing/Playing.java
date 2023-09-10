@@ -3,10 +3,11 @@ package scenes.playing;
 import entities.playercharacters.LocalPlayer;
 import entities.playercharacters.OnlinePlayer;
 import entities.spells.basicspells.FirstSpell;
+import scenes.SceneEssentials;
 
 import java.awt.*;
 
-public class Playing {
+public class Playing implements SceneEssentials {
 
     LocalPlayer localPlayer;
     Camera camera;
@@ -66,10 +67,10 @@ public class Playing {
         OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer -> {
             if (onlinePlayer.isPlayerMoving)
                 g.drawImage(onlinePlayer.currentPlayerSpriteOnlinePlayer[onlinePlayer.animationIndexMoving],
-                        (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen,72,72, null);
+                        (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen, null);
             else {
                 g.drawImage(onlinePlayer.currentPlayerSpriteOnlinePlayer[0],
-                        (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen,72,72, null);
+                        (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen, null);
             }
         });
 

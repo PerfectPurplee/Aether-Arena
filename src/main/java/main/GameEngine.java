@@ -6,6 +6,7 @@ import inputs.ActionListener;
 import inputs.PlayerKeyboardInputs;
 import inputs.PlayerMouseInputs;
 import networking.Client;
+import scenes.championselect.ChampionSelect;
 import scenes.menu.Menu;
 import scenes.playing.Camera;
 import scenes.playing.Playing;
@@ -24,15 +25,16 @@ public class GameEngine extends Thread {
 
     static Playing playing;
     static Menu menu;
+    static ChampionSelect championSelect;
     MainFrame mainFrame;
-    MainPanel mainPanel;
+    static MainPanel mainPanel;
     LocalPlayer localPlayer;
     OnlinePlayer onlinePlayer;
     PlayerKeyboardInputs playerKeyboardInputs;
     PlayerMouseInputs playerMouseInputs;
     ActionListener actionListener;
     Camera camera;
-//    Server server;
+    //    Server server;
     Client client;
 
 
@@ -46,9 +48,10 @@ public class GameEngine extends Thread {
         getAllBasicSpellsSpriteSheet();
 
         localPlayer = new LocalPlayer();
+        championSelect = new ChampionSelect();
 
         playerKeyboardInputs = new PlayerKeyboardInputs(localPlayer);
-        playerMouseInputs = new PlayerMouseInputs(localPlayer);
+        playerMouseInputs = new PlayerMouseInputs(localPlayer, championSelect);
         mainPanel = new MainPanel(playerKeyboardInputs, playerMouseInputs);
         actionListener = new ActionListener(mainPanel, this);
         menu = new Menu(mainPanel, actionListener);
@@ -56,6 +59,8 @@ public class GameEngine extends Thread {
         playing = new Playing(localPlayer, camera);
         mainFrame = new MainFrame(mainPanel);
 
+        championSelect.mainPanel = mainPanel;
+        playerMouseInputs.gameEngine = this;
 
         this.start();
     }
@@ -79,6 +84,11 @@ public class GameEngine extends Thread {
                 menu.draw(g);
             }
             case PAUSE -> {
+            }
+            case CHAMPION_SELECT -> {
+                championSelect.draw(g);
+            }
+            case SETTINGS -> {
             }
             case MAP_EDITOR -> {
             }
@@ -123,7 +133,7 @@ public class GameEngine extends Thread {
 
             if (System.currentTimeMillis() - lastCheck >= 1000) {
                 lastCheck = System.currentTimeMillis();
-//                System.out.println("FPS: " + frames + " | UPS: " + updates);
+                System.out.println("FPS: " + frames + " | UPS: " + updates);
                 frames = 0;
                 updates = 0;
 
@@ -150,11 +160,37 @@ public class GameEngine extends Thread {
         playerMouseInputs.client = client;
     }
 
+
     public String getHostIpAddress() {
 
         String serverIPaddress = JOptionPane.showInputDialog(mainPanel, "Type in your host IP address to connect: ");
 
         return serverIPaddress;
+    }
+
+    public void changeScene(EnumContainer.AllScenes scene) {
+        mainPanel.removeAll();
+
+//        SCENE WE WANT CHANGE TO
+        switch (scene) {
+            case MENU -> {
+                menu.addComponentsToMainPanel();
+            }
+            case CHAMPION_SELECT -> {
+                championSelect.addComponentsToMainPanel();
+            }
+            case PLAYING -> {
+                this.createClient(this.getHostIpAddress());
+            }
+            case PAUSE -> {
+            }
+            case SETTINGS -> {
+            }
+            case MAP_EDITOR -> {
+            }
+        }
+        EnumContainer.AllScenes.Current_Scene = scene;
+
     }
 
 }

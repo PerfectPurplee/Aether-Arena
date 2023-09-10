@@ -63,11 +63,12 @@ public class OnlinePlayer {
 
     }
 
-    public void getPlayerSprites8Directional(EnumContainer.AllPlayableChampions onlinePlayerChampion) {
+    public void getPlayerSprites8Directional(EnumContainer.AllPlayableChampions localPlayerChampion) {
 
         int spriteSize = 0;
         int spriteXpos = 0;
-        if (onlinePlayerChampion == EnumContainer.AllPlayableChampions.DON_OHL) {
+        int numberOfSpritesInRow = 0;
+        if (localPlayerChampion == EnumContainer.AllPlayableChampions.DON_OHL) {
             InputStream inputStream = getClass().getResourceAsStream("/DON_OHL.png");
             try {
                 allOnlinePlayerSprites = ImageIO.read(Objects.requireNonNull(inputStream));
@@ -83,8 +84,40 @@ public class OnlinePlayer {
             }
 
             spriteSize = 72;
+            numberOfSpritesInRow = 4;
 
-        } else if (onlinePlayerChampion == EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE) {
+
+//        Assigning moving sprites for all directions
+            for (int i = 0; i < numberOfSpritesInRow; i++) {
+                playerSpriteUP[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
+                playerSpriteUP_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
+                playerSpriteUP_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
+                playerSpriteLEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
+                playerSpriteRIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
+                playerSpriteDOWN_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
+                playerSpriteDOWN_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
+                playerSpriteDOWN[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
+
+                spriteXpos += spriteSize;
+            }
+
+            spriteXpos = 0;
+//       Assinging idle sprites for all directions
+            for (int i = 0; i < 1; i++) {
+                playerSpriteIDLE_UP[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
+                playerSpriteIDLE_UP_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
+                playerSpriteIDLE_UP_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
+                playerSpriteIDLE_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
+                playerSpriteIDLE_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
+                playerSpriteIDLE_DOWN_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
+                playerSpriteIDLE_DOWN_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
+                playerSpriteIDLE_DOWN[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
+
+
+                spriteXpos += spriteSize;
+            }
+
+        } else if (localPlayerChampion == EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE) {
             InputStream inputStream = getClass().getResourceAsStream("/WIKING_RUN.png");
             try {
                 allOnlinePlayerSprites = ImageIO.read(Objects.requireNonNull(inputStream));
@@ -98,41 +131,37 @@ public class OnlinePlayer {
                     e.printStackTrace();
                 }
             }
-
             spriteSize = 128;
-        }
-
+            numberOfSpritesInRow = 8;
 //        Assigning moving sprites for all directions
-        for (int i = 0; i < 8; i++) {
-            playerSpriteDOWN[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
-            playerSpriteLEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
-            playerSpriteRIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
-            playerSpriteUP[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
-            playerSpriteDOWN_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
-            playerSpriteDOWN_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
-            playerSpriteUP_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
-            playerSpriteUP_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
+            for (int i = 0; i < numberOfSpritesInRow; i++) {
+                playerSpriteDOWN[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
+                playerSpriteLEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
+                playerSpriteRIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
+                playerSpriteUP[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
+                playerSpriteDOWN_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
+                playerSpriteDOWN_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
+                playerSpriteUP_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
+                playerSpriteUP_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
 
-            spriteXpos += spriteSize;
-        }
+                spriteXpos += spriteSize;
+            }
 
-        spriteXpos = 0;
+            spriteXpos = 0;
 //       Assinging idle sprites for all directions
-        for (int i = 0; i < 1; i++) {
-            playerSpriteIDLE_DOWN[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
-            playerSpriteIDLE_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
-            playerSpriteIDLE_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
-            playerSpriteIDLE_UP[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
-            playerSpriteIDLE_DOWN_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
-            playerSpriteIDLE_DOWN_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
-            playerSpriteIDLE_UP_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
-            playerSpriteIDLE_UP_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
+            for (int i = 0; i < 1; i++) {
+                playerSpriteIDLE_DOWN[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
+                playerSpriteIDLE_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
+                playerSpriteIDLE_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
+                playerSpriteIDLE_UP[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
+                playerSpriteIDLE_DOWN_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
+                playerSpriteIDLE_DOWN_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
+                playerSpriteIDLE_UP_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
+                playerSpriteIDLE_UP_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
 
-
-            spriteXpos += spriteSize;
+                spriteXpos += spriteSize;
+            }
         }
-
-
     }
 
     public void updatePlayerPositionOnScreen() {

@@ -28,7 +28,7 @@ public class MainPanel extends JPanel {
         this.addMouseMotionListener(playerMouseInputs);
         this.setFocusable(true);
         this.requestFocus();
-        this.setBackground(Color.white);
+//        this.setBackground(Color.white);
         this.setPreferredSize(gameSize);
 
 
@@ -41,10 +41,7 @@ public class MainPanel extends JPanel {
         render(g);
     }
 
-    public void changeScene(EnumContainer.AllScenes scene) {
-        this.removeAll();
-        EnumContainer.AllScenes.Current_Scene = scene;
-    }
+
 }
 
 

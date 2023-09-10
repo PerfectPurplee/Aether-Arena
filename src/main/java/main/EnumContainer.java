@@ -20,13 +20,13 @@ public class EnumContainer {
     }
 
 
-
-
     public enum AllScenes {
 
-        PLAYING,
         MENU,
+        CHAMPION_SELECT,
+        PLAYING,
         PAUSE,
+        SETTINGS,
         MAP_EDITOR;
 
         public static AllScenes Current_Scene = MENU;
