@@ -30,6 +30,8 @@ public class MainPanel extends JPanel {
         this.requestFocus();
         this.setBackground(Color.white);
         this.setPreferredSize(gameSize);
+
+
     }
 
 

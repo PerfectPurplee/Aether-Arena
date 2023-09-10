@@ -31,11 +31,14 @@ public class FirstSpell {
     public FirstSpell() {
         getVector();
         getSpellSprites();
-
         spellPosXWorld = (LocalPlayer.playerPosXWorld + 62) + (normalizedVectorX * 150);
         spellPosYWorld = (LocalPlayer.playerPosYWorld + 62) + (normalizedVectorY * 150);
+        spellPosXScreen = spellPosXWorld - Camera.cameraPosX;
+        spellPosYScreen = spellPosYWorld - Camera.cameraPosY;
 
-        ListOfActiveFirstSpells.add(this);
+        synchronized (ListOfActiveFirstSpells) {
+            ListOfActiveFirstSpells.add(this);
+        }
     }
 
     private void getSpellSprites() {
@@ -73,9 +76,11 @@ public class FirstSpell {
     }
 
     public static void updateFirstSpells() {
-        ListOfActiveFirstSpells.forEach(firstSpell -> {
-            firstSpell.animationController();
-            firstSpell.moveSpellAndUpdatePosOnScreen();
-        });
+        synchronized (ListOfActiveFirstSpells) {
+            ListOfActiveFirstSpells.forEach(firstSpell -> {
+                firstSpell.animationController();
+                firstSpell.moveSpellAndUpdatePosOnScreen();
+            });
+        }
     }
 }

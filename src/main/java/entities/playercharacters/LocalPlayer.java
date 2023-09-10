@@ -11,30 +11,33 @@ import java.util.Objects;
 
 public class LocalPlayer {
 
-    public BufferedImage allPlayer1Sprites;
+    public BufferedImage allLocalPlayerSprites;
 
-    public BufferedImage[] playerSpriteIDLE_UP = new BufferedImage[2];
-    public BufferedImage[] playerSpriteIDLE_DOWN = new BufferedImage[2];
-    public BufferedImage[] playerSpriteIDLE_LEFT = new BufferedImage[2];
-    public BufferedImage[] playerSpriteIDLE_RIGHT = new BufferedImage[2];
+    public BufferedImage[] playerSpriteIDLE_UP = new BufferedImage[1];
+    public BufferedImage[] playerSpriteIDLE_DOWN = new BufferedImage[1];
+    public BufferedImage[] playerSpriteIDLE_LEFT = new BufferedImage[1];
+    public BufferedImage[] playerSpriteIDLE_RIGHT = new BufferedImage[1];
 
-    public BufferedImage[] playerSpriteIDLE_UP_LEFT = new BufferedImage[2];
-    public BufferedImage[] playerSpriteIDLE_UP_RIGHT = new BufferedImage[2];
-    public BufferedImage[] playerSpriteIDLE_DOWN_LEFT = new BufferedImage[2];
-    public BufferedImage[] playerSpriteIDLE_DOWN_RIGHT = new BufferedImage[2];
+    public BufferedImage[] playerSpriteIDLE_UP_LEFT = new BufferedImage[1];
+    public BufferedImage[] playerSpriteIDLE_UP_RIGHT = new BufferedImage[1];
+    public BufferedImage[] playerSpriteIDLE_DOWN_LEFT = new BufferedImage[1];
+    public BufferedImage[] playerSpriteIDLE_DOWN_RIGHT = new BufferedImage[1];
 
 
-    public BufferedImage[] playerSpriteUP = new BufferedImage[8];
-    public BufferedImage[] playerSpriteDOWN = new BufferedImage[8];
-    public BufferedImage[] playerSpriteLEFT = new BufferedImage[8];
-    public BufferedImage[] playerSpriteRIGHT = new BufferedImage[8];
+    public BufferedImage[] playerSpriteUP = new BufferedImage[4];
+    public BufferedImage[] playerSpriteDOWN = new BufferedImage[4];
+    public BufferedImage[] playerSpriteLEFT = new BufferedImage[4];
+    public BufferedImage[] playerSpriteRIGHT = new BufferedImage[4];
 
-    public BufferedImage[] playerSpriteUP_LEFT = new BufferedImage[8];
-    public BufferedImage[] playerSpriteUP_RIGHT = new BufferedImage[8];
-    public BufferedImage[] playerSpriteDOWN_LEFT = new BufferedImage[8];
-    public BufferedImage[] playerSpriteDOWN_RIGHT = new BufferedImage[8];
+    public BufferedImage[] playerSpriteUP_LEFT = new BufferedImage[4];
+    public BufferedImage[] playerSpriteUP_RIGHT = new BufferedImage[4];
+    public BufferedImage[] playerSpriteDOWN_LEFT = new BufferedImage[4];
+    public BufferedImage[] playerSpriteDOWN_RIGHT = new BufferedImage[4];
 
-    public EnumContainer.PlayerState Current_Player_State;
+    public BufferedImage[] currentPlayerSprite;
+
+    public EnumContainer.AllPlayerStates Current_Player_State;
+    public EnumContainer.AllPlayableChampions localPlayerChampion;
 
     public static float playerPosXWorld, playerPosYWorld;
     public static float playerPosXScreen, playerPosYScreen;
@@ -48,32 +51,21 @@ public class LocalPlayer {
     public float distanceToTravel;
     public boolean isPlayerMoving;
 
-
     private int animationTick, animationSpeed = 15;
     public int animationIndexMoving, animationIndexIdle;
 
 
     public LocalPlayer() {
-
-        Current_Player_State = EnumContainer.PlayerState.MOVING_DOWN;
+        this.Current_Player_State = EnumContainer.AllPlayerStates.MOVING_DOWN;
+        currentPlayerSprite = playerSpriteController();
 //        getPlayerSprites4Directional("/Player1.png");
-        getPlayerSprites8Directional();
-    }
-//
-//    public boolean checkIsCharacterMoving() {
-//
-////        switch (Current_Player_State) {
-////            case IDLE_UP, IDLE_DOWN, IDLE_LEFT, IDLE_RIGHT -> {
-////                return false;
-////            }
-////            case MOVING_UP, MOVING_DOWN, MOVING_LEFT, MOVING_RIGHT, MOVING_UP_RIGHT,M-> {
-//        return true;
-////            }
-////            default -> throw new IllegalStateException("Unexpected value: " + Current_Player_State);
-////    }
-//    }
+        localPlayerChampion = EnumContainer.AllPlayableChampions.DON_OHL;
+        getPlayerSprites8Directional(localPlayerChampion);
 
-    public void alternateMoveController() {
+    }
+
+
+    public void moveController() {
 //
         if (distanceToTravel > 0) {
 
@@ -98,55 +90,55 @@ public class LocalPlayer {
         }
         if (isPlayerMoving) {
             if (angleDegrees >= 22.5 && angleDegrees < 67.5) {
-                Current_Player_State = EnumContainer.PlayerState.MOVING_DOWN_RIGHT;
+                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_DOWN_RIGHT;
 
             } else if (angleDegrees >= 67.5 && angleDegrees < 112.5) {
-                Current_Player_State = EnumContainer.PlayerState.MOVING_DOWN;
+                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_DOWN;
 
             } else if (angleDegrees >= 112.5 && angleDegrees < 157.5) {
-                Current_Player_State = EnumContainer.PlayerState.MOVING_DOWN_LEFT;
+                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_DOWN_LEFT;
 
             } else if (angleDegrees >= 157.5 && angleDegrees < 202.5) {
-                Current_Player_State = EnumContainer.PlayerState.MOVING_LEFT;
+                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_LEFT;
 
             } else if (angleDegrees >= 202.5 && angleDegrees < 247.5) {
-                Current_Player_State = EnumContainer.PlayerState.MOVING_UP_LEFT;
+                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_UP_LEFT;
 
             } else if (angleDegrees >= 247.5 && angleDegrees < 292.5) {
-                Current_Player_State = EnumContainer.PlayerState.MOVING_UP;
+                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_UP;
 
             } else if (angleDegrees >= 292.5 && angleDegrees < 337.5) {
-                Current_Player_State = EnumContainer.PlayerState.MOVING_UP_RIGHT;
+                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_UP_RIGHT;
 
             } else {
-                Current_Player_State = EnumContainer.PlayerState.MOVING_RIGHT;
+                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_RIGHT;
             }
         } else {
             switch (Current_Player_State) {
 
                 case MOVING_UP -> {
-                    Current_Player_State = EnumContainer.PlayerState.IDLE_UP;
+                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_UP;
                 }
                 case MOVING_DOWN -> {
-                    Current_Player_State = EnumContainer.PlayerState.IDLE_DOWN;
+                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_DOWN;
                 }
                 case MOVING_LEFT -> {
-                    Current_Player_State = EnumContainer.PlayerState.IDLE_LEFT;
+                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_LEFT;
                 }
                 case MOVING_RIGHT -> {
-                    Current_Player_State = EnumContainer.PlayerState.IDLE_RIGHT;
+                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_RIGHT;
                 }
                 case MOVING_UP_LEFT -> {
-                    Current_Player_State = EnumContainer.PlayerState.IDLE_UP_LEFT;
+                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_UP_LEFT;
                 }
                 case MOVING_UP_RIGHT -> {
-                    Current_Player_State = EnumContainer.PlayerState.IDLE_UP_RIGHT;
+                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_UP_RIGHT;
                 }
                 case MOVING_DOWN_LEFT -> {
-                    Current_Player_State = EnumContainer.PlayerState.IDLE_DOWN_LEFT;
+                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_DOWN_LEFT;
                 }
                 case MOVING_DOWN_RIGHT -> {
-                    Current_Player_State = EnumContainer.PlayerState.IDLE_DOWN_RIGHT;
+                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_DOWN_RIGHT;
                 }
             }
 
@@ -159,69 +151,116 @@ public class LocalPlayer {
         this.playerMovementStartingPosY = playerPosYWorld + playerFeetY;
     }
 
-
     public void updatePlayerPositionOnScreen() {
         playerPosXScreen = playerPosXWorld - Camera.cameraPosX;
         playerPosYScreen = playerPosYWorld - Camera.cameraPosY;
     }
 
-    public void getPlayerSprites8Directional() {
-        InputStream inputStream = getClass().getResourceAsStream("/WIKING_RUN.png");
-        try {
-            allPlayer1Sprites = ImageIO.read(Objects.requireNonNull(inputStream));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
+    public void getPlayerSprites8Directional(EnumContainer.AllPlayableChampions localPlayerChampion) {
+
+        int spriteSize = 0;
+        int spriteXpos = 0;
+        int numberOfSpritesInRow = 0;
+        if (localPlayerChampion == EnumContainer.AllPlayableChampions.DON_OHL) {
+            InputStream inputStream = getClass().getResourceAsStream("/DON_OHL.png");
             try {
-                assert inputStream != null;
-                inputStream.close();
+                allLocalPlayerSprites = ImageIO.read(Objects.requireNonNull(inputStream));
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    assert inputStream != null;
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        }
 
-        int spriteSize = 128;
-        int spriteXpos = 0;
+            spriteSize = 72;
+            numberOfSpritesInRow = 4;
+
 
 //        Assigning moving sprites for all directions
-        for (int i = 0; i < 8; i++) {
-            playerSpriteDOWN[i] = allPlayer1Sprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
-            playerSpriteLEFT[i] = allPlayer1Sprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
-            playerSpriteRIGHT[i] = allPlayer1Sprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
-            playerSpriteUP[i] = allPlayer1Sprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
-            playerSpriteDOWN_RIGHT[i] = allPlayer1Sprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
-            playerSpriteDOWN_LEFT[i] = allPlayer1Sprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
-            playerSpriteUP_RIGHT[i] = allPlayer1Sprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
-            playerSpriteUP_LEFT[i] = allPlayer1Sprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
+            for (int i = 0; i < numberOfSpritesInRow; i++) {
+                playerSpriteUP[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
+                playerSpriteUP_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
+                playerSpriteUP_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
+                playerSpriteLEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
+                playerSpriteRIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
+                playerSpriteDOWN_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
+                playerSpriteDOWN_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
+                playerSpriteDOWN[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
 
-            spriteXpos += spriteSize;
-        }
+                spriteXpos += spriteSize;
+            }
 
-        spriteXpos = 0;
+            spriteXpos = 0;
 //       Assinging idle sprites for all directions
-        for (int i = 0; i < 1; i++) {
-            playerSpriteIDLE_DOWN[i] = allPlayer1Sprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
-            playerSpriteIDLE_LEFT[i] = allPlayer1Sprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
-            playerSpriteIDLE_RIGHT[i] = allPlayer1Sprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
-            playerSpriteIDLE_UP[i] = allPlayer1Sprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
-            playerSpriteIDLE_DOWN_RIGHT[i] = allPlayer1Sprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize,spriteSize);
-            playerSpriteIDLE_DOWN_LEFT[i] = allPlayer1Sprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize,spriteSize);
-            playerSpriteIDLE_UP_RIGHT[i] = allPlayer1Sprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize,spriteSize);
-            playerSpriteIDLE_UP_LEFT[i] = allPlayer1Sprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize,spriteSize);
+            for (int i = 0; i < 1; i++) {
+                playerSpriteIDLE_UP[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
+                playerSpriteIDLE_UP_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
+                playerSpriteIDLE_UP_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
+                playerSpriteIDLE_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
+                playerSpriteIDLE_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
+                playerSpriteIDLE_DOWN_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
+                playerSpriteIDLE_DOWN_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
+                playerSpriteIDLE_DOWN[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
 
 
+                spriteXpos += spriteSize;
+            }
 
+        } else if (localPlayerChampion == EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE) {
+            InputStream inputStream = getClass().getResourceAsStream("/WIKING_RUN.png");
+            try {
+                allLocalPlayerSprites = ImageIO.read(Objects.requireNonNull(inputStream));
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    assert inputStream != null;
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+             spriteSize = 128;
+            numberOfSpritesInRow = 8;
+//        Assigning moving sprites for all directions
+            for (int i = 0; i < numberOfSpritesInRow; i++) {
+                playerSpriteDOWN[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
+                playerSpriteLEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
+                playerSpriteRIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
+                playerSpriteUP[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
+                playerSpriteDOWN_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
+                playerSpriteDOWN_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
+                playerSpriteUP_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
+                playerSpriteUP_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
 
-            spriteXpos += spriteSize;
+                spriteXpos += spriteSize;
+            }
+
+            spriteXpos = 0;
+//       Assinging idle sprites for all directions
+            for (int i = 0; i < 1; i++) {
+                playerSpriteIDLE_DOWN[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
+                playerSpriteIDLE_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
+                playerSpriteIDLE_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
+                playerSpriteIDLE_UP[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
+                playerSpriteIDLE_DOWN_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
+                playerSpriteIDLE_DOWN_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
+                playerSpriteIDLE_UP_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
+                playerSpriteIDLE_UP_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
+
+                spriteXpos += spriteSize;
+            }
         }
-
-
     }
 
     public void getPlayerSprites4Directional(String classpath) {
         InputStream inputStream = getClass().getResourceAsStream(classpath);
         try {
-            allPlayer1Sprites = ImageIO.read(Objects.requireNonNull(inputStream));
+            allLocalPlayerSprites = ImageIO.read(Objects.requireNonNull(inputStream));
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -238,20 +277,20 @@ public class LocalPlayer {
 
 //        Assigning moving sprites for all directions
         for (int i = 0; i < 4; i++) {
-            playerSpriteDOWN[i] = allPlayer1Sprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
-            playerSpriteLEFT[i] = allPlayer1Sprites.getSubimage(spriteXpos, 72, spriteSize, spriteSize);
-            playerSpriteRIGHT[i] = allPlayer1Sprites.getSubimage(spriteXpos, 144, spriteSize, spriteSize);
-            playerSpriteUP[i] = allPlayer1Sprites.getSubimage(spriteXpos, 216, spriteSize, spriteSize);
+            playerSpriteDOWN[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
+            playerSpriteLEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 72, spriteSize, spriteSize);
+            playerSpriteRIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 144, spriteSize, spriteSize);
+            playerSpriteUP[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 216, spriteSize, spriteSize);
             spriteXpos += 72;
         }
 
         spriteXpos = 0;
 //       Assinging idle sprites for all directions
         for (int i = 0; i < 2; i++) {
-            playerSpriteIDLE_DOWN[i] = allPlayer1Sprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
-            playerSpriteIDLE_LEFT[i] = allPlayer1Sprites.getSubimage(spriteXpos, 72, spriteSize, spriteSize);
-            playerSpriteIDLE_RIGHT[i] = allPlayer1Sprites.getSubimage(spriteXpos, 144, spriteSize, spriteSize);
-            playerSpriteIDLE_UP[i] = allPlayer1Sprites.getSubimage(spriteXpos, 216, spriteSize, spriteSize);
+            playerSpriteIDLE_DOWN[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
+            playerSpriteIDLE_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 72, spriteSize, spriteSize);
+            playerSpriteIDLE_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 144, spriteSize, spriteSize);
+            playerSpriteIDLE_UP[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 216, spriteSize, spriteSize);
 
             spriteXpos += 144;
         }
@@ -339,7 +378,7 @@ public class LocalPlayer {
                     playerSpriteController() == playerSpriteDOWN_LEFT |
                     playerSpriteController() == playerSpriteDOWN_RIGHT) {
 
-                if (animationIndexMoving < 7)
+                if (animationIndexMoving < 3)
                     animationIndexMoving++;
                 else animationIndexMoving = 0;
             }

@@ -105,22 +105,22 @@ public class Client extends Thread {
 
 //                    Local player
                     if (serverClientID == ClientID) {
-                        PlayerState.Current_Player_State_Shared = (EnumContainer.PlayerState) dataInputStream.readObject();
+                        PlayerState.Current_Player_State_Shared = (EnumContainer.AllPlayerStates) dataInputStream.readObject();
 //                        NO need for that just creates more lag, animation does not need to be server accurate
-//                        localPlayer.Current_Player_State_Shared = PlayerState.Current_Player_State_Shared;
+//                        localPlayer.Current_Player_State_Shared = AllPlayerStates.Current_Player_State_Shared;
                         LocalPlayer.playerPosXWorld = dataInputStream.readFloat();
                         LocalPlayer.playerPosYWorld = dataInputStream.readFloat();
 //                    Online player
                     } else if (OptionalOnlinePlayer.isPresent()) {
-                        PlayerState.Current_Player_State_Shared = (EnumContainer.PlayerState) dataInputStream.readObject();
-                        OptionalOnlinePlayer.get().Current_Player_State = PlayerState.Current_Player_State_Shared;
+                        PlayerState.Current_Player_State_Shared = (EnumContainer.AllPlayerStates) dataInputStream.readObject();
+                        OptionalOnlinePlayer.get().Current_Player_State_Online_Player = PlayerState.Current_Player_State_Shared;
                         OptionalOnlinePlayer.get().playerPosXWorld = dataInputStream.readFloat();
                         OptionalOnlinePlayer.get().playerPosYWorld = dataInputStream.readFloat();
 //                    New online player
                     } else {
                         OnlinePlayer onlinePlayer = new OnlinePlayer(serverClientID);
-                        PlayerState.Current_Player_State_Shared = (EnumContainer.PlayerState) dataInputStream.readObject();
-                        onlinePlayer.Current_Player_State = PlayerState.Current_Player_State_Shared;
+                        PlayerState.Current_Player_State_Shared = (EnumContainer.AllPlayerStates) dataInputStream.readObject();
+                        onlinePlayer.Current_Player_State_Online_Player = PlayerState.Current_Player_State_Shared;
                         onlinePlayer.playerPosXWorld = dataInputStream.readFloat();
                         onlinePlayer.playerPosYWorld = dataInputStream.readFloat();
 

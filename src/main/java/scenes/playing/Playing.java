@@ -23,19 +23,21 @@ public class Playing {
     public synchronized void update() {
 
 //        Local player and spells update
-        localPlayer.alternateMoveController();
-        localPlayer.playerSpriteController();
+
+        localPlayer.moveController();
+        localPlayer.currentPlayerSprite = localPlayer.playerSpriteController();
         localPlayer.animationController();
-        FirstSpell.updateFirstSpells();
         camera.updateCameraPosition();
         localPlayer.updatePlayerPositionOnScreen();
+        FirstSpell.updateFirstSpells();
 
 //        Online player update
-        OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer ->  {
+        OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer -> {
 
-            onlinePlayer.playerSpriteController();
+          onlinePlayer.currentPlayerSpriteOnlinePlayer = onlinePlayer.playerSpriteController();
             onlinePlayer.animationController();
             onlinePlayer.updatePlayerPositionOnScreen();
+            onlinePlayer.checkIsOnlinePlayerMoving();
         });
 
     }
@@ -51,29 +53,32 @@ public class Playing {
 
 //        Rysowanie postaci
         if (localPlayer.isPlayerMoving) {
-            g.drawImage(localPlayer.playerSpriteController()[localPlayer.animationIndexMoving],
-                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen,   null);
+            g.drawImage(localPlayer.currentPlayerSprite[localPlayer.animationIndexMoving],
+                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, null);
         } else {
-            g.drawImage(localPlayer.playerSpriteController()[0],
-                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen,  null);
+            g.drawImage(localPlayer.currentPlayerSprite[0],
+                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, null);
 
         }
 
- //       Rysowanie ONLINE postaci
+        //       Rysowanie ONLINE postaci
 
-        OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer ->
-                g.drawImage(onlinePlayer.playerSpriteController()[onlinePlayer.animationIndexMoving],
-          (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen,  null)
-                );
-
-//        g.drawImage(onlinePlayer.playerSpriteDOWN[onlinePlayer.animationIndexMoving],
-//                (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen,  null);
+        OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer -> {
+            if (onlinePlayer.isPlayerMoving)
+                g.drawImage(onlinePlayer.currentPlayerSpriteOnlinePlayer[onlinePlayer.animationIndexMoving],
+                        (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen,72,72, null);
+            else {
+                g.drawImage(onlinePlayer.currentPlayerSpriteOnlinePlayer[0],
+                        (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen,72,72, null);
+            }
+        });
 
 //        Rysowanie Zaklec
         FirstSpell.ListOfActiveFirstSpells.forEach(firstSpell -> {
             g.drawImage(firstSpell.spellSprites[firstSpell.animationIndex], (int) firstSpell.spellPosXScreen,
-                    (int) firstSpell.spellPosYScreen, 32,32, null);
+                    (int) firstSpell.spellPosYScreen, 32, 32, null);
         });
+
 //        DEBUGGING
 //        g.drawRect((int) LocalPlayer.playerPosXWorld, (int) LocalPlayer.playerPosYWorld,
 //                localPlayer.playerSpriteUP[1].getWidth(),localPlayer.playerSpriteUP[1].getHeight());

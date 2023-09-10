@@ -82,6 +82,7 @@ public class GameEngine extends Thread {
             }
             case MAP_EDITOR -> {
             }
+
         }
 
 
