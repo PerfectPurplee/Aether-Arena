@@ -10,6 +10,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ChampionSelect implements SceneEssentials {
 
@@ -21,10 +25,13 @@ public class ChampionSelect implements SceneEssentials {
     BufferedImage champion1;
     BufferedImage champion2;
 
+    Queue<Throwable> yo = new ConcurrentLinkedQueue<>();
+
     public ChampionSelect() {
         initComponents();
         champion1 = getChampionImage("/DON_OHL.png");
         champion2 = getChampionImage("/WIKING_RUN.png");
+
     }
 
     public void initComponents() {

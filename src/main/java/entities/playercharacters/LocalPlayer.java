@@ -42,7 +42,7 @@ public class LocalPlayer {
 
     public static float playerPosXWorld, playerPosYWorld;
     public static float playerPosXScreen, playerPosYScreen;
-    public int playerFeetX = 64, playerFeetY = 115;
+    public int playerFeetX, playerFeetY;
     public int mouseClickXPos;
     public int mouseClickYPos;
     public float normalizedVectorX;
@@ -67,6 +67,17 @@ public class LocalPlayer {
     public void setPlayerChampion(EnumContainer.AllPlayableChampions champion) {
         localPlayerChampion = champion;
         getPlayerSprites8Directional(localPlayerChampion);
+        setPLayerFeetPos();
+    }
+
+    public void setPLayerFeetPos() {
+        if (localPlayerChampion.equals(EnumContainer.AllPlayableChampions.DON_OHL)) {
+            playerFeetX = 36;
+            playerFeetY = 68;
+        } else if (localPlayerChampion.equals(EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE)) {
+            playerFeetX = 64;
+            playerFeetY = 115;
+        }
     }
 
     public void getVectorForPlayerMovement(MouseEvent e) {
@@ -396,10 +407,15 @@ public class LocalPlayer {
                     playerSpriteController() == playerSpriteUP_RIGHT |
                     playerSpriteController() == playerSpriteDOWN_LEFT |
                     playerSpriteController() == playerSpriteDOWN_RIGHT) {
-
-                if (animationIndexMoving < 7)
-                    animationIndexMoving++;
-                else animationIndexMoving = 0;
+                if (localPlayerChampion.equals(EnumContainer.AllPlayableChampions.DON_OHL)) {
+                    if (animationIndexMoving < 3)
+                        animationIndexMoving++;
+                    else animationIndexMoving = 0;
+                } else if (localPlayerChampion.equals(EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE)) {
+                    if (animationIndexMoving < 7)
+                        animationIndexMoving++;
+                    else animationIndexMoving = 0;
+                }
             }
             animationTick = 0;
         }

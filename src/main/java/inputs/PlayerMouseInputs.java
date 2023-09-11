@@ -19,6 +19,7 @@ import java.net.DatagramPacket;
 public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
     public static Point CurrentMousePosition;
+    public static boolean mouseDragging;
     LocalPlayer localPlayer;
     ChampionSelect championSelect;
     public Client client;
@@ -51,13 +52,11 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
                     localPlayer.setPlayerChampion(EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE);
                     gameEngine.changeScene(EnumContainer.AllScenes.PLAYING);
                 }
-//                localPlayer.setPlayerChampion(EnumContainer.AllPlayableChampions.DON_OHL);
-//                gameEngine.changeScene(EnumContainer.AllScenes.PLAYING);
+
             }
             case PLAYING -> {
                 CurrentMousePosition = e.getPoint();
                 localPlayer.getVectorForPlayerMovement(e);
-
                 try {
                     client.socket.send(PacketManager.movementRequestPacket(localPlayer.mouseClickXPos, localPlayer.mouseClickYPos, client.ClientID));
                 } catch (IOException ex) {

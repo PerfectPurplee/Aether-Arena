@@ -3,11 +3,12 @@ package networking;
 import entities.playercharacters.LocalPlayer;
 import entities.playercharacters.OnlinePlayer;
 import main.EnumContainer;
-import main.PlayerState;
 
 import java.io.*;
 import java.net.*;
 import java.util.Optional;
+
+import static main.EnumContainer.*;
 
 public class Client extends Thread {
 
@@ -32,7 +33,7 @@ public class Client extends Thread {
         this.start();
 
         try {
-            socket.send(PacketManager.LoginPacket());
+            socket.send(PacketManager.LoginPacket(localPlayer));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -105,22 +106,27 @@ public class Client extends Thread {
 
 //                    Local player
                     if (serverClientID == ClientID) {
-                        PlayerState.Current_Player_State_Shared = (EnumContainer.AllPlayerStates) dataInputStream.readObject();
-//                        NO need for that just creates more lag, animation does not need to be server accurate
-//                        localPlayer.Current_Player_State_Shared = AllPlayerStates.Current_Player_State_Shared;
+                        ServerClientConnectionCopyObjects.Current_Player_State_Shared = (AllPlayerStates) dataInputStream.readObject();
+                        ServerClientConnectionCopyObjects.PLayer_Champion_Shared = (AllPlayableChampions) dataInputStream.readObject();
+
                         LocalPlayer.playerPosXWorld = dataInputStream.readFloat();
                         LocalPlayer.playerPosYWorld = dataInputStream.readFloat();
+
 //                    Online player
                     } else if (OptionalOnlinePlayer.isPresent()) {
-                        PlayerState.Current_Player_State_Shared = (EnumContainer.AllPlayerStates) dataInputStream.readObject();
-                        OptionalOnlinePlayer.get().Current_Player_State_Online_Player = PlayerState.Current_Player_State_Shared;
+                        ServerClientConnectionCopyObjects.Current_Player_State_Shared = (AllPlayerStates) dataInputStream.readObject();
+                        ServerClientConnectionCopyObjects.PLayer_Champion_Shared = (AllPlayableChampions) dataInputStream.readObject();
+                        OptionalOnlinePlayer.get().Current_Player_State_Online_Player = ServerClientConnectionCopyObjects.Current_Player_State_Shared;
+
                         OptionalOnlinePlayer.get().playerPosXWorld = dataInputStream.readFloat();
                         OptionalOnlinePlayer.get().playerPosYWorld = dataInputStream.readFloat();
 //                    New online player
                     } else {
+                        ServerClientConnectionCopyObjects.Current_Player_State_Shared = (AllPlayerStates) dataInputStream.readObject();
+                        ServerClientConnectionCopyObjects.PLayer_Champion_Shared = (AllPlayableChampions) dataInputStream.readObject();
                         OnlinePlayer onlinePlayer = new OnlinePlayer(serverClientID);
-                        PlayerState.Current_Player_State_Shared = (EnumContainer.AllPlayerStates) dataInputStream.readObject();
-                        onlinePlayer.Current_Player_State_Online_Player = PlayerState.Current_Player_State_Shared;
+
+                        onlinePlayer.Current_Player_State_Online_Player = ServerClientConnectionCopyObjects.Current_Player_State_Shared;
                         onlinePlayer.playerPosXWorld = dataInputStream.readFloat();
                         onlinePlayer.playerPosYWorld = dataInputStream.readFloat();
 

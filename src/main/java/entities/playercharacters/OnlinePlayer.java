@@ -52,7 +52,7 @@ public class OnlinePlayer {
 
 
     public OnlinePlayer(int onlinePlayerID) {
-        onlinePlayerChampion = EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE;
+        onlinePlayerChampion = EnumContainer.ServerClientConnectionCopyObjects.PLayer_Champion_Shared;
         getPlayerSprites8Directional(onlinePlayerChampion);
         this.onlinePlayerID = onlinePlayerID;
         this.Current_Player_State_Online_Player = EnumContainer.AllPlayerStates.IDLE_DOWN;
@@ -250,10 +250,15 @@ public class OnlinePlayer {
                     playerSpriteController() == playerSpriteUP_RIGHT |
                     playerSpriteController() == playerSpriteDOWN_LEFT |
                     playerSpriteController() == playerSpriteDOWN_RIGHT) {
-
-                if (animationIndexMoving < 7)
-                    animationIndexMoving++;
-                else animationIndexMoving = 0;
+                if (onlinePlayerChampion.equals(EnumContainer.AllPlayableChampions.DON_OHL)) {
+                    if (animationIndexMoving < 3)
+                        animationIndexMoving++;
+                    else animationIndexMoving = 0;
+                } else if (onlinePlayerChampion.equals(EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE)) {
+                    if (animationIndexMoving < 7)
+                        animationIndexMoving++;
+                    else animationIndexMoving = 0;
+                }
             }
             animationTick = 0;
         }

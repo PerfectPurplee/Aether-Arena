@@ -1,22 +1,28 @@
 package networking;
 
+import entities.playercharacters.LocalPlayer;
+
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 
+import static main.EnumContainer.ServerClientConnectionCopyObjects.*;
+
 public abstract class PacketManager {
 
-    public static DatagramPacket LoginPacket() throws IOException {
+    public static DatagramPacket LoginPacket(LocalPlayer localPlayer) throws IOException {
 
         final int packetType = 0;
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream dataOutputStream = new ObjectOutputStream(byteArrayOutputStream);
 
+        PLayer_Champion_Shared = localPlayer.localPlayerChampion;
+
         try {
             dataOutputStream.writeInt(packetType);
+            dataOutputStream.writeObject(PLayer_Champion_Shared);
             dataOutputStream.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);

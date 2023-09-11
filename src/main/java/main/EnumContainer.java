@@ -33,4 +33,13 @@ public class EnumContainer {
 
     }
 
+// here are saved objects received from server and then further copied to their respective classes
+    public abstract static class ServerClientConnectionCopyObjects {
+
+        public static AllPlayerStates Current_Player_State_Shared;
+
+        public static AllPlayableChampions PLayer_Champion_Shared;
+
+
+    }
 }

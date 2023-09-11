@@ -6,6 +6,7 @@ import inputs.ActionListener;
 import inputs.PlayerKeyboardInputs;
 import inputs.PlayerMouseInputs;
 import networking.Client;
+import networking.PacketManager;
 import scenes.championselect.ChampionSelect;
 import scenes.menu.Menu;
 import scenes.playing.Camera;
