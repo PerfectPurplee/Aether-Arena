@@ -75,7 +75,7 @@ public class Camera {
     }
 
     public void getWholeMapImage() {
-        InputStream inputStream = getClass().getResourceAsStream("/Map2.png");
+        InputStream inputStream = getClass().getResourceAsStream("/Forest.jpg");
         try {
             WHOLE_MAP = ImageIO.read(Objects.requireNonNull(inputStream));
         } catch (IOException e) {

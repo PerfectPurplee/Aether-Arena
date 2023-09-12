@@ -15,10 +15,12 @@ import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.net.DatagramPacket;
 
+import static main.EnumContainer.*;
+
 
 public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
-    public static Point CurrentMousePosition;
+
     public static boolean mouseDragging;
     LocalPlayer localPlayer;
     ChampionSelect championSelect;
@@ -40,22 +42,22 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
     @Override
     public void mousePressed(MouseEvent e) {
 
-        switch (EnumContainer.AllScenes.Current_Scene) {
+        switch (AllScenes.Current_Scene) {
 
             case MENU -> {
             }
             case CHAMPION_SELECT -> {
                 if (e.getSource() == championSelect.championChoice1) {
-                    localPlayer.setPlayerChampion(EnumContainer.AllPlayableChampions.DON_OHL);
-                    gameEngine.changeScene(EnumContainer.AllScenes.PLAYING);
+                    localPlayer.setPlayerChampion(AllPlayableChampions.DON_OHL);
+                    gameEngine.changeScene(AllScenes.PLAYING);
                 } else if (e.getSource() == championSelect.championChoice2) {
-                    localPlayer.setPlayerChampion(EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE);
-                    gameEngine.changeScene(EnumContainer.AllScenes.PLAYING);
+                    localPlayer.setPlayerChampion(AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE);
+                    gameEngine.changeScene(AllScenes.PLAYING);
                 }
 
             }
             case PLAYING -> {
-                CurrentMousePosition = e.getPoint();
+                setCurrentMouseWorldPosition(e);
                 localPlayer.getVectorForPlayerMovement(e);
                 try {
                     client.socket.send(PacketManager.movementRequestPacket(localPlayer.mouseClickXPos, localPlayer.mouseClickYPos, client.ClientID));
@@ -76,7 +78,7 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        mouseDragging = false;
     }
 
     @Override
@@ -92,22 +94,17 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
     @Override
     public void mouseDragged(MouseEvent e) {
 
-        switch (EnumContainer.AllScenes.Current_Scene) {
+        switch (AllScenes.Current_Scene) {
 
             case MENU -> {
             }
             case CHAMPION_SELECT -> {
             }
             case PLAYING -> {
-                CurrentMousePosition = e.getPoint();
+                mouseDragging = true;
+                setCurrentMouseWorldPosition(e);
                 localPlayer.getVectorForPlayerMovement(e);
                 Camera.updateCameraState(e);
-
-                try {
-                    client.socket.send(PacketManager.movementRequestPacket(localPlayer.mouseClickXPos, localPlayer.mouseClickYPos, client.ClientID));
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
 
             }
             case PAUSE -> {
@@ -123,13 +120,18 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
     @Override
     public void mouseMoved(MouseEvent e) {
 
-        switch (EnumContainer.AllScenes.Current_Scene) {
+        switch (AllScenes.Current_Scene) {
 
             case PLAYING -> {
-                CurrentMousePosition = e.getPoint();
+                setCurrentMouseWorldPosition(e);
                 Camera.updateCameraState(e);
             }
         }
+
+    }
+
+    private void setCurrentMouseWorldPosition(MouseEvent e) {
+        ServerClientConnectionCopyObjects.currentMousePosition.setLocation(e.getX() + Camera.cameraPosX, e.getY() + Camera.cameraPosY);
 
     }
 }

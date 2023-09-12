@@ -1,5 +1,11 @@
 package main;
 
+import sharedObjects.Spell01;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class EnumContainer {
 
 
@@ -33,12 +39,18 @@ public class EnumContainer {
 
     }
 
-// here are saved objects received from server and then further copied to their respective classes
+    // here are saved objects send/received to/from server and then further copied to their respective classes if needed
     public abstract static class ServerClientConnectionCopyObjects {
 
         public static AllPlayerStates Current_Player_State_Shared;
 
         public static AllPlayableChampions PLayer_Champion_Shared;
+
+        public static Boolean[] ArrayOfPlayerCreateSpellRequests = new Boolean[4];
+
+        public static Point currentMousePosition = new Point();
+
+        public static List<Spell01> listOfAllActiveSpellsCopy = new ArrayList<>();
 
 
     }

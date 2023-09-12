@@ -1,6 +1,11 @@
 package entities.playercharacters;
 
+import sharedObjects.Spell01;
+import inputs.PlayerKeyboardInputs;
 import main.EnumContainer;
+import main.EnumContainer.ServerClientConnectionCopyObjects;
+import networking.Client;
+import networking.PacketManager;
 import scenes.playing.Camera;
 
 import javax.imageio.ImageIO;
@@ -52,7 +57,8 @@ public class LocalPlayer {
     public float distanceToTravel;
     public boolean isPlayerMoving;
 
-    private int animationTick, animationSpeed = 15;
+    private int animationTick;
+    private final int animationSpeed = 15;
     public int animationIndexMoving, animationIndexIdle;
 
 
@@ -421,6 +427,40 @@ public class LocalPlayer {
         }
     }
 
+    public void spellCastController() {
+
+        ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[0] = PlayerKeyboardInputs.Q_Pressed;
+        ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[1] = PlayerKeyboardInputs.W_Pressed;
+        ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[2] = PlayerKeyboardInputs.E_Pressed;
+        ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[3] = PlayerKeyboardInputs.R_Pressed;
+
+        boolean shouldWeSendPacketToServer = false;
+        for (int i = 0; i < ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests.length; i++) {
+            if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[i]) {
+                shouldWeSendPacketToServer = true;
+                break;
+            }
+        }
+        if (shouldWeSendPacketToServer) {
+            try {
+                Client.socket.send(PacketManager.spellRequestPacket());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[0]) {
+            new Spell01();
+        }
+        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[1]) {
+            new Spell01();
+        }
+        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[2]) {
+            new Spell01();
+        }
+        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[3]) {
+            new Spell01();
+        }
+    }
 
 }
 
