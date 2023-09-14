@@ -24,7 +24,9 @@ public class Camera {
     public static int cameraPosY;
     public int cameraSpeed = 4;
     private static int distanceToEdgeToMoveCamera;
-    public BufferedImage WHOLE_MAP;
+
+    public static BufferedImage WHOLE_MAP;
+
 
     public Camera() {
 
@@ -75,7 +77,7 @@ public class Camera {
     }
 
     public void getWholeMapImage() {
-        InputStream inputStream = getClass().getResourceAsStream("/Forest.jpg");
+        InputStream inputStream = getClass().getResourceAsStream("/Map2.png");
         try {
             WHOLE_MAP = ImageIO.read(Objects.requireNonNull(inputStream));
         } catch (IOException e) {

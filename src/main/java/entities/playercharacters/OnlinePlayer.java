@@ -45,7 +45,7 @@ public class OnlinePlayer {
     private int animationTick, animationSpeed = 15;
     public int animationIndexMoving, animationIndexIdle;
 
-    public int onlinePlayerID;
+    public final int onlinePlayerID;
     public boolean isPlayerMoving;
 
     public static List<OnlinePlayer> listOfAllConnectedOnlinePLayers = new ArrayList<>();

@@ -2,7 +2,7 @@ package scenes.playing;
 
 import entities.playercharacters.LocalPlayer;
 import entities.playercharacters.OnlinePlayer;
-import sharedObjects.Spell01;
+import entities.spells.basicspells.Spell01;
 import inputs.PlayerMouseInputs;
 import networking.Client;
 import networking.PacketManager;
@@ -36,8 +36,13 @@ public class Playing implements SceneEssentials {
         camera.updateCameraPosition();
         localPlayer.updatePlayerPositionOnScreen();
 //      spellCastController creates spells, but also sends data to server
-        localPlayer.spellCastController();
+        if (!Spell01.QSpellCreatedOnThisMousePress) {
+            localPlayer.spellCastController();
+        }
         Spell01.updateAllSpells01();
+
+
+
 
 //        Online player update
         OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer -> {

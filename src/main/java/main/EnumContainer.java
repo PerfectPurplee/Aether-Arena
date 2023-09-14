@@ -1,6 +1,6 @@
 package main;
 
-import sharedObjects.Spell01;
+import entities.spells.basicspells.Spell01;
 
 import java.awt.*;
 import java.util.ArrayList;

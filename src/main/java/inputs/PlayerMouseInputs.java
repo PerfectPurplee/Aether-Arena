@@ -1,6 +1,7 @@
 package inputs;
 
 import entities.playercharacters.LocalPlayer;
+import entities.spells.basicspells.Spell01;
 import main.EnumContainer;
 import main.GameEngine;
 import networking.Client;
@@ -79,6 +80,7 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
     @Override
     public void mouseReleased(MouseEvent e) {
         mouseDragging = false;
+
     }
 
     @Override

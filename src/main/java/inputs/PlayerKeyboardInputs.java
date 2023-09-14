@@ -1,6 +1,7 @@
 package inputs;
 
 import entities.playercharacters.LocalPlayer;
+import entities.spells.basicspells.Spell01;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -46,6 +47,7 @@ public class PlayerKeyboardInputs implements KeyListener {
     }
     @Override
     public void keyReleased(KeyEvent e) {
+        Spell01.QSpellCreatedOnThisMousePress = false;
 
         if (e.getKeyCode() == KeyEvent.VK_Q)
             Q_Pressed = false;
