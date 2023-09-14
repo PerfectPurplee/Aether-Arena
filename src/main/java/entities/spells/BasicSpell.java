@@ -1,6 +1,7 @@
 package entities.spells;
 
 import entities.playercharacters.LocalPlayer;
+import main.EnumContainer;
 import main.GameEngine;
 
 import java.awt.image.BufferedImage;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static inputs.PlayerMouseInputs.*;
+import static main.EnumContainer.*;
 
 public abstract class BasicSpell {
 
@@ -50,10 +52,10 @@ public abstract class BasicSpell {
     }
 
     public void getVector() {
-        CurrentMousePosition.getX();
-        CurrentMousePosition.getY();
-        float vectorX = (float) (CurrentMousePosition.getX() - LocalPlayer.playerPosXWorld);
-        float vectorY = (float) (CurrentMousePosition.getY() - LocalPlayer.playerPosYWorld);
+        ServerClientConnectionCopyObjects.currentMousePosition.getX();
+        ServerClientConnectionCopyObjects.currentMousePosition.getY();
+        float vectorX = (float) (ServerClientConnectionCopyObjects.currentMousePosition.getX() - LocalPlayer.playerPosXWorld);
+        float vectorY = (float) (ServerClientConnectionCopyObjects.currentMousePosition.getY() - LocalPlayer.playerPosYWorld);
         float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
         normalizedVectorX = (vectorX / magnitude);
         normalizedVectorY = (vectorY / magnitude);

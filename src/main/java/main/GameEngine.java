@@ -134,7 +134,7 @@ public class GameEngine extends Thread {
 
             if (System.currentTimeMillis() - lastCheck >= 1000) {
                 lastCheck = System.currentTimeMillis();
-                System.out.println("FPS: " + frames + " | UPS: " + updates);
+//                System.out.println("FPS: " + frames + " | UPS: " + updates);
                 frames = 0;
                 updates = 0;
 
@@ -159,6 +159,7 @@ public class GameEngine extends Thread {
     public void createClient(String serverIPaddress) {
         client = new Client(localPlayer, serverIPaddress);
         playerMouseInputs.client = client;
+        playing.client = client;
     }
 
 

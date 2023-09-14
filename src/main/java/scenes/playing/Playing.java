@@ -2,15 +2,20 @@ package scenes.playing;
 
 import entities.playercharacters.LocalPlayer;
 import entities.playercharacters.OnlinePlayer;
-import entities.spells.basicspells.FirstSpell;
+import entities.spells.basicspells.Spell01;
+import inputs.PlayerMouseInputs;
+import networking.Client;
+import networking.PacketManager;
 import scenes.SceneEssentials;
 
 import java.awt.*;
+import java.io.IOException;
 
 public class Playing implements SceneEssentials {
 
     LocalPlayer localPlayer;
     Camera camera;
+    public Client client;
 
 
     public Playing(LocalPlayer localPlayer, Camera camera) {
@@ -30,16 +35,26 @@ public class Playing implements SceneEssentials {
         localPlayer.animationController();
         camera.updateCameraPosition();
         localPlayer.updatePlayerPositionOnScreen();
-        FirstSpell.updateFirstSpells();
+//      spellCastController creates spells, but also sends data to server
+        if (!Spell01.QSpellCreatedOnThisMousePress) {
+            localPlayer.spellCastController();
+        }
+        Spell01.updateAllSpells01();
+
+
+
 
 //        Online player update
         OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer -> {
 
-          onlinePlayer.currentPlayerSpriteOnlinePlayer = onlinePlayer.playerSpriteController();
+            onlinePlayer.currentPlayerSpriteOnlinePlayer = onlinePlayer.playerSpriteController();
             onlinePlayer.animationController();
             onlinePlayer.updatePlayerPositionOnScreen();
             onlinePlayer.checkIsOnlinePlayerMoving();
         });
+
+//        Send data to server
+        sendMouseDraggedMovementPacket();
 
     }
 
@@ -75,15 +90,26 @@ public class Playing implements SceneEssentials {
         });
 
 //        Rysowanie Zaklec
-        FirstSpell.ListOfActiveFirstSpells.forEach(firstSpell -> {
-            g.drawImage(firstSpell.spellSprites[firstSpell.animationIndex], (int) firstSpell.spellPosXScreen,
-                    (int) firstSpell.spellPosYScreen, 32, 32, null);
+        Spell01.listOfActiveSpell01s.forEach(spell01 -> {
+            g.drawImage(spell01.spellSprites[spell01.animationIndex], (int) spell01.spellPosXScreen,
+                    (int) spell01.spellPosYScreen, 32, 32, null);
         });
 
 //        DEBUGGING
 //        g.drawRect((int) LocalPlayer.playerPosXWorld, (int) LocalPlayer.playerPosYWorld,
 //                localPlayer.playerSpriteUP[1].getWidth(),localPlayer.playerSpriteUP[1].getHeight());
 
+    }
+
+
+    private void sendMouseDraggedMovementPacket() {
+        if (PlayerMouseInputs.mouseDragging) {
+            try {
+                Client.socket.send(PacketManager.movementRequestPacket(localPlayer.mouseClickXPos, localPlayer.mouseClickYPos, Client.ClientID));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 }

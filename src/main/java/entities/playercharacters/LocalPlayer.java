@@ -1,6 +1,11 @@
 package entities.playercharacters;
 
+import entities.spells.basicspells.Spell01;
+import inputs.PlayerKeyboardInputs;
 import main.EnumContainer;
+import main.EnumContainer.ServerClientConnectionCopyObjects;
+import networking.Client;
+import networking.PacketManager;
 import scenes.playing.Camera;
 
 import javax.imageio.ImageIO;
@@ -8,6 +13,8 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class LocalPlayer {
@@ -52,8 +59,17 @@ public class LocalPlayer {
     public float distanceToTravel;
     public boolean isPlayerMoving;
 
-    private int animationTick, animationSpeed = 15;
+    private int animationTick;
+    private final int animationSpeed = 15;
     public int animationIndexMoving, animationIndexIdle;
+
+    //    This player Spells
+    public int counterOfThisPlayerQSpells;
+
+    public List<Spell01> listOfAllActive_Q_Spells = new ArrayList<>();
+
+    private long lastQSpellCastTime;
+
 
 
     public LocalPlayer() {
@@ -421,6 +437,54 @@ public class LocalPlayer {
         }
     }
 
+    public void spellCastController() {
+
+        ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[0] = PlayerKeyboardInputs.Q_Pressed;
+        ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[1] = PlayerKeyboardInputs.W_Pressed;
+        ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[2] = PlayerKeyboardInputs.E_Pressed;
+        ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[3] = PlayerKeyboardInputs.R_Pressed;
+
+        boolean shouldWeSendPacketToServer = false;
+        for (int i = 0; i < ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests.length; i++) {
+            if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[i] && isSpellQoffCooldown()) {
+                shouldWeSendPacketToServer = true;
+                break;
+            }
+        }
+        if (shouldWeSendPacketToServer) {
+            try {
+                Client.socket.send(PacketManager.spellRequestPacket());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[0] && isSpellQoffCooldown()) {
+            new Spell01(this);
+            Spell01.QSpellCreatedOnThisMousePress = true;
+            lastQSpellCastTime = System.currentTimeMillis();
+        }
+        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[1]) {
+            new Spell01(this);
+            Spell01.QSpellCreatedOnThisMousePress = true;
+
+        }
+        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[2]) {
+            new Spell01(this);
+            Spell01.QSpellCreatedOnThisMousePress = true;
+
+        }
+        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[3]) {
+            new Spell01(this);
+            Spell01.QSpellCreatedOnThisMousePress = true;
+
+        }
+    }
+
+    private boolean isSpellQoffCooldown() {
+    long currentTime = System.currentTimeMillis();
+    return currentTime - lastQSpellCastTime >= Spell01.SPELL01COOLDOWN;
+
+    }
 
 }
 

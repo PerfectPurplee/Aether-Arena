@@ -24,7 +24,9 @@ public class Camera {
     public static int cameraPosY;
     public int cameraSpeed = 4;
     private static int distanceToEdgeToMoveCamera;
-    public BufferedImage WHOLE_MAP;
+
+    public static BufferedImage WHOLE_MAP;
+
 
     public Camera() {
 

@@ -70,4 +70,39 @@ public abstract class PacketManager {
 
         return datagramPacket;
     }
+
+    public static DatagramPacket spellRequestPacket() throws IOException {
+
+        final int packetType = 2;
+        final int clinetID = Client.ClientID;
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream dataOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+
+
+        try {
+            dataOutputStream.writeInt(packetType);
+            dataOutputStream.writeInt(clinetID);
+            dataOutputStream.writeObject(ArrayOfPlayerCreateSpellRequests);
+            dataOutputStream.writeObject(currentMousePosition);
+            dataOutputStream.flush();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        byte[] data = byteArrayOutputStream.toByteArray();
+        DatagramPacket datagramPacket = new DatagramPacket(data, data.length, Client.serverIPaddress, 1337);
+
+
+        try {
+            byteArrayOutputStream.close();
+            dataOutputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return datagramPacket;
+    }
+
+
 }
