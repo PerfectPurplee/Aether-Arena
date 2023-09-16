@@ -42,8 +42,6 @@ public class Playing implements SceneEssentials {
         Spell01.updateAllSpells01();
 
 
-
-
 //        Online player update
         OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer -> {
 
@@ -67,7 +65,7 @@ public class Playing implements SceneEssentials {
                 camera.Camera_Height), 0, 0, null);
 
 
-//        Rysowanie postaci
+//        Rysowanie Localplayera
         if (localPlayer.isPlayerMoving) {
             g.drawImage(localPlayer.currentPlayerSprite[localPlayer.animationIndexMoving],
                     (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, null);
@@ -76,6 +74,7 @@ public class Playing implements SceneEssentials {
                     (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, null);
 
         }
+
 
         //       Rysowanie ONLINE postaci
 
@@ -90,10 +89,38 @@ public class Playing implements SceneEssentials {
         });
 
 //        Rysowanie Zaklec
-        Spell01.listOfActiveSpell01s.forEach(spell01 -> {
-            g.drawImage(spell01.spellSprites[spell01.animationIndex], (int) spell01.spellPosXScreen,
-                    (int) spell01.spellPosYScreen, 32, 32, null);
-        });
+        synchronized (Spell01.listOfActiveSpell01s) {
+            Spell01.listOfActiveSpell01s.forEach(spell01 -> {
+                g.drawImage(spell01.spellSprites[spell01.animationIndex], (int) spell01.spellPosXScreen,
+                        (int) spell01.spellPosYScreen, 32, 32, null);
+            });
+        }
+
+//        Heathbar onlineplayers
+
+        OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer -> {
+            g.setColor(Color.black);
+            g.fillRect((int) onlinePlayer.playerPosXScreen, (int) (onlinePlayer.playerPosYScreen - 20),
+                    localPlayer.healthbar.healthbarWidth,localPlayer.healthbar.healthbarHeight);
+            g.setColor(Color.GREEN);
+            g.fillRect((int) onlinePlayer.playerPosXScreen, (int) (onlinePlayer.playerPosYScreen - 20),
+                    localPlayer.healthbar.setSizeOfCurrentHealthToDraw(),localPlayer.healthbar.healthbarHeight);
+            g.setColor(Color.YELLOW);
+            g.drawRect((int) onlinePlayer.playerPosXScreen, (int) (onlinePlayer.playerPosYScreen - 20),
+                    localPlayer.healthbar.healthbarWidth,localPlayer.healthbar.healthbarHeight);
+                });
+
+//        Healthbar localplayer
+
+        g.setColor(Color.black);
+        g.fillRect((int) LocalPlayer.playerPosXScreen, (int) (LocalPlayer.playerPosYScreen - 20),
+                localPlayer.healthbar.healthbarWidth,localPlayer.healthbar.healthbarHeight);
+        g.setColor(Color.GREEN);
+        g.fillRect((int) LocalPlayer.playerPosXScreen, (int) (LocalPlayer.playerPosYScreen - 20),
+                localPlayer.healthbar.setSizeOfCurrentHealthToDraw(),localPlayer.healthbar.healthbarHeight);
+        g.setColor(Color.YELLOW);
+        g.drawRect((int) LocalPlayer.playerPosXScreen, (int) (LocalPlayer.playerPosYScreen - 20),
+                localPlayer.healthbar.healthbarWidth,localPlayer.healthbar.healthbarHeight);
 
 //        DEBUGGING
 //        g.drawRect((int) LocalPlayer.playerPosXWorld, (int) LocalPlayer.playerPosYWorld,
