@@ -1,5 +1,6 @@
 package entities.playercharacters;
 
+import entities.Healthbar;
 import entities.spells.basicspells.Spell01;
 import inputs.PlayerKeyboardInputs;
 import main.EnumContainer;
@@ -47,6 +48,8 @@ public class LocalPlayer {
     public EnumContainer.AllPlayerStates Current_Player_State;
     public EnumContainer.AllPlayableChampions localPlayerChampion;
 
+    public Healthbar healthbar;
+
     public static float playerPosXWorld, playerPosYWorld;
     public static float playerPosXScreen, playerPosYScreen;
     public int playerFeetX, playerFeetY;
@@ -71,7 +74,6 @@ public class LocalPlayer {
     private long lastQSpellCastTime;
 
 
-
     public LocalPlayer() {
         this.Current_Player_State = EnumContainer.AllPlayerStates.MOVING_DOWN;
         currentPlayerSprite = playerSpriteController();
@@ -80,10 +82,24 @@ public class LocalPlayer {
 
     }
 
+    private void setPlayerHealthBar() {
+        switch (localPlayerChampion) {
+
+            case DON_OHL -> {
+                healthbar = new Healthbar(200, playerPosXScreen, playerPosYScreen);
+            }
+            case BIG_HAIRY_SWEATY_DUDE -> {
+                healthbar = new Healthbar(400, playerPosXScreen, playerPosYScreen);
+
+            }
+        }
+    }
+
     public void setPlayerChampion(EnumContainer.AllPlayableChampions champion) {
         localPlayerChampion = champion;
         getPlayerSprites8Directional(localPlayerChampion);
         setPLayerFeetPos();
+        setPlayerHealthBar();
     }
 
     public void setPLayerFeetPos() {
@@ -481,8 +497,8 @@ public class LocalPlayer {
     }
 
     private boolean isSpellQoffCooldown() {
-    long currentTime = System.currentTimeMillis();
-    return currentTime - lastQSpellCastTime >= Spell01.SPELL01COOLDOWN;
+        long currentTime = System.currentTimeMillis();
+        return currentTime - lastQSpellCastTime >= Spell01.SPELL01COOLDOWN;
 
     }
 

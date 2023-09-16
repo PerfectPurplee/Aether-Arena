@@ -1,5 +1,6 @@
 package entities.playercharacters;
 
+import entities.Healthbar;
 import main.EnumContainer;
 import scenes.playing.Camera;
 
@@ -40,6 +41,8 @@ public class OnlinePlayer {
     public EnumContainer.AllPlayerStates Current_Player_State_Online_Player;
     public EnumContainer.AllPlayableChampions onlinePlayerChampion;
 
+    public Healthbar healthbar;
+
     public float playerPosXWorld, playerPosYWorld;
     public float playerPosXScreen, playerPosYScreen;
     private int animationTick, animationSpeed = 15;
@@ -57,18 +60,32 @@ public class OnlinePlayer {
         this.onlinePlayerID = onlinePlayerID;
         this.Current_Player_State_Online_Player = EnumContainer.AllPlayerStates.IDLE_DOWN;
         currentPlayerSpriteOnlinePlayer = playerSpriteController();
+        setPlayerHealthBar();
 
 
         listOfAllConnectedOnlinePLayers.add(this);
 
     }
 
-    public void getPlayerSprites8Directional(EnumContainer.AllPlayableChampions localPlayerChampion) {
+    private void setPlayerHealthBar() {
+        switch (onlinePlayerChampion) {
+
+            case DON_OHL -> {
+                healthbar = new Healthbar(200, playerPosXScreen, playerPosYScreen);
+            }
+            case BIG_HAIRY_SWEATY_DUDE -> {
+                healthbar = new Healthbar(400, playerPosXScreen, playerPosYScreen);
+
+            }
+        }
+    }
+
+    public void getPlayerSprites8Directional(EnumContainer.AllPlayableChampions onlinePlayerChampion) {
 
         int spriteSize = 0;
         int spriteXpos = 0;
         int numberOfSpritesInRow = 0;
-        if (localPlayerChampion == EnumContainer.AllPlayableChampions.DON_OHL) {
+        if (onlinePlayerChampion == EnumContainer.AllPlayableChampions.DON_OHL) {
             InputStream inputStream = getClass().getResourceAsStream("/DON_OHL.png");
             try {
                 allOnlinePlayerSprites = ImageIO.read(Objects.requireNonNull(inputStream));
@@ -117,7 +134,7 @@ public class OnlinePlayer {
                 spriteXpos += spriteSize;
             }
 
-        } else if (localPlayerChampion == EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE) {
+        } else if (onlinePlayerChampion == EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE) {
             InputStream inputStream = getClass().getResourceAsStream("/WIKING_RUN.png");
             try {
                 allOnlinePlayerSprites = ImageIO.read(Objects.requireNonNull(inputStream));
