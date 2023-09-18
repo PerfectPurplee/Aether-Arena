@@ -20,7 +20,7 @@ public class Healthbar {
         healthbarHeight = 10;
         offsetY = 20;
         this.maxHealth = maxHealth;
-        currentHealth = maxHealth - 50;
+        currentHealth = maxHealth;
         healthbarPositionOnScreenX = playerPosOnScreenX;
         healthbarPositionOnScreenY = playerPosOnScreenY - offsetY;
     }

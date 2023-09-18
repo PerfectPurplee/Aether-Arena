@@ -89,10 +89,10 @@ public class LocalPlayer {
         switch (localPlayerChampion) {
 
             case DON_OHL -> {
-                healthbar = new Healthbar(200, playerPosXScreen, playerPosYScreen);
+                healthbar = new Healthbar(4000, playerPosXScreen, playerPosYScreen);
             }
             case BIG_HAIRY_SWEATY_DUDE -> {
-                healthbar = new Healthbar(400, playerPosXScreen, playerPosYScreen);
+                healthbar = new Healthbar(200, playerPosXScreen, playerPosYScreen);
 
             }
         }
@@ -509,8 +509,8 @@ public class LocalPlayer {
     }
 
     public void updatePlayerHitboxWorldAndPosOnScreen() {
-        localPlayerHitbox.x =  playerPosXWorld;
-        localPlayerHitbox.y =  playerPosYWorld;
+        localPlayerHitbox.x = playerPosXWorld;
+        localPlayerHitbox.y = playerPosYWorld;
         localPlayerHitbox.playerHitboxPosXScreen = playerPosXScreen;
         localPlayerHitbox.playerHitboxPosYScreen = playerPosYScreen;
 

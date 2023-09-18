@@ -53,7 +53,7 @@ public class Client extends Thread {
     }
 
     private synchronized void receiveDataFromServer() {
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[2048];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
         try {

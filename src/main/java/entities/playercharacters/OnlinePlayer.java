@@ -5,6 +5,7 @@ import main.EnumContainer;
 import scenes.playing.Camera;
 
 import javax.imageio.ImageIO;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +43,7 @@ public class OnlinePlayer {
     public EnumContainer.AllPlayableChampions onlinePlayerChampion;
 
     public Healthbar healthbar;
+    public OnlinePlayerHitbox onlinePlayerHitbox;
 
     public float playerPosXWorld, playerPosYWorld;
     public float playerPosXScreen, playerPosYScreen;
@@ -61,6 +63,7 @@ public class OnlinePlayer {
         this.Current_Player_State_Online_Player = EnumContainer.AllPlayerStates.IDLE_DOWN;
         currentPlayerSpriteOnlinePlayer = playerSpriteController();
         setPlayerHealthBar();
+        onlinePlayerHitbox = new OnlinePlayerHitbox();
 
 
         listOfAllConnectedOnlinePLayers.add(this);
@@ -71,7 +74,7 @@ public class OnlinePlayer {
         switch (onlinePlayerChampion) {
 
             case DON_OHL -> {
-                healthbar = new Healthbar(200, playerPosXScreen, playerPosYScreen);
+                healthbar = new Healthbar(4000, playerPosXScreen, playerPosYScreen);
             }
             case BIG_HAIRY_SWEATY_DUDE -> {
                 healthbar = new Healthbar(400, playerPosXScreen, playerPosYScreen);
@@ -181,9 +184,10 @@ public class OnlinePlayer {
         }
     }
 
-    public void updatePlayerPositionOnScreen() {
+    public void updatePlayerPositionOnScreenAndHitbox() {
         playerPosXScreen = playerPosXWorld - Camera.cameraPosX;
         playerPosYScreen = playerPosYWorld - Camera.cameraPosY;
+        updatePlayerHitboxWorldAndPosOnScreen();
     }
 
 
@@ -294,5 +298,23 @@ public class OnlinePlayer {
             }
             default -> throw new IllegalStateException("Unexpected value: " + Current_Player_State_Online_Player);
         }
+    }
+
+    public void updatePlayerHitboxWorldAndPosOnScreen() {
+        onlinePlayerHitbox.x = playerPosXWorld;
+        onlinePlayerHitbox.y = playerPosYWorld;
+        onlinePlayerHitbox.playerHitboxPosXScreen = playerPosXScreen;
+        onlinePlayerHitbox.playerHitboxPosYScreen = playerPosYScreen;
+
+    }
+
+    public class OnlinePlayerHitbox extends Rectangle2D.Float {
+
+        public float playerHitboxPosXScreen, playerHitboxPosYScreen;
+        OnlinePlayerHitbox() {
+            super( playerPosXWorld,  playerPosYWorld,
+                    playerSpriteDOWN[0].getWidth(),playerSpriteDOWN[0].getHeight());
+        }
+
     }
 }

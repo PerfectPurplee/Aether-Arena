@@ -7,6 +7,7 @@ import main.GameEngine;
 import networking.Client;
 import scenes.playing.Camera;
 
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.Serial;
 import java.io.Serializable;
@@ -38,6 +39,8 @@ public class Spell01 {
     public int spellCasterClientID;
     public final int spellID;
 
+    public Spell01Hitbox spell01Hitbox;
+
     public static List<Spell01> listOfActiveSpell01s = new ArrayList<>();
 
     public static boolean QSpellCreatedOnThisMousePress = false;
@@ -53,6 +56,8 @@ public class Spell01 {
         spellCasterClientID = Client.ClientID;
         spellID = playerCastingThisSpell.counterOfThisPlayerQSpells;
         playerCastingThisSpell.counterOfThisPlayerQSpells++;
+
+        spell01Hitbox = new Spell01Hitbox();
 
 
         synchronized (listOfActiveSpell01s) {
@@ -72,6 +77,7 @@ public class Spell01 {
         spellCasterClientID = spell01DTO.spellCasterClientID;
         spellID = spell01DTO.spellID;
 
+        spell01Hitbox = new Spell01Hitbox();
 
         synchronized (listOfActiveSpell01s) {
             listOfActiveSpell01s.add(this);
@@ -115,7 +121,7 @@ public class Spell01 {
     public static void updateAllSpells01() {
         synchronized (listOfActiveSpell01s) {
             listOfActiveSpell01s = listOfActiveSpell01s.stream().filter(spell01 ->
-                            spell01.spellPosXWorld >= -64 && spell01.spellPosYWorld >= -64 &&
+                    spell01.spellPosXWorld >= -64 && spell01.spellPosYWorld >= -64 &&
                             spell01.spellPosXWorld <= Camera.WHOLE_MAP.getWidth() + 64 &&
                             spell01.spellPosYWorld <= Camera.WHOLE_MAP.getHeight() + 64).collect(Collectors.toList());
 
@@ -123,9 +129,28 @@ public class Spell01 {
             listOfActiveSpell01s.forEach(spell01 -> {
                 spell01.animationController();
                 spell01.spellPositionUpdate();
+                spell01.updateSpellHitboxWorldAndPosOnScreen();
 //                System.out.println("Caster:  " + spell01.spellCasterClientID +  "SpellID: " + spell01.spellID + "Pos X: "
 //                        + spell01.spellPosXWorld + "Pos Y" + spell01.spellPosYWorld);
             });
         }
+    }
+
+    public void updateSpellHitboxWorldAndPosOnScreen() {
+        spell01Hitbox.x = spellPosXWorld;
+        spell01Hitbox.y = spellPosYWorld;
+        spell01Hitbox.spell01HitboxPosXScreen = spellPosXScreen;
+        spell01Hitbox.spell01HitboxPosYScreen = spellPosYScreen;
+    }
+
+    public class Spell01Hitbox extends Rectangle2D.Float {
+
+        public float spell01HitboxPosXScreen, spell01HitboxPosYScreen;
+
+        Spell01Hitbox() {
+            super(spellPosXWorld, spellPosYWorld,
+                    spellSprites[0].getWidth() + 16, spellSprites[0].getHeight() + 16);
+        }
+
     }
 }
