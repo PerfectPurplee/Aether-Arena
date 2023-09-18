@@ -11,6 +11,7 @@ import scenes.playing.Camera;
 
 import javax.imageio.ImageIO;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,8 +50,10 @@ public class LocalPlayer {
     public EnumContainer.AllPlayableChampions localPlayerChampion;
 
     public Healthbar healthbar;
+    public LocalPlayerHitbox localPlayerHitbox;
 
-    public static float playerPosXWorld, playerPosYWorld;
+    public static float playerPosXWorld;
+    public static float playerPosYWorld;
     public static float playerPosXScreen, playerPosYScreen;
     public int playerFeetX, playerFeetY;
     public int mouseClickXPos;
@@ -100,6 +103,7 @@ public class LocalPlayer {
         getPlayerSprites8Directional(localPlayerChampion);
         setPLayerFeetPos();
         setPlayerHealthBar();
+        localPlayerHitbox = new LocalPlayerHitbox();
     }
 
     public void setPLayerFeetPos() {
@@ -213,9 +217,11 @@ public class LocalPlayer {
         this.playerMovementStartingPosY = playerPosYWorld + playerFeetY;
     }
 
-    public void updatePlayerPositionOnScreen() {
+    public void updatePlayerPositionOnScreenAndPlayerHitbox() {
         playerPosXScreen = playerPosXWorld - Camera.cameraPosX;
         playerPosYScreen = playerPosYWorld - Camera.cameraPosY;
+        updatePlayerHitboxWorldAndPosOnScreen();
+
     }
 
     public void getPlayerSprites8Directional(EnumContainer.AllPlayableChampions localPlayerChampion) {
@@ -499,6 +505,24 @@ public class LocalPlayer {
     private boolean isSpellQoffCooldown() {
         long currentTime = System.currentTimeMillis();
         return currentTime - lastQSpellCastTime >= Spell01.SPELL01COOLDOWN;
+
+    }
+
+    public void updatePlayerHitboxWorldAndPosOnScreen() {
+        localPlayerHitbox.x =  playerPosXWorld;
+        localPlayerHitbox.y =  playerPosYWorld;
+        localPlayerHitbox.playerHitboxPosXScreen = playerPosXScreen;
+        localPlayerHitbox.playerHitboxPosYScreen = playerPosYScreen;
+
+    }
+
+    public class LocalPlayerHitbox extends Rectangle2D.Float {
+
+        public float playerHitboxPosXScreen, playerHitboxPosYScreen;
+        LocalPlayerHitbox() {
+            super( playerPosXWorld,  playerPosYWorld,
+                    playerSpriteDOWN[0].getWidth(),playerSpriteDOWN[0].getHeight());
+        }
 
     }
 

@@ -34,7 +34,7 @@ public class Playing implements SceneEssentials {
         localPlayer.currentPlayerSprite = localPlayer.playerSpriteController();
         localPlayer.animationController();
         camera.updateCameraPosition();
-        localPlayer.updatePlayerPositionOnScreen();
+        localPlayer.updatePlayerPositionOnScreenAndPlayerHitbox();
 //      spellCastController creates spells, but also sends data to server
         if (!Spell01.QSpellCreatedOnThisMousePress) {
             localPlayer.spellCastController();
@@ -122,7 +122,13 @@ public class Playing implements SceneEssentials {
         g.drawRect((int) LocalPlayer.playerPosXScreen, (int) (LocalPlayer.playerPosYScreen - 20),
                 localPlayer.healthbar.healthbarWidth,localPlayer.healthbar.healthbarHeight);
 
+
 //        DEBUGGING
+
+//        HITBOXES
+        g.setColor(Color.red);
+        g.drawRect((int) localPlayer.localPlayerHitbox.playerHitboxPosXScreen, (int) localPlayer.localPlayerHitbox.playerHitboxPosYScreen,
+                (int) localPlayer.localPlayerHitbox.getWidth(), (int) localPlayer.localPlayerHitbox.getHeight());
 //        g.drawRect((int) LocalPlayer.playerPosXWorld, (int) LocalPlayer.playerPosYWorld,
 //                localPlayer.playerSpriteUP[1].getWidth(),localPlayer.playerSpriteUP[1].getHeight());
 
