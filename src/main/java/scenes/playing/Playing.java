@@ -12,6 +12,7 @@ import javax.swing.text.html.Option;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Playing implements SceneEssentials {
 
@@ -72,10 +73,10 @@ public class Playing implements SceneEssentials {
 //        Rysowanie Localplayera
         if (localPlayer.isPlayerMoving) {
             g.drawImage(localPlayer.currentPlayerSprite[localPlayer.animationIndexMoving],
-                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, null);
+                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen,144,144, null);
         } else {
             g.drawImage(localPlayer.currentPlayerSprite[0],
-                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, null);
+                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, 144,144,null);
 
         }
 
@@ -99,6 +100,11 @@ public class Playing implements SceneEssentials {
                         (int) spell01.spellPosYScreen, 32, 32, null);
             });
         }
+//        Rysowanie Obiektów Mapy
+
+        g.drawImage(camera.WHOLE_MAP_OBJECTS.getSubimage(Camera.cameraPosX, Camera.cameraPosY, camera.Camera_Width,
+                camera.Camera_Height), 0, 0, null);
+
 
 //        Heathbar onlineplayers
 
@@ -130,15 +136,15 @@ public class Playing implements SceneEssentials {
 //        DEBUGGING
 
 //        HITBOXES
-        g.setColor(Color.red);
-        g.drawRect((int) localPlayer.localPlayerHitbox.playerHitboxPosXScreen, (int) localPlayer.localPlayerHitbox.playerHitboxPosYScreen,
-                (int) localPlayer.localPlayerHitbox.getWidth(), (int) localPlayer.localPlayerHitbox.getHeight());
-        OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer ->
-                g.drawRect((int) onlinePlayer.onlinePlayerHitbox.playerHitboxPosXScreen, (int) onlinePlayer.onlinePlayerHitbox.playerHitboxPosYScreen,
-                        (int) onlinePlayer.onlinePlayerHitbox.getWidth(), (int) onlinePlayer.onlinePlayerHitbox.getHeight()));
-        Spell01.listOfActiveSpell01s.forEach(spell01 ->
-                g.drawRect((int) spell01.spell01Hitbox.spell01HitboxPosXScreen, (int) spell01.spell01Hitbox.spell01HitboxPosYScreen,
-                        (int) spell01.spell01Hitbox.getWidth(), (int) spell01.spell01Hitbox.getHeight()));
+//        g.setColor(Color.red);
+//        g.drawRect((int) localPlayer.localPlayerHitbox.playerHitboxPosXScreen, (int) localPlayer.localPlayerHitbox.playerHitboxPosYScreen,
+//                (int) localPlayer.localPlayerHitbox.getWidth(), (int) localPlayer.localPlayerHitbox.getHeight());
+//        OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer ->
+//                g.drawRect((int) onlinePlayer.onlinePlayerHitbox.playerHitboxPosXScreen, (int) onlinePlayer.onlinePlayerHitbox.playerHitboxPosYScreen,
+//                        (int) onlinePlayer.onlinePlayerHitbox.getWidth(), (int) onlinePlayer.onlinePlayerHitbox.getHeight()));
+//        Spell01.listOfActiveSpell01s.forEach(spell01 ->
+//                g.drawRect((int) spell01.spell01Hitbox.spell01HitboxPosXScreen, (int) spell01.spell01Hitbox.spell01HitboxPosYScreen,
+//                        (int) spell01.spell01Hitbox.getWidth(), (int) spell01.spell01Hitbox.getHeight()));
 
 //        g.drawRect((int) LocalPlayer.playerPosXWorld, (int) LocalPlayer.playerPosYWorld,
 //                localPlayer.playerSpriteUP[1].getWidth(),localPlayer.playerSpriteUP[1].getHeight());
@@ -163,7 +169,8 @@ public class Playing implements SceneEssentials {
 
                 if (localPlayer.localPlayerHitbox.intersects(spell.spell01Hitbox)) {
                     if (localPlayer.healthbar.currentHealth > 0)
-                        localPlayer.healthbar.currentHealth = localPlayer.healthbar.currentHealth - 10;
+                        localPlayer.healthbar.currentHealth = localPlayer.healthbar.currentHealth - 50;
+                    spell.flagForRemoval = true;
                 }
                 synchronized (OnlinePlayer.listOfAllConnectedOnlinePLayers) {
                     OnlinePlayer.listOfAllConnectedOnlinePLayers
@@ -171,20 +178,25 @@ public class Playing implements SceneEssentials {
                             .filter(onlinePlayer -> onlinePlayer.onlinePlayerHitbox.intersects(spell.spell01Hitbox))
                             .forEach(onlinePlayerFiltered -> {
                                 if (onlinePlayerFiltered.healthbar.currentHealth > 0) {
-                                    onlinePlayerFiltered.healthbar.currentHealth = onlinePlayerFiltered.healthbar.currentHealth - 10;
+                                    onlinePlayerFiltered.healthbar.currentHealth = onlinePlayerFiltered.healthbar.currentHealth - 50;
                                 }
+                                spell.flagForRemoval = true;
                             });
                 }
+
             });
+            synchronized (Spell01.listOfActiveSpell01s) {
+                Spell01.listOfActiveSpell01s = Spell01.listOfActiveSpell01s.stream().filter(spell01 -> !spell01.flagForRemoval).collect(Collectors.toList());
+            }
 
         }
 
 
-        //            FOR ONLY ONE PLAYER GETTING HIT
+    }
+    //            FOR ONLY ONE PLAYER GETTING HIT
 //            Optional<OnlinePlayer> onlinePlayerInter = OnlinePlayer.listOfAllConnectedOnlinePLayers.stream()
 //                    .filter(onlinePlayer -> spell.spell01Hitbox.intersects(onlinePlayer.onlinePlayerHitbox.getBounds())).findFirst();
 //            onlinePlayerInter.ifPresent(onlinePlayer -> onlinePlayer.healthbar.currentHealth = onlinePlayer.healthbar.currentHealth - 50);
-    }
 
 }
 

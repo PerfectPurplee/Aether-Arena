@@ -39,8 +39,8 @@ public class GameEngine extends Thread {
     Client client;
 
 
-    private final int FPS_SET = 120;
-    private final int UPS_SET = 128;
+    private final int FPS_SET = 128;
+    private final int UPS_SET = 200;
 
     public static BufferedImage BasicSpellsSpriteSheet;
 
@@ -134,7 +134,7 @@ public class GameEngine extends Thread {
 
             if (System.currentTimeMillis() - lastCheck >= 1000) {
                 lastCheck = System.currentTimeMillis();
-//                System.out.println("FPS: " + frames + " | UPS: " + updates);
+                System.out.println("FPS: " + frames + " | UPS: " + updates);
                 frames = 0;
                 updates = 0;
 

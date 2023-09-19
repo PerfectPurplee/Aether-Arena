@@ -39,6 +39,9 @@ public class Spell01 {
     public int spellCasterClientID;
     public final int spellID;
 
+//    If true, object will be soon removed from active spell list;
+    public boolean flagForRemoval;
+
     public Spell01Hitbox spell01Hitbox;
 
     public static List<Spell01> listOfActiveSpell01s = new ArrayList<>();
@@ -58,6 +61,7 @@ public class Spell01 {
         playerCastingThisSpell.counterOfThisPlayerQSpells++;
 
         spell01Hitbox = new Spell01Hitbox();
+        flagForRemoval = false;
 
 
         synchronized (listOfActiveSpell01s) {
@@ -78,6 +82,8 @@ public class Spell01 {
         spellID = spell01DTO.spellID;
 
         spell01Hitbox = new Spell01Hitbox();
+        flagForRemoval = false;
+
 
         synchronized (listOfActiveSpell01s) {
             listOfActiveSpell01s.add(this);

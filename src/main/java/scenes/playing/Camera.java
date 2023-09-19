@@ -26,6 +26,7 @@ public class Camera {
     private static int distanceToEdgeToMoveCamera;
 
     public static BufferedImage WHOLE_MAP;
+    public static BufferedImage WHOLE_MAP_OBJECTS;
 
 
     public Camera() {
@@ -35,6 +36,7 @@ public class Camera {
         cameraMovingLeft = false;
         cameraMovingRight = false;
         getWholeMapImage();
+        getWholeMapObjectsImage();
         distanceToEdgeToMoveCamera = 100;
 
     }
@@ -77,9 +79,17 @@ public class Camera {
     }
 
     public void getWholeMapImage() {
-        InputStream inputStream = getClass().getResourceAsStream("/Map2.png");
+        InputStream inputStream = getClass().getResourceAsStream("/asset_map_version_smaller.png");
         try {
             WHOLE_MAP = ImageIO.read(Objects.requireNonNull(inputStream));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void getWholeMapObjectsImage() {
+        InputStream inputStream = getClass().getResourceAsStream("/asset_map_version_smaller_objects.png");
+        try {
+            WHOLE_MAP_OBJECTS = ImageIO.read(Objects.requireNonNull(inputStream));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
