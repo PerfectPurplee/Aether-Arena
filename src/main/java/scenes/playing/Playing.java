@@ -158,17 +158,26 @@ public class Playing implements SceneEssentials {
 
     private void checkIfAnyPlayerGotHit() {
 
-        Spell01.listOfActiveSpell01s.forEach(spell -> {
+        synchronized (Spell01.listOfActiveSpell01s) {
+            Spell01.listOfActiveSpell01s.forEach(spell -> {
 
-            if (localPlayer.localPlayerHitbox.intersects(spell.spell01Hitbox)) {
-                localPlayer.healthbar.currentHealth = localPlayer.healthbar.currentHealth - 10;
-            }
+                if (localPlayer.localPlayerHitbox.intersects(spell.spell01Hitbox)) {
+                    if (localPlayer.healthbar.currentHealth > 0)
+                        localPlayer.healthbar.currentHealth = localPlayer.healthbar.currentHealth - 10;
+                }
+                synchronized (OnlinePlayer.listOfAllConnectedOnlinePLayers) {
+                    OnlinePlayer.listOfAllConnectedOnlinePLayers
+                            .stream()
+                            .filter(onlinePlayer -> onlinePlayer.onlinePlayerHitbox.intersects(spell.spell01Hitbox))
+                            .forEach(onlinePlayerFiltered -> {
+                                if (onlinePlayerFiltered.healthbar.currentHealth > 0) {
+                                    onlinePlayerFiltered.healthbar.currentHealth = onlinePlayerFiltered.healthbar.currentHealth - 10;
+                                }
+                            });
+                }
+            });
 
-            OnlinePlayer.listOfAllConnectedOnlinePLayers.stream().filter(onlinePlayer ->
-                    onlinePlayer.onlinePlayerHitbox.intersects(spell.spell01Hitbox)).forEach(onlinePlayerFiltered
-                    -> onlinePlayerFiltered.healthbar.currentHealth = onlinePlayerFiltered.healthbar.currentHealth - 10);
-
-        });
+        }
 
 
         //            FOR ONLY ONE PLAYER GETTING HIT
@@ -178,3 +187,4 @@ public class Playing implements SceneEssentials {
     }
 
 }
+

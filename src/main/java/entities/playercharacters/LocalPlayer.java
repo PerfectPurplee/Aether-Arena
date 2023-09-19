@@ -467,11 +467,27 @@ public class LocalPlayer {
         ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[3] = PlayerKeyboardInputs.R_Pressed;
 
         boolean shouldWeSendPacketToServer = false;
-        for (int i = 0; i < ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests.length; i++) {
-            if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[i] && isSpellQoffCooldown()) {
-                shouldWeSendPacketToServer = true;
-                break;
-            }
+
+        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[0] && isSpellQoffCooldown()) {
+            new Spell01(this);
+            Spell01.QSpellCreatedOnThisMousePress = true;
+            lastQSpellCastTime = System.currentTimeMillis();
+            shouldWeSendPacketToServer = true;
+        }
+        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[1]) {
+            new Spell01(this);
+            Spell01.QSpellCreatedOnThisMousePress = true;
+            shouldWeSendPacketToServer = true;
+        }
+        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[2]) {
+            new Spell01(this);
+            Spell01.QSpellCreatedOnThisMousePress = true;
+            shouldWeSendPacketToServer = true;
+        }
+        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[3]) {
+            new Spell01(this);
+            Spell01.QSpellCreatedOnThisMousePress = true;
+            shouldWeSendPacketToServer = true;
         }
         if (shouldWeSendPacketToServer) {
             try {
@@ -479,26 +495,6 @@ public class LocalPlayer {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[0] && isSpellQoffCooldown()) {
-            new Spell01(this);
-            Spell01.QSpellCreatedOnThisMousePress = true;
-            lastQSpellCastTime = System.currentTimeMillis();
-        }
-        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[1]) {
-            new Spell01(this);
-            Spell01.QSpellCreatedOnThisMousePress = true;
-
-        }
-        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[2]) {
-            new Spell01(this);
-            Spell01.QSpellCreatedOnThisMousePress = true;
-
-        }
-        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[3]) {
-            new Spell01(this);
-            Spell01.QSpellCreatedOnThisMousePress = true;
-
         }
     }
 
