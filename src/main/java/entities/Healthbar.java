@@ -9,8 +9,8 @@ public class Healthbar {
     public final int maxHealth;
     public int currentHealth;
     public int healthbarWidth, healthbarHeight;
-    public float healthbarPositionOnScreenX;
-    public float healthbarPositionOnScreenY;
+    public int healthbarPositionOnScreenX;
+    public int healthbarPositionOnScreenY;
     public int offsetY;
 
 //    public static List<Healthbar> listOfAllHealthbars = new ArrayList<>();
@@ -21,8 +21,8 @@ public class Healthbar {
         offsetY = 20;
         this.maxHealth = maxHealth;
         currentHealth = maxHealth;
-        healthbarPositionOnScreenX = playerPosOnScreenX;
-        healthbarPositionOnScreenY = playerPosOnScreenY - offsetY;
+        healthbarPositionOnScreenX = (int) (playerPosOnScreenX + 36);
+        healthbarPositionOnScreenY = (int) (playerPosOnScreenY - offsetY);
     }
 
     public int setSizeOfCurrentHealthToDraw() {

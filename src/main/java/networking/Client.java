@@ -123,12 +123,14 @@ public class Client extends Thread {
 //                    System.out.println("Caster:  " + spellDTO.spellCasterClientID +  "SpellID: " + spellDTO.spellID + "Pos X: "
 //                            + spellDTO.spellPosXWorld + "Pos Y" + spellDTO.spellPosYWorld);
                     boolean found = false;
-                    for (Spell01 spell01 : Spell01.listOfActiveSpell01s) {
-                        if (spell01.spellCasterClientID == spellDTO.spellCasterClientID && spell01.spellID == spellDTO.spellID) {
-                            spell01.spellPosXWorld = spellDTO.spellPosXWorld;
-                            spell01.spellPosYWorld = spellDTO.spellPosYWorld;
-                            found = true;
-                            break;
+                    synchronized (Spell01.listOfActiveSpell01s) {
+                        for (Spell01 spell01 : Spell01.listOfActiveSpell01s) {
+                            if (spell01.spellCasterClientID == spellDTO.spellCasterClientID && spell01.spellID == spellDTO.spellID) {
+                                spell01.spellPosXWorld = spellDTO.spellPosXWorld;
+                                spell01.spellPosYWorld = spellDTO.spellPosYWorld;
+                                found = true;
+                                break;
+                            }
                         }
                     }
                     if(!found) {

@@ -30,6 +30,8 @@ public class Camera {
 
 
     public Camera() {
+        cameraPosX = 0;
+        cameraPosY = 1500;
 
         cameraMovingUP = false;
         cameraMovingDown = false;

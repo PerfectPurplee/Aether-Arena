@@ -39,8 +39,8 @@ public class GameEngine extends Thread {
     Client client;
 
 
-    private final int FPS_SET = 128;
-    private final int UPS_SET = 200;
+    private final int FPS_SET = 120;
+    private final int UPS_SET = 128;
 
     public static BufferedImage BasicSpellsSpriteSheet;
 

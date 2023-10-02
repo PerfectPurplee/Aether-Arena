@@ -57,6 +57,7 @@ public class Playing implements SceneEssentials {
         checkIfAnyPlayerGotHit();
 
 //        Send data to server
+//        Movement request packet while mouse is dragging
         sendMouseDraggedMovementPacket();
 
     }
@@ -73,10 +74,10 @@ public class Playing implements SceneEssentials {
 //        Rysowanie Localplayera
         if (localPlayer.isPlayerMoving) {
             g.drawImage(localPlayer.currentPlayerSprite[localPlayer.animationIndexMoving],
-                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen,144,144, null);
+                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, 144, 144, null);
         } else {
             g.drawImage(localPlayer.currentPlayerSprite[0],
-                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, 144,144,null);
+                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, 144, 144, null);
 
         }
 
@@ -86,10 +87,10 @@ public class Playing implements SceneEssentials {
             OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer -> {
                 if (onlinePlayer.isPlayerMoving)
                     g.drawImage(onlinePlayer.currentPlayerSpriteOnlinePlayer[onlinePlayer.animationIndexMoving],
-                            (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen, null);
+                            (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen, 144, 144, null);
                 else {
                     g.drawImage(onlinePlayer.currentPlayerSpriteOnlinePlayer[0],
-                            (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen, null);
+                            (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen, 144, 144, null);
                 }
             });
         }
@@ -110,26 +111,26 @@ public class Playing implements SceneEssentials {
 
         OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer -> {
             g.setColor(Color.black);
-            g.fillRect((int) onlinePlayer.playerPosXScreen, (int) (onlinePlayer.playerPosYScreen - 20),
+            g.fillRect((int) onlinePlayer.playerPosXScreen + 36, (int) (onlinePlayer.playerPosYScreen - 20),
                     onlinePlayer.healthbar.healthbarWidth, onlinePlayer.healthbar.healthbarHeight);
             g.setColor(Color.GREEN);
-            g.fillRect((int) onlinePlayer.playerPosXScreen, (int) (onlinePlayer.playerPosYScreen - 20),
+            g.fillRect((int) onlinePlayer.playerPosXScreen + 36, (int) (onlinePlayer.playerPosYScreen - 20),
                     onlinePlayer.healthbar.setSizeOfCurrentHealthToDraw(), onlinePlayer.healthbar.healthbarHeight);
             g.setColor(Color.YELLOW);
-            g.drawRect((int) onlinePlayer.playerPosXScreen, (int) (onlinePlayer.playerPosYScreen - 20),
+            g.drawRect((int) onlinePlayer.playerPosXScreen + 36, (int) (onlinePlayer.playerPosYScreen - 20),
                     onlinePlayer.healthbar.healthbarWidth, onlinePlayer.healthbar.healthbarHeight);
         });
 
 //        Healthbar localplayer
 
         g.setColor(Color.black);
-        g.fillRect((int) LocalPlayer.playerPosXScreen, (int) (LocalPlayer.playerPosYScreen - 20),
+        g.fillRect((int) LocalPlayer.playerPosXScreen + 36, (int) (LocalPlayer.playerPosYScreen - 20),
                 localPlayer.healthbar.healthbarWidth, localPlayer.healthbar.healthbarHeight);
         g.setColor(Color.GREEN);
-        g.fillRect((int) LocalPlayer.playerPosXScreen, (int) (LocalPlayer.playerPosYScreen - 20),
+        g.fillRect((int) LocalPlayer.playerPosXScreen + 36, (int) (LocalPlayer.playerPosYScreen - 20),
                 localPlayer.healthbar.setSizeOfCurrentHealthToDraw(), localPlayer.healthbar.healthbarHeight);
         g.setColor(Color.YELLOW);
-        g.drawRect((int) LocalPlayer.playerPosXScreen, (int) (LocalPlayer.playerPosYScreen - 20),
+        g.drawRect((int) LocalPlayer.playerPosXScreen + 36, (int) (LocalPlayer.playerPosYScreen - 20),
                 localPlayer.healthbar.healthbarWidth, localPlayer.healthbar.healthbarHeight);
 
 
@@ -185,9 +186,9 @@ public class Playing implements SceneEssentials {
                 }
 
             });
-            synchronized (Spell01.listOfActiveSpell01s) {
-                Spell01.listOfActiveSpell01s = Spell01.listOfActiveSpell01s.stream().filter(spell01 -> !spell01.flagForRemoval).collect(Collectors.toList());
-            }
+//            synchronized (Spell01.listOfActiveSpell01s) {
+//                Spell01.listOfActiveSpell01s = Spell01.listOfActiveSpell01s.stream().filter(spell01 -> !spell01.flagForRemoval).collect(Collectors.toList());
+//            }
 
         }
 

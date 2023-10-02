@@ -31,7 +31,7 @@ public class Spell01 {
     public static BufferedImage[] spellSprites = new BufferedImage[NUMBER_OF_SPRITES];
     public final BufferedImage BasicSpellsSpriteSheet = GameEngine.BasicSpellsSpriteSheet;
     public int xSpriteStartPos, ySpriteStartPos, spriteSize;
-    public int animationTick, animationSpeed = 35, animationIndex;
+    public int animationTick, animationSpeed = 15, animationIndex;
     public float normalizedVectorX;
     public float normalizedVectorY;
     public int mousePosXWorld, mousePosYWorld;
