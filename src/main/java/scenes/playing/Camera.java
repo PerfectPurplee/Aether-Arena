@@ -28,6 +28,8 @@ public class Camera {
     public static BufferedImage WHOLE_MAP;
     public static BufferedImage WHOLE_MAP_OBJECTS;
 
+    public BufferedImage currentCameraPosition;
+    public BufferedImage currentObjectsPosition;
 
     public Camera() {
         cameraPosX = 0;
@@ -65,7 +67,7 @@ public class Camera {
         }
     }
 
-
+//Not used in game loop, rather on MouseEvent
     public static void updateCameraState(MouseEvent e) {
         cameraMovingDown = e.getY() >= MainPanel.gameSize.getHeight() - distanceToEdgeToMoveCamera;
         cameraMovingUP = e.getY() <= distanceToEdgeToMoveCamera;
@@ -88,6 +90,7 @@ public class Camera {
             throw new RuntimeException(e);
         }
     }
+
     public void getWholeMapObjectsImage() {
         InputStream inputStream = getClass().getResourceAsStream("/asset_map_version_smaller_objects.png");
         try {
@@ -95,5 +98,22 @@ public class Camera {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void updateCurrentCameraPosition() {
+        currentCameraPosition = WHOLE_MAP.getSubimage(Camera.cameraPosX, Camera.cameraPosY, Camera_Width,
+                Camera_Height);
+    }
+
+    public void updateMapObjectsPosition() {
+        currentObjectsPosition = WHOLE_MAP_OBJECTS.getSubimage(Camera.cameraPosX, Camera.cameraPosY, Camera_Width,
+                Camera_Height);
+    }
+
+
+    public void updateEverythingForCamera() {
+        updateCameraPosition();
+        updateCurrentCameraPosition();
+        updateMapObjectsPosition();
     }
 }

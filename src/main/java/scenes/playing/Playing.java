@@ -31,12 +31,14 @@ public class Playing implements SceneEssentials {
 
     public synchronized void update() {
 
+//        Camera Updates
+        camera.updateEverythingForCamera();
+
 //        Local player and spells update
 
         localPlayer.moveController();
         localPlayer.currentPlayerSprite = localPlayer.playerSpriteController();
         localPlayer.animationController();
-        camera.updateCameraPosition();
         localPlayer.updatePlayerPositionOnScreenAndPlayerHitbox();
 //      spellCastController creates spells, but also sends data to server
         if (!Spell01.QSpellCreatedOnThisMousePress) {
@@ -67,8 +69,7 @@ public class Playing implements SceneEssentials {
 //        RYSOWANIE LOKALNYCH OBIEKTOW
 
 //        Rysowanie Kamery
-        g.drawImage(camera.WHOLE_MAP.getSubimage(Camera.cameraPosX, Camera.cameraPosY, camera.Camera_Width,
-                camera.Camera_Height), 0, 0, null);
+        g.drawImage(camera.currentCameraPosition, 0, 0, null);
 
 
 //        Rysowanie Localplayera
@@ -103,8 +104,7 @@ public class Playing implements SceneEssentials {
         }
 //        Rysowanie Obiektów Mapy
 
-        g.drawImage(camera.WHOLE_MAP_OBJECTS.getSubimage(Camera.cameraPosX, Camera.cameraPosY, camera.Camera_Width,
-                camera.Camera_Height), 0, 0, null);
+        g.drawImage(camera.currentObjectsPosition, 0, 0, null);
 
 
 //        Heathbar onlineplayers
