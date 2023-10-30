@@ -33,14 +33,14 @@ public class Camera {
 
     public Camera() {
         cameraPosX = 0;
-        cameraPosY = 1500;
+        cameraPosY = 0;
 
         cameraMovingUP = false;
         cameraMovingDown = false;
         cameraMovingLeft = false;
         cameraMovingRight = false;
         getWholeMapImage();
-        getWholeMapObjectsImage();
+//        getWholeMapObjectsImage();
         distanceToEdgeToMoveCamera = 100;
 
     }
@@ -83,7 +83,7 @@ public class Camera {
     }
 
     public void getWholeMapImage() {
-        InputStream inputStream = getClass().getResourceAsStream("/asset_map_version_smaller.png");
+        InputStream inputStream = getClass().getResourceAsStream("/NewMap.png");
         try {
             WHOLE_MAP = ImageIO.read(Objects.requireNonNull(inputStream));
         } catch (IOException e) {
@@ -91,29 +91,29 @@ public class Camera {
         }
     }
 
-    public void getWholeMapObjectsImage() {
-        InputStream inputStream = getClass().getResourceAsStream("/asset_map_version_smaller_objects.png");
-        try {
-            WHOLE_MAP_OBJECTS = ImageIO.read(Objects.requireNonNull(inputStream));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public void getWholeMapObjectsImage() {
+//        InputStream inputStream = getClass().getResourceAsStream("/asset_map_version_smaller_objects.png");
+//        try {
+//            WHOLE_MAP_OBJECTS = ImageIO.read(Objects.requireNonNull(inputStream));
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     public void updateCurrentCameraPosition() {
         currentCameraPosition = WHOLE_MAP.getSubimage(Camera.cameraPosX, Camera.cameraPosY, Camera_Width,
                 Camera_Height);
     }
 
-    public void updateMapObjectsPosition() {
-        currentObjectsPosition = WHOLE_MAP_OBJECTS.getSubimage(Camera.cameraPosX, Camera.cameraPosY, Camera_Width,
-                Camera_Height);
-    }
+//    public void updateMapObjectsPosition() {
+//        currentObjectsPosition = WHOLE_MAP_OBJECTS.getSubimage(Camera.cameraPosX, Camera.cameraPosY, Camera_Width,
+//                Camera_Height);
+//    }
 
 
     public void updateEverythingForCamera() {
         updateCameraPosition();
         updateCurrentCameraPosition();
-        updateMapObjectsPosition();
+//        updateMapObjectsPosition();
     }
 }

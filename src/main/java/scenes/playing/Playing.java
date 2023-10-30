@@ -104,7 +104,7 @@ public class Playing implements SceneEssentials {
         }
 //        Rysowanie Obiektów Mapy
 
-        g.drawImage(camera.currentObjectsPosition, 0, 0, null);
+
 
 
 //        Heathbar onlineplayers
