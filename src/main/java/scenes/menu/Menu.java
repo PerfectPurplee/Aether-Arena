@@ -1,78 +1,95 @@
 package scenes.menu;
 
-import inputs.ActionListener;
+import inputs.PlayerMouseInputs;
 import main.MainPanel;
 import scenes.SceneEssentials;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
 
 public class Menu implements SceneEssentials {
 
-    MainPanel mainPanel;
-    ActionListener actionListener;
-    public static JButton startGameWithServer;
-    public static JButton joinExistingGame;
+    private final MainPanel mainPanel;
+    private final MouseListener mouseListener;
 
+    public static JLabel startGameWithServer;
+    public static JLabel joinExistingGame;
+    public static JLabel settings;
+    public static JLabel exit;
 
     private JPanel panelForMenuButtons;
+    private JPanel mainMenuPanel;
 
-    public Menu(MainPanel mainPanel, ActionListener actionListener) {
+    public static Font googleExo2;
+    private Dimension jLabelSize;
+
+
+    public Menu(MainPanel mainPanel, PlayerMouseInputs playerMouseInputs) {
         this.mainPanel = mainPanel;
-        this.actionListener = actionListener;
+        this.mouseListener = playerMouseInputs;
+        this.jLabelSize = new Dimension(500, 75);
+
+        try {
+            InputStream fontStream = getClass().getResourceAsStream("/Exo2-BoldItalic.ttf");
+            googleExo2 = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(fontStream));
+        } catch (FontFormatException | IOException e) {
+            throw new RuntimeException(e);
+        }
         initiateMenuComponents();
     }
 
     public void initiateMenuComponents() {
-        Dimension buttonMaxSize = new Dimension(600, 75);
+        mainMenuPanel = new JPanel();
+        mainMenuPanel.setLayout(new GridBagLayout());
         panelForMenuButtons = new JPanel();
-        panelForMenuButtons.setLayout(new GridBagLayout());
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
-        buttonPanel.setOpaque(false);
-        buttonPanel.setPreferredSize(new Dimension(800, 600));
-
-//        button properties
-        startGameWithServer = new JButton("START NEW GAME AND BECOME A HOST");
-        joinExistingGame = new JButton("JOIN EXISTING GAME");
-        JButton scoreBoard = new JButton("");
-        JButton zasadyGry = new JButton("");
-        joinExistingGame.setBackground(Color.YELLOW);
-        startGameWithServer.setBackground(Color.YELLOW);
-        scoreBoard.setBackground(Color.YELLOW);
-        zasadyGry.setBackground(Color.YELLOW);
-        joinExistingGame.setFocusable(false);
-        startGameWithServer.setFocusable(false);
-        scoreBoard.setFocusable(false);
-        zasadyGry.setFocusable(false);
-        joinExistingGame.setAlignmentX(Component.CENTER_ALIGNMENT);
-        startGameWithServer.setAlignmentX(Component.CENTER_ALIGNMENT);
-        scoreBoard.setAlignmentX(Component.CENTER_ALIGNMENT);
-        zasadyGry.setAlignmentX(Component.CENTER_ALIGNMENT);
-        joinExistingGame.setMaximumSize(buttonMaxSize);
-        startGameWithServer.setMaximumSize(buttonMaxSize);
-        scoreBoard.setMaximumSize(buttonMaxSize);
-        zasadyGry.setMaximumSize(buttonMaxSize);
-        startGameWithServer.addActionListener(actionListener);
-        joinExistingGame.addActionListener(actionListener);
-
-        buttonPanel.add(Box.createRigidArea(new Dimension(0, 50)));
-        buttonPanel.add(startGameWithServer);
-        buttonPanel.add(Box.createRigidArea(new Dimension(0, 50)));
-        buttonPanel.add(joinExistingGame);
-        buttonPanel.add(Box.createRigidArea(new Dimension(0, 50)));
-        buttonPanel.add(scoreBoard);
-        buttonPanel.add(Box.createRigidArea(new Dimension(0, 50)));
-        buttonPanel.add(zasadyGry);
-
-        panelForMenuButtons.add(buttonPanel);
+        panelForMenuButtons.setLayout(new BoxLayout(panelForMenuButtons, BoxLayout.Y_AXIS)); // Use BoxLayout for the entire panel
         panelForMenuButtons.setOpaque(false);
+        panelForMenuButtons.setPreferredSize(new Dimension(800, 600));
+
+        // Button properties
+        startGameWithServer = createMenuLabel("HOST NEW GAME");
+        joinExistingGame = createMenuLabel("JOIN EXISTING GAME");
+        settings = createMenuLabel("SETTINGS");
+        exit = createMenuLabel("EXIT");
+
+        // Add buttons to the panel
+
+        panelForMenuButtons.add(Box.createRigidArea(new Dimension(0, 50)));
+        panelForMenuButtons.add(startGameWithServer);
+        panelForMenuButtons.add(Box.createRigidArea(new Dimension(0, 50)));
+        panelForMenuButtons.add(joinExistingGame);
+        panelForMenuButtons.add(Box.createRigidArea(new Dimension(0, 50)));
+        panelForMenuButtons.add(settings);
+        panelForMenuButtons.add(Box.createRigidArea(new Dimension(0, 50)));
+        panelForMenuButtons.add(exit);
+
+
+        mainMenuPanel.add(panelForMenuButtons);
+        mainMenuPanel.setOpaque(false);
 
         addComponentsToMainPanel();
     }
 
+    private JLabel createMenuLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(googleExo2.deriveFont(26F));
+        label.setHorizontalAlignment(JLabel.CENTER);
+        label.setVerticalAlignment(JLabel.CENTER);
+        label.setFocusable(false);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        label.setMaximumSize(jLabelSize);
+        label.setMinimumSize(jLabelSize);
+        label.addMouseListener(mouseListener);
+        return label;
+    }
+
+
     public void addComponentsToMainPanel() {
-        mainPanel.add(panelForMenuButtons, BorderLayout.CENTER);
+        mainPanel.add(mainMenuPanel, BorderLayout.CENTER);
     }
 
 

@@ -27,19 +27,6 @@ public class ActionListener implements java.awt.event.ActionListener {
             }
             case MENU -> {
 
-//                if (e.getSource() == Menu.startGameWithServer) {
-////                    gameEngine.createServer();
-//                    mainPanel.changeScene(PLAYING);
-//                }
-
-                if (e.getSource() == Menu.joinExistingGame) {
-
-//                    gameEngine.createClient(gameEngine.getHostIpAddress());
-//                    mainPanel.changeScene(PLAYING);
-                    gameEngine.changeScene(CHAMPION_SELECT);
-
-                }
-
             }
             case PAUSE -> {
             }

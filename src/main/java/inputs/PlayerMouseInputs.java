@@ -1,22 +1,21 @@
 package inputs;
 
 import entities.playercharacters.LocalPlayer;
-import entities.spells.basicspells.Spell01;
-import main.EnumContainer;
 import main.GameEngine;
+import main.MainFrame;
 import networking.Client;
 import networking.PacketManager;
 import scenes.championselect.ChampionSelect;
+import scenes.menu.Menu;
 import scenes.playing.Camera;
 
-import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
-import java.net.DatagramPacket;
 
 import static main.EnumContainer.*;
+import static main.EnumContainer.AllScenes.CHAMPION_SELECT;
 
 
 public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
@@ -26,7 +25,13 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
     LocalPlayer localPlayer;
     ChampionSelect championSelect;
     public Client client;
+
+    //  Instantiated in GameEngine
     public GameEngine gameEngine;
+    public MainFrame mainFrame;
+
+    private int startingPosX;
+    private int startingPosY;
 
     public PlayerMouseInputs(LocalPlayer localPlayer, ChampionSelect championSelect) {
         this.localPlayer = localPlayer;
@@ -42,10 +47,37 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-
+//        Window moving
+        if (e.getY() < 30) {
+            startingPosX = e.getX();
+            startingPosY = e.getY();
+        }
+        else {
+            startingPosX = -1;
+            startingPosY = -1;
+        }
         switch (AllScenes.Current_Scene) {
 
             case MENU -> {
+//                if (e.getSource() == Menu.startGameWithServer) {
+//                   gameEngine.createServer();
+//                    mainPanel.changeScene(PLAYING);
+//                }
+                if (e.getSource() == Menu.joinExistingGame) {
+                    gameEngine.changeScene(CHAMPION_SELECT);
+
+                }
+
+                if (e.getSource() == Menu.settings) {
+
+
+                }
+
+                if (e.getSource() == Menu.exit) {
+                    System.exit(0);
+
+                }
+
             }
             case CHAMPION_SELECT -> {
                 if (e.getSource() == championSelect.championChoice1) {
@@ -85,12 +117,43 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseEntered(MouseEvent e) {
+        switch (AllScenes.Current_Scene) {
+            case MENU -> {
+                if (e.getSource() == Menu.startGameWithServer) {
+                    Menu.startGameWithServer.setFont(Menu.googleExo2.deriveFont(28F));
+                }
+                if (e.getSource() == Menu.joinExistingGame) {
+                    Menu.joinExistingGame.setFont(Menu.googleExo2.deriveFont(28F));
+                }
+                if (e.getSource() == Menu.settings) {
+                    Menu.settings.setFont(Menu.googleExo2.deriveFont(28F));
+                }
+                if (e.getSource() == Menu.exit) {
+                    Menu.exit.setFont(Menu.googleExo2.deriveFont(28F));
+                }
+            }
+        }
 
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-
+        switch (AllScenes.Current_Scene) {
+            case MENU -> {
+                if (e.getSource() == Menu.startGameWithServer) {
+                    Menu.startGameWithServer.setFont(Menu.googleExo2.deriveFont(26F));
+                }
+                if (e.getSource() == Menu.joinExistingGame) {
+                    Menu.joinExistingGame.setFont(Menu.googleExo2.deriveFont(26F));
+                }
+                if (e.getSource() == Menu.settings) {
+                    Menu.settings.setFont(Menu.googleExo2.deriveFont(26F));
+                }
+                if (e.getSource() == Menu.exit) {
+                    Menu.exit.setFont(Menu.googleExo2.deriveFont(26F));
+                }
+            }
+        }
     }
 
     @Override
@@ -115,6 +178,12 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
             }
             case MAP_EDITOR -> {
             }
+        }
+
+        if (e.getY() < 30 && startingPosX != -1 || startingPosY != -1) {
+            mainFrame.setLocation(mainFrame.getX() + e.getX() - startingPosX,
+                    mainFrame.getY() + e.getY() - startingPosY);
+
         }
 
     }

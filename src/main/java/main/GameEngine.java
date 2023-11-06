@@ -6,7 +6,6 @@ import inputs.ActionListener;
 import inputs.PlayerKeyboardInputs;
 import inputs.PlayerMouseInputs;
 import networking.Client;
-import networking.PacketManager;
 import scenes.championselect.ChampionSelect;
 import scenes.menu.Menu;
 import scenes.playing.Camera;
@@ -20,7 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-import static main.EnumContainer.AllScenes.*;
+import static main.EnumContainer.AllScenes.Current_Scene;
+import static main.EnumContainer.AllScenes.PLAYING;
 
 public class GameEngine extends Thread {
 
@@ -55,12 +55,13 @@ public class GameEngine extends Thread {
         playerMouseInputs = new PlayerMouseInputs(localPlayer, championSelect);
         mainPanel = new MainPanel(playerKeyboardInputs, playerMouseInputs);
         actionListener = new ActionListener(mainPanel, this);
-        menu = new Menu(mainPanel, actionListener);
+        menu = new Menu(mainPanel, playerMouseInputs);
         camera = new Camera();
         playing = new Playing(localPlayer, camera);
         mainFrame = new MainFrame(mainPanel);
 
         championSelect.mainPanel = mainPanel;
+        playerMouseInputs.mainFrame = mainFrame;
         playerMouseInputs.gameEngine = this;
 
         this.start();
