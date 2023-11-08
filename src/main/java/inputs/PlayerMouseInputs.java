@@ -81,10 +81,10 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
             }
             case CHAMPION_SELECT -> {
                 if (e.getSource() == championSelect.championChoice1) {
-                    localPlayer.setPlayerChampion(AllPlayableChampions.DON_OHL);
+                    localPlayer.setPlayerChampion(AllPlayableChampions.BLUE_HAIR_DUDE);
                     gameEngine.changeScene(AllScenes.PLAYING);
                 } else if (e.getSource() == championSelect.championChoice2) {
-                    localPlayer.setPlayerChampion(AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE);
+                    localPlayer.setPlayerChampion(AllPlayableChampions.PINK_HAIR_GIRL);
                     gameEngine.changeScene(AllScenes.PLAYING);
                 }
 

@@ -78,24 +78,27 @@ public class LocalPlayer {
 
 
     public LocalPlayer() {
-        this.Current_Player_State = EnumContainer.AllPlayerStates.MOVING_DOWN;
-        currentPlayerSprite = playerSpriteController();
-//        getPlayerSprites4Directional("/Player1.png");
+        this.Current_Player_State = EnumContainer.AllPlayerStates.MOVING_RIGHT;
+        currentPlayerSprite = setCurrentPlayerSprite();
 
 
     }
 
     private void setPlayerHealthBar() {
-        switch (localPlayerChampion) {
 
-            case DON_OHL -> {
-                healthbar = new Healthbar(4000, playerPosXScreen, playerPosYScreen);
-            }
-            case BIG_HAIRY_SWEATY_DUDE -> {
-                healthbar = new Healthbar(200, playerPosXScreen, playerPosYScreen);
+        healthbar = new Healthbar(4000, playerPosXScreen, playerPosYScreen);
 
-            }
-        }
+//        PROTOTYPE CODE IF YOU WANT DIFFERENT HEALTH CAPACITY FOR DIFFERENT CHAMPIONS
+//        switch (localPlayerChampion) {
+//
+//            case BLUE_HAIR_DUDE -> {
+//            }
+//            case PINK_HAIR_GIRL -> {
+//                healthbar = new Healthbar(3000, playerPosXScreen, playerPosYScreen);
+//
+//            }
+//        }
+
     }
 
     public void setPlayerChampion(EnumContainer.AllPlayableChampions champion) {
@@ -107,13 +110,8 @@ public class LocalPlayer {
     }
 
     public void setPLayerFeetPos() {
-        if (localPlayerChampion.equals(EnumContainer.AllPlayableChampions.DON_OHL)) {
-            playerFeetX = 36;
-            playerFeetY = 68;
-        } else if (localPlayerChampion.equals(EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE)) {
-            playerFeetX = 64;
-            playerFeetY = 115;
-        }
+        playerFeetX = 128;
+        playerFeetY = 256;
     }
 
     public void getVectorForPlayerMovement(MouseEvent e) {
@@ -136,7 +134,8 @@ public class LocalPlayer {
 
             playerPosXWorld += (playerMoveSpeed * normalizedVectorX);
             playerPosYWorld += (playerMoveSpeed * normalizedVectorY);
-            distanceToTravel -= (float) (playerMoveSpeed * Math.sqrt(normalizedVectorX * normalizedVectorX + normalizedVectorY * normalizedVectorY));
+            distanceToTravel -= (float) (playerMoveSpeed * Math.sqrt
+                    (normalizedVectorX * normalizedVectorX + normalizedVectorY * normalizedVectorY));
             isPlayerMoving = true;
             setCurrent_Player_State();
         } else {
@@ -147,69 +146,25 @@ public class LocalPlayer {
     }
 
     public void setCurrent_Player_State() {
-// double angle = atan2(y2 - y1, x2 - x1) * 180 / PI;".
-        double movementAngle = Math.atan2(mouseClickYPos - playerMovementStartingPosY, mouseClickXPos - playerMovementStartingPosX);
-        double angleDegrees = Math.toDegrees(movementAngle);
-        if (angleDegrees < 0) {
-            angleDegrees += 360;
-        }
+
         if (isPlayerMoving) {
-            if (angleDegrees >= 22.5 && angleDegrees < 67.5) {
-                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_DOWN_RIGHT;
-
-            } else if (angleDegrees >= 67.5 && angleDegrees < 112.5) {
-                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_DOWN;
-
-            } else if (angleDegrees >= 112.5 && angleDegrees < 157.5) {
-                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_DOWN_LEFT;
-
-            } else if (angleDegrees >= 157.5 && angleDegrees < 202.5) {
+            if (mouseClickXPos < playerMovementStartingPosY) {
                 Current_Player_State = EnumContainer.AllPlayerStates.MOVING_LEFT;
-
-            } else if (angleDegrees >= 202.5 && angleDegrees < 247.5) {
-                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_UP_LEFT;
-
-            } else if (angleDegrees >= 247.5 && angleDegrees < 292.5) {
-                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_UP;
-
-            } else if (angleDegrees >= 292.5 && angleDegrees < 337.5) {
-                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_UP_RIGHT;
-
             } else {
                 Current_Player_State = EnumContainer.AllPlayerStates.MOVING_RIGHT;
             }
         } else {
             switch (Current_Player_State) {
-
-                case MOVING_UP -> {
-                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_UP;
-                }
-                case MOVING_DOWN -> {
-                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_DOWN;
-                }
                 case MOVING_LEFT -> {
                     Current_Player_State = EnumContainer.AllPlayerStates.IDLE_LEFT;
                 }
                 case MOVING_RIGHT -> {
                     Current_Player_State = EnumContainer.AllPlayerStates.IDLE_RIGHT;
                 }
-                case MOVING_UP_LEFT -> {
-                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_UP_LEFT;
-                }
-                case MOVING_UP_RIGHT -> {
-                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_UP_RIGHT;
-                }
-                case MOVING_DOWN_LEFT -> {
-                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_DOWN_LEFT;
-                }
-                case MOVING_DOWN_RIGHT -> {
-                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_DOWN_RIGHT;
-                }
             }
-
         }
-
     }
+
 
     public void setPlayerMovementStartingPosition(float playerPosXWorld, float playerPosYWorld) {
         this.playerMovementStartingPosX = playerPosXWorld + playerFeetX;
@@ -227,7 +182,7 @@ public class LocalPlayer {
         ClassLoader classLoader = getClass().getClassLoader();
         URL resource;
 
-        if (localPlayerChampion == EnumContainer.AllPlayableChampions.DON_OHL) {
+        if (localPlayerChampion == EnumContainer.AllPlayableChampions.BLUE_HAIR_DUDE) {
 
             resource = classLoader.getResource("NewAssets/FullChar/Char1/withHands");
             File folder = new File(Objects.requireNonNull(resource).getFile());
@@ -256,24 +211,21 @@ public class LocalPlayer {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                }
-                else if (spriteImages[i].getName().startsWith("roll")) {
+                } else if (spriteImages[i].getName().startsWith("roll")) {
                     try {
                         playerSpriteROLL_RIGHT[j] = ImageIO.read(spriteImages[i]);
                         playerSpriteROLL_LEFT[j] = flipImageHorizontally(spriteImages[i]);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                }
-                else if (spriteImages[i].getName().startsWith("walk")) {
+                } else if (spriteImages[i].getName().startsWith("walk")) {
                     try {
                         playerSpriteMOVE_RIGHT[j] = ImageIO.read(spriteImages[i]);
                         playerSpriteMOVE_LEFT[j] = flipImageHorizontally(spriteImages[i]);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                }
-                else if (spriteImages[i].getName().startsWith("hit")) {
+                } else if (spriteImages[i].getName().startsWith("hit")) {
                     try {
                         playerSpriteTAKE_DMG_RIGHT[j] = ImageIO.read(spriteImages[i]);
                         playerSpriteTAKE_DMG_LEFT[j] = flipImageHorizontally(spriteImages[i]);
@@ -285,7 +237,7 @@ public class LocalPlayer {
             }
 
 
-        } else if (localPlayerChampion == EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE) {
+        } else if (localPlayerChampion == EnumContainer.AllPlayableChampions.PINK_HAIR_GIRL) {
             InputStream inputStream = getClass().getResourceAsStream("/WIKING_RUN.png");
             try {
                 allLocalPlayerSprites = ImageIO.read(Objects.requireNonNull(inputStream));
@@ -320,7 +272,7 @@ public class LocalPlayer {
     }
 
 
-    public BufferedImage[] playerSpriteController() {
+    public BufferedImage[] setCurrentPlayerSprite() {
         switch (Current_Player_State) {
             case IDLE_LEFT -> {
                 return playerSpriteIDLE_LEFT;
@@ -328,14 +280,12 @@ public class LocalPlayer {
             case IDLE_RIGHT -> {
                 return playerSpriteIDLE_RIGHT;
             }
-
             case MOVING_LEFT -> {
                 return playerSpriteMOVE_LEFT;
             }
             case MOVING_RIGHT -> {
                 return playerSpriteMOVE_RIGHT;
             }
-
             default -> {
                 return null;
             }
@@ -345,20 +295,12 @@ public class LocalPlayer {
     public void animationController() {
         animationTick++;
         if (animationTick >= animationSpeed) {
-            if (playerSpriteController() == playerSpriteIDLE_LEFT ||
-                    playerSpriteController() == playerSpriteIDLE_RIGHT) {
-
-                if (animationIndexIdle < 1) animationIndexIdle++;
+            if (currentPlayerSprite == playerSpriteIDLE_LEFT || currentPlayerSprite == playerSpriteIDLE_RIGHT) {
+                if (animationIndexIdle < 5) animationIndexIdle++;
                 else animationIndexIdle = 0;
-            } else if (playerSpriteController() == playerSpriteMOVE_LEFT ||
-                    playerSpriteController() == playerSpriteMOVE_RIGHT) {
-                if (localPlayerChampion.equals(EnumContainer.AllPlayableChampions.DON_OHL)) {
-                    if (animationIndexMoving < 3) animationIndexMoving++;
-                    else animationIndexMoving = 0;
-                } else if (localPlayerChampion.equals(EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE)) {
-                    if (animationIndexMoving < 7) animationIndexMoving++;
-                    else animationIndexMoving = 0;
-                }
+            } else if (currentPlayerSprite == playerSpriteMOVE_LEFT || currentPlayerSprite == playerSpriteMOVE_RIGHT) {
+                if (animationIndexMoving < 7) animationIndexMoving++;
+                else animationIndexMoving = 0;
             }
             animationTick = 0;
         }
