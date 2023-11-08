@@ -72,7 +72,7 @@ public class Playing implements SceneEssentials {
 //        Rysowanie Localplayera
         if (localPlayer.isPlayerMoving) {
             g.drawImage(localPlayer.currentPlayerSprite[localPlayer.animationIndexMoving],
-                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen,256, 256, null);
+                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, null);
         } else {
             g.drawImage(localPlayer.currentPlayerSprite[localPlayer.animationIndexIdle],
                     (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, 256, 256,null);

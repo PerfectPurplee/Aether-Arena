@@ -12,7 +12,9 @@ import scenes.playing.Camera;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -178,7 +180,29 @@ public class LocalPlayer {
 
     }
 
-    public void getPlayerSprites2Directional(EnumContainer.AllPlayableChampions localPlayerChampion) {
+    private BufferedImage scaleImage(File imageFile) {
+        try {
+            BufferedImage originalImage = ImageIO.read(imageFile);
+
+            double scale = 0.125;
+            int newWidth = (int) (originalImage.getWidth() * scale);
+            int newHeight = (int) (originalImage.getHeight() * scale);
+
+            AffineTransformOp transform = new AffineTransformOp(
+                    AffineTransform.getScaleInstance(scale, scale),
+                    AffineTransformOp.TYPE_BICUBIC);
+            return transform.filter(
+                    originalImage,
+                    new BufferedImage(newWidth, newHeight, originalImage.getType()));
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+
+    private void getPlayerSprites2Directional(EnumContainer.AllPlayableChampions localPlayerChampion) {
         ClassLoader classLoader = getClass().getClassLoader();
         URL resource;
 
@@ -197,41 +221,21 @@ public class LocalPlayer {
                 }
                 fileNameTemp = spriteImages[i].getName();
                 if (spriteImages[i].getName().startsWith("death")) {
-                    try {
-                        playerSpriteDEATH_RIGHT[j] = ImageIO.read(spriteImages[i]);
-                        playerSpriteDEATH_LEFT[j] = flipImageHorizontally(spriteImages[i]);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    playerSpriteDEATH_RIGHT[j] = scaleImage(spriteImages[i]);
+                    playerSpriteDEATH_LEFT[j] = flipImageHorizontally(spriteImages[i]);
 
                 } else if (spriteImages[i].getName().startsWith("idle")) {
-                    try {
-                        playerSpriteIDLE_RIGHT[j] = ImageIO.read(spriteImages[i]);
-                        playerSpriteIDLE_LEFT[j] = flipImageHorizontally(spriteImages[i]);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    playerSpriteIDLE_RIGHT[j] = scaleImage(spriteImages[i]);
+                    playerSpriteIDLE_LEFT[j] = flipImageHorizontally(spriteImages[i]);
                 } else if (spriteImages[i].getName().startsWith("roll")) {
-                    try {
-                        playerSpriteROLL_RIGHT[j] = ImageIO.read(spriteImages[i]);
-                        playerSpriteROLL_LEFT[j] = flipImageHorizontally(spriteImages[i]);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    playerSpriteROLL_RIGHT[j] = scaleImage(spriteImages[i]);
+                    playerSpriteROLL_LEFT[j] = flipImageHorizontally(spriteImages[i]);
                 } else if (spriteImages[i].getName().startsWith("walk")) {
-                    try {
-                        playerSpriteMOVE_RIGHT[j] = ImageIO.read(spriteImages[i]);
-                        playerSpriteMOVE_LEFT[j] = flipImageHorizontally(spriteImages[i]);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    playerSpriteMOVE_RIGHT[j] = scaleImage(spriteImages[i]);
+                    playerSpriteMOVE_LEFT[j] = flipImageHorizontally(spriteImages[i]);
                 } else if (spriteImages[i].getName().startsWith("hit")) {
-                    try {
-                        playerSpriteTAKE_DMG_RIGHT[j] = ImageIO.read(spriteImages[i]);
-                        playerSpriteTAKE_DMG_LEFT[j] = flipImageHorizontally(spriteImages[i]);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    playerSpriteTAKE_DMG_RIGHT[j] = scaleImage(spriteImages[i]);;
+                    playerSpriteTAKE_DMG_LEFT[j] = flipImageHorizontally(spriteImages[i]);
                 }
 
             }
@@ -256,12 +260,7 @@ public class LocalPlayer {
     }
 
     private BufferedImage flipImageHorizontally(File imageFile) {
-        BufferedImage image = null;
-        try {
-            image = ImageIO.read(imageFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        BufferedImage image = scaleImage(imageFile);
         int width = image.getWidth();
         int height = image.getHeight();
         BufferedImage flippedImage = new BufferedImage(width, height, image.getType());
