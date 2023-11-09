@@ -21,7 +21,7 @@ public class MainPanel extends JPanel {
         this.setLayout(new BorderLayout());
 //        gameSize = Toolkit.getDefaultToolkit().getScreenSize();
         gameSize = new Dimension(1280, 800);
-        this.playerKeyboardInputs = playerKeyboardInputs;
+         this.playerKeyboardInputs = playerKeyboardInputs;
         this.playerMouseInputs = playerMouseInputs;
         this.addKeyListener(playerKeyboardInputs);
         this.addMouseListener(playerMouseInputs);

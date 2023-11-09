@@ -3,6 +3,7 @@ package entities.playercharacters;
 import entities.Healthbar;
 import entities.spells.basicspells.Spell01;
 import inputs.PlayerKeyboardInputs;
+import main.AssetLoader;
 import main.EnumContainer;
 import main.EnumContainer.ServerClientConnectionCopyObjects;
 import networking.Client;
@@ -10,41 +11,37 @@ import networking.PacketManager;
 import scenes.playing.Camera;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class LocalPlayer {
 
     public BufferedImage allLocalPlayerSprites;
-
-    public BufferedImage[] playerSpriteIDLE_UP = new BufferedImage[1];
-    public BufferedImage[] playerSpriteIDLE_DOWN = new BufferedImage[1];
-    public BufferedImage[] playerSpriteIDLE_LEFT = new BufferedImage[1];
-    public BufferedImage[] playerSpriteIDLE_RIGHT = new BufferedImage[1];
-
-    public BufferedImage[] playerSpriteIDLE_UP_LEFT = new BufferedImage[1];
-    public BufferedImage[] playerSpriteIDLE_UP_RIGHT = new BufferedImage[1];
-    public BufferedImage[] playerSpriteIDLE_DOWN_LEFT = new BufferedImage[1];
-    public BufferedImage[] playerSpriteIDLE_DOWN_RIGHT = new BufferedImage[1];
-
-
-    public BufferedImage[] playerSpriteUP = new BufferedImage[8];
-    public BufferedImage[] playerSpriteDOWN = new BufferedImage[8];
-    public BufferedImage[] playerSpriteLEFT = new BufferedImage[8];
-    public BufferedImage[] playerSpriteRIGHT = new BufferedImage[8];
-
-    public BufferedImage[] playerSpriteUP_LEFT = new BufferedImage[8];
-    public BufferedImage[] playerSpriteUP_RIGHT = new BufferedImage[8];
-    public BufferedImage[] playerSpriteDOWN_LEFT = new BufferedImage[8];
-    public BufferedImage[] playerSpriteDOWN_RIGHT = new BufferedImage[8];
-
     public BufferedImage[] currentPlayerSprite;
+
+    public BufferedImage[] playerSpriteIDLE_RIGHT = new BufferedImage[6];
+    public BufferedImage[] playerSpriteIDLE_LEFT = new BufferedImage[6];
+
+    public BufferedImage[] playerSpriteMOVE_LEFT = new BufferedImage[8];
+    public BufferedImage[] playerSpriteMOVE_RIGHT = new BufferedImage[8];
+
+    public BufferedImage[] playerSpriteDEATH_RIGHT;
+    public BufferedImage[] playerSpriteDEATH_LEFT = new BufferedImage[10];
+
+
+    public BufferedImage[] playerSpriteTAKE_DMG_RIGHT = new BufferedImage[3];
+    public BufferedImage[] playerSpriteTAKE_DMG_LEFT = new BufferedImage[3];
+
+    public BufferedImage[] playerSpriteROLL_RIGHT = new BufferedImage[5];
+    public BufferedImage[] playerSpriteROLL_LEFT = new BufferedImage[5];
 
     public EnumContainer.AllPlayerStates Current_Player_State;
     public EnumContainer.AllPlayableChampions localPlayerChampion;
@@ -55,15 +52,21 @@ public class LocalPlayer {
     public static float playerPosXWorld;
     public static float playerPosYWorld;
     public static float playerPosXScreen, playerPosYScreen;
+
     public int playerFeetX, playerFeetY;
     public int mouseClickXPos;
     public int mouseClickYPos;
     public float normalizedVectorX;
     public float normalizedVectorY;
-    int playerMovespeed = 2;
+
     public float playerMovementStartingPosX, playerMovementStartingPosY;
     public float distanceToTravel;
     public boolean isPlayerMoving;
+
+
+    private Graphics2D g2d;
+    private AssetLoader assetLoader;
+    private int playerMoveSpeed = 2;
 
     private int animationTick;
     private final int animationSpeed = 15;
@@ -77,43 +80,45 @@ public class LocalPlayer {
     private long lastQSpellCastTime;
 
 
-    public LocalPlayer() {
-        this.Current_Player_State = EnumContainer.AllPlayerStates.MOVING_DOWN;
-        currentPlayerSprite = playerSpriteController();
-//        getPlayerSprites4Directional("/Player1.png");
+    public LocalPlayer(AssetLoader assetLoader) {
+        this.assetLoader = assetLoader;
+        this.Current_Player_State = EnumContainer.AllPlayerStates.MOVING_RIGHT;
+        currentPlayerSprite = setCurrentPlayerSprite();
 
 
     }
 
     private void setPlayerHealthBar() {
-        switch (localPlayerChampion) {
 
-            case DON_OHL -> {
-                healthbar = new Healthbar(4000, playerPosXScreen, playerPosYScreen);
-            }
-            case BIG_HAIRY_SWEATY_DUDE -> {
-                healthbar = new Healthbar(200, playerPosXScreen, playerPosYScreen);
+        healthbar = new Healthbar(
+                4000, localPlayerHitbox.playerHitboxPosXScreen,
+                localPlayerHitbox.playerHitboxPosYScreen);
 
-            }
-        }
+//        PROTOTYPE CODE IF YOU WANT DIFFERENT HEALTH CAPACITY FOR DIFFERENT CHAMPIONS
+//        switch (localPlayerChampion) {
+//
+//            case BLUE_HAIR_DUDE -> {
+//            }
+//            case PINK_HAIR_GIRL -> {
+//                healthbar = new Healthbar(3000, playerPosXScreen, playerPosYScreen);
+//
+//            }
+//        }
+
     }
 
     public void setPlayerChampion(EnumContainer.AllPlayableChampions champion) {
         localPlayerChampion = champion;
-        getPlayerSprites8Directional(localPlayerChampion);
+        getPlayerSprites2Directional(localPlayerChampion);
         setPLayerFeetPos();
-        setPlayerHealthBar();
         localPlayerHitbox = new LocalPlayerHitbox();
+        setPlayerHealthBar();
+
     }
 
     public void setPLayerFeetPos() {
-        if (localPlayerChampion.equals(EnumContainer.AllPlayableChampions.DON_OHL)) {
-            playerFeetX = 36;
-            playerFeetY = 68;
-        } else if (localPlayerChampion.equals(EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE)) {
-            playerFeetX = 64;
-            playerFeetY = 115;
-        }
+        playerFeetX = 128;
+        playerFeetY = 220;
     }
 
     public void getVectorForPlayerMovement(MouseEvent e) {
@@ -126,7 +131,6 @@ public class LocalPlayer {
         float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
         distanceToTravel = magnitude;
 
-
         normalizedVectorX = (vectorX / magnitude);
         normalizedVectorY = (vectorY / magnitude);
     }
@@ -135,9 +139,10 @@ public class LocalPlayer {
 //
         if (distanceToTravel > 0) {
 
-            playerPosXWorld += (playerMovespeed * normalizedVectorX);
-            playerPosYWorld += (playerMovespeed * normalizedVectorY);
-            distanceToTravel -= (float) (playerMovespeed * Math.sqrt(normalizedVectorX * normalizedVectorX + normalizedVectorY * normalizedVectorY));
+            playerPosXWorld += (playerMoveSpeed * normalizedVectorX);
+            playerPosYWorld += (playerMoveSpeed * normalizedVectorY);
+            distanceToTravel -= (float) (playerMoveSpeed * Math.sqrt
+                    (normalizedVectorX * normalizedVectorX + normalizedVectorY * normalizedVectorY));
             isPlayerMoving = true;
             setCurrent_Player_State();
         } else {
@@ -148,69 +153,25 @@ public class LocalPlayer {
     }
 
     public void setCurrent_Player_State() {
-// double angle = atan2(y2 - y1, x2 - x1) * 180 / PI;".
-        double movementAngle = Math.atan2(mouseClickYPos - playerMovementStartingPosY, mouseClickXPos - playerMovementStartingPosX);
-        double angleDegrees = Math.toDegrees(movementAngle);
-        if (angleDegrees < 0) {
-            angleDegrees += 360;
-        }
+
         if (isPlayerMoving) {
-            if (angleDegrees >= 22.5 && angleDegrees < 67.5) {
-                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_DOWN_RIGHT;
-
-            } else if (angleDegrees >= 67.5 && angleDegrees < 112.5) {
-                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_DOWN;
-
-            } else if (angleDegrees >= 112.5 && angleDegrees < 157.5) {
-                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_DOWN_LEFT;
-
-            } else if (angleDegrees >= 157.5 && angleDegrees < 202.5) {
+            if (mouseClickXPos < playerPosXScreen + playerFeetX) {
                 Current_Player_State = EnumContainer.AllPlayerStates.MOVING_LEFT;
-
-            } else if (angleDegrees >= 202.5 && angleDegrees < 247.5) {
-                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_UP_LEFT;
-
-            } else if (angleDegrees >= 247.5 && angleDegrees < 292.5) {
-                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_UP;
-
-            } else if (angleDegrees >= 292.5 && angleDegrees < 337.5) {
-                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_UP_RIGHT;
-
             } else {
                 Current_Player_State = EnumContainer.AllPlayerStates.MOVING_RIGHT;
             }
         } else {
             switch (Current_Player_State) {
-
-                case MOVING_UP -> {
-                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_UP;
-                }
-                case MOVING_DOWN -> {
-                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_DOWN;
-                }
                 case MOVING_LEFT -> {
                     Current_Player_State = EnumContainer.AllPlayerStates.IDLE_LEFT;
                 }
                 case MOVING_RIGHT -> {
                     Current_Player_State = EnumContainer.AllPlayerStates.IDLE_RIGHT;
                 }
-                case MOVING_UP_LEFT -> {
-                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_UP_LEFT;
-                }
-                case MOVING_UP_RIGHT -> {
-                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_UP_RIGHT;
-                }
-                case MOVING_DOWN_LEFT -> {
-                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_DOWN_LEFT;
-                }
-                case MOVING_DOWN_RIGHT -> {
-                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_DOWN_RIGHT;
-                }
             }
-
         }
-
     }
+
 
     public void setPlayerMovementStartingPosition(float playerPosXWorld, float playerPosYWorld) {
         this.playerMovementStartingPosX = playerPosXWorld + playerFeetX;
@@ -224,197 +185,80 @@ public class LocalPlayer {
 
     }
 
-    public void getPlayerSprites8Directional(EnumContainer.AllPlayableChampions localPlayerChampion) {
 
-        int spriteSize = 0;
-        int spriteXpos = 0;
-        int numberOfSpritesInRow = 0;
-        if (localPlayerChampion == EnumContainer.AllPlayableChampions.DON_OHL) {
-            InputStream inputStream = getClass().getResourceAsStream("/DON_OHL.png");
-            try {
-                allLocalPlayerSprites = ImageIO.read(Objects.requireNonNull(inputStream));
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    assert inputStream != null;
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+    private void getPlayerSprites2Directional(EnumContainer.AllPlayableChampions localPlayerChampion) {
 
-            spriteSize = 72;
-            numberOfSpritesInRow = 4;
+        int indexOFChampionInAssetLoader;
 
-
-//        Assigning moving sprites for all directions
-            for (int i = 0; i < numberOfSpritesInRow; i++) {
-                playerSpriteUP[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
-                playerSpriteUP_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
-                playerSpriteUP_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
-                playerSpriteLEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
-                playerSpriteRIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
-                playerSpriteDOWN_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
-                playerSpriteDOWN_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
-                playerSpriteDOWN[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
-
-                spriteXpos += spriteSize;
-            }
-
-            spriteXpos = 0;
-//       Assinging idle sprites for all directions
-            for (int i = 0; i < 1; i++) {
-                playerSpriteIDLE_UP[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
-                playerSpriteIDLE_UP_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
-                playerSpriteIDLE_UP_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
-                playerSpriteIDLE_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
-                playerSpriteIDLE_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
-                playerSpriteIDLE_DOWN_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
-                playerSpriteIDLE_DOWN_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
-                playerSpriteIDLE_DOWN[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
-
-
-                spriteXpos += spriteSize;
-            }
-
-        } else if (localPlayerChampion == EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE) {
-            InputStream inputStream = getClass().getResourceAsStream("/WIKING_RUN.png");
-            try {
-                allLocalPlayerSprites = ImageIO.read(Objects.requireNonNull(inputStream));
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    assert inputStream != null;
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            spriteSize = 128;
-            numberOfSpritesInRow = 8;
-//        Assigning moving sprites for all directions
-            for (int i = 0; i < numberOfSpritesInRow; i++) {
-                playerSpriteDOWN[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
-                playerSpriteLEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
-                playerSpriteRIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
-                playerSpriteUP[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
-                playerSpriteDOWN_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
-                playerSpriteDOWN_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
-                playerSpriteUP_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
-                playerSpriteUP_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
-
-                spriteXpos += spriteSize;
-            }
-
-            spriteXpos = 0;
-//       Assinging idle sprites for all directions
-            for (int i = 0; i < 1; i++) {
-                playerSpriteIDLE_DOWN[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
-                playerSpriteIDLE_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
-                playerSpriteIDLE_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
-                playerSpriteIDLE_UP[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
-                playerSpriteIDLE_DOWN_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
-                playerSpriteIDLE_DOWN_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
-                playerSpriteIDLE_UP_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
-                playerSpriteIDLE_UP_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
-
-                spriteXpos += spriteSize;
-            }
+        switch (localPlayerChampion) {
+            case BLUE_HAIR_DUDE -> indexOFChampionInAssetLoader = 0;
+            case PINK_HAIR_GIRL -> indexOFChampionInAssetLoader = 1;
+            case BLOND_MOHAWK_DUDE -> indexOFChampionInAssetLoader = 2;
+            case CAPE_BALDY_DUDE -> indexOFChampionInAssetLoader = 3;
+            default -> indexOFChampionInAssetLoader = 99;
         }
+        playerSpriteDEATH_RIGHT = assetLoader.playerSpriteDEATH_RIGHT[indexOFChampionInAssetLoader];
+        playerSpriteDEATH_LEFT = assetLoader.playerSpriteDEATH_LEFT[indexOFChampionInAssetLoader];
+
+        playerSpriteIDLE_RIGHT = assetLoader.playerSpriteIDLE_RIGHT[indexOFChampionInAssetLoader];
+        playerSpriteIDLE_LEFT = assetLoader.playerSpriteIDLE_LEFT[indexOFChampionInAssetLoader];
+
+        playerSpriteROLL_RIGHT = assetLoader.playerSpriteROLL_RIGHT[indexOFChampionInAssetLoader];
+        playerSpriteROLL_LEFT = assetLoader.playerSpriteROLL_LEFT[indexOFChampionInAssetLoader];
+
+        playerSpriteMOVE_RIGHT = assetLoader.playerSpriteMOVE_RIGHT[indexOFChampionInAssetLoader];
+        playerSpriteMOVE_LEFT = assetLoader.playerSpriteMOVE_LEFT[indexOFChampionInAssetLoader];
+
+        playerSpriteTAKE_DMG_RIGHT = assetLoader.playerSpriteTAKE_DMG_RIGHT[indexOFChampionInAssetLoader];
+        playerSpriteTAKE_DMG_LEFT = assetLoader.playerSpriteTAKE_DMG_LEFT[indexOFChampionInAssetLoader];
     }
 
-    public void getPlayerSprites4Directional(String classpath) {
-        InputStream inputStream = getClass().getResourceAsStream(classpath);
+    private BufferedImage scaleImage(File imageFile) {
         try {
-            allLocalPlayerSprites = ImageIO.read(Objects.requireNonNull(inputStream));
+            BufferedImage originalImage = ImageIO.read(imageFile);
+
+            double scale = 0.125;
+            int newWidth = (int) (originalImage.getWidth() * scale);
+            int newHeight = (int) (originalImage.getHeight() * scale);
+
+            AffineTransformOp transform = new AffineTransformOp(
+                    AffineTransform.getScaleInstance(scale, scale),
+                    AffineTransformOp.TYPE_BICUBIC);
+            return transform.filter(
+                    originalImage,
+                    new BufferedImage(newWidth, newHeight, originalImage.getType()));
+
         } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                assert inputStream != null;
-                inputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            throw new RuntimeException(e);
         }
-
-        int spriteSize = 72;
-        int spriteXpos = 0;
-
-//        Assigning moving sprites for all directions
-        for (int i = 0; i < 4; i++) {
-            playerSpriteDOWN[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
-            playerSpriteLEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 72, spriteSize, spriteSize);
-            playerSpriteRIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 144, spriteSize, spriteSize);
-            playerSpriteUP[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 216, spriteSize, spriteSize);
-            spriteXpos += 72;
-        }
-
-        spriteXpos = 0;
-//       Assinging idle sprites for all directions
-        for (int i = 0; i < 2; i++) {
-            playerSpriteIDLE_DOWN[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
-            playerSpriteIDLE_LEFT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 72, spriteSize, spriteSize);
-            playerSpriteIDLE_RIGHT[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 144, spriteSize, spriteSize);
-            playerSpriteIDLE_UP[i] = allLocalPlayerSprites.getSubimage(spriteXpos, 216, spriteSize, spriteSize);
-
-            spriteXpos += 144;
-        }
-
 
     }
 
-    public BufferedImage[] playerSpriteController() {
+    private BufferedImage flipImageHorizontally(File imageFile) {
+        BufferedImage image = scaleImage(imageFile);
+        int width = image.getWidth();
+        int height = image.getHeight();
+        BufferedImage flippedImage = new BufferedImage(width, height, image.getType());
+        g2d = flippedImage.createGraphics();
+        g2d.drawImage(image, width, 0, -width, height, null);
+
+        return flippedImage;
+    }
+
+
+    public BufferedImage[] setCurrentPlayerSprite() {
         switch (Current_Player_State) {
-            case IDLE_UP -> {
-                return playerSpriteIDLE_UP;
-            }
-            case IDLE_DOWN -> {
-                return playerSpriteIDLE_DOWN;
-            }
             case IDLE_LEFT -> {
                 return playerSpriteIDLE_LEFT;
             }
             case IDLE_RIGHT -> {
                 return playerSpriteIDLE_RIGHT;
             }
-            case IDLE_UP_LEFT -> {
-                return playerSpriteIDLE_UP_LEFT;
-            }
-            case IDLE_UP_RIGHT -> {
-                return playerSpriteIDLE_UP_RIGHT;
-            }
-            case IDLE_DOWN_LEFT -> {
-                return playerSpriteIDLE_DOWN_LEFT;
-            }
-            case IDLE_DOWN_RIGHT -> {
-                return playerSpriteIDLE_DOWN_RIGHT;
-            }
-            case MOVING_UP -> {
-                return playerSpriteUP;
-            }
-            case MOVING_DOWN -> {
-                return playerSpriteDOWN;
-            }
             case MOVING_LEFT -> {
-                return playerSpriteLEFT;
+                return playerSpriteMOVE_LEFT;
             }
             case MOVING_RIGHT -> {
-                return playerSpriteRIGHT;
-            }
-            case MOVING_UP_LEFT -> {
-                return playerSpriteUP_LEFT;
-            }
-            case MOVING_UP_RIGHT -> {
-                return playerSpriteUP_RIGHT;
-            }
-            case MOVING_DOWN_LEFT -> {
-                return playerSpriteDOWN_LEFT;
-            }
-            case MOVING_DOWN_RIGHT -> {
-                return playerSpriteDOWN_RIGHT;
+                return playerSpriteMOVE_RIGHT;
             }
             default -> {
                 return null;
@@ -425,35 +269,12 @@ public class LocalPlayer {
     public void animationController() {
         animationTick++;
         if (animationTick >= animationSpeed) {
-            if (playerSpriteController() == playerSpriteIDLE_UP |
-                    playerSpriteController() == playerSpriteIDLE_DOWN |
-                    playerSpriteController() == playerSpriteIDLE_LEFT |
-                    playerSpriteController() == playerSpriteIDLE_RIGHT |
-                    playerSpriteController() == playerSpriteIDLE_UP_LEFT |
-                    playerSpriteController() == playerSpriteIDLE_UP_RIGHT |
-                    playerSpriteController() == playerSpriteIDLE_DOWN_LEFT |
-                    playerSpriteController() == playerSpriteIDLE_DOWN_RIGHT) {
-
-                if (animationIndexIdle < 1)
-                    animationIndexIdle++;
+            if (currentPlayerSprite == playerSpriteIDLE_LEFT || currentPlayerSprite == playerSpriteIDLE_RIGHT) {
+                if (animationIndexIdle < 5) animationIndexIdle++;
                 else animationIndexIdle = 0;
-            } else if (playerSpriteController() == playerSpriteUP |
-                    playerSpriteController() == playerSpriteDOWN |
-                    playerSpriteController() == playerSpriteLEFT |
-                    playerSpriteController() == playerSpriteRIGHT |
-                    playerSpriteController() == playerSpriteUP_LEFT |
-                    playerSpriteController() == playerSpriteUP_RIGHT |
-                    playerSpriteController() == playerSpriteDOWN_LEFT |
-                    playerSpriteController() == playerSpriteDOWN_RIGHT) {
-                if (localPlayerChampion.equals(EnumContainer.AllPlayableChampions.DON_OHL)) {
-                    if (animationIndexMoving < 3)
-                        animationIndexMoving++;
-                    else animationIndexMoving = 0;
-                } else if (localPlayerChampion.equals(EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE)) {
-                    if (animationIndexMoving < 7)
-                        animationIndexMoving++;
-                    else animationIndexMoving = 0;
-                }
+            } else if (currentPlayerSprite == playerSpriteMOVE_LEFT || currentPlayerSprite == playerSpriteMOVE_RIGHT) {
+                if (animationIndexMoving < 7) animationIndexMoving++;
+                else animationIndexMoving = 0;
             }
             animationTick = 0;
         }
@@ -505,19 +326,33 @@ public class LocalPlayer {
     }
 
     public void updatePlayerHitboxWorldAndPosOnScreen() {
-        localPlayerHitbox.x = playerPosXWorld;
-        localPlayerHitbox.y = playerPosYWorld;
-        localPlayerHitbox.playerHitboxPosXScreen = playerPosXScreen;
-        localPlayerHitbox.playerHitboxPosYScreen = playerPosYScreen;
+        localPlayerHitbox.x = playerPosXWorld + hitboxOffsetX;
+        localPlayerHitbox.y = playerPosYWorld + hitboxOffsetYAbovePlayerSprite;
+        localPlayerHitbox.playerHitboxPosXScreen = playerPosXScreen + hitboxOffsetX;
+        localPlayerHitbox.playerHitboxPosYScreen = playerPosYScreen + hitboxOffsetYAbovePlayerSprite;
 
     }
+
+    public void updateHealthBarCurrentHealthAndPositionOnScreen() {
+        healthbar.currentHealthToDraw = healthbar.setSizeOfCurrentHealthToDraw();
+        healthbar.healthbarPositionOnScreenX = (int) (localPlayerHitbox.playerHitboxPosXScreen);
+        healthbar.healthbarPositionOnScreenY = (int) (localPlayerHitbox.playerHitboxPosYScreen - healthbar.offsetY);
+    }
+
+
+    private final int hitboxOffsetX = 90;
+    private final int hitboxOffsetYAbovePlayerSprite = 130;
 
     public class LocalPlayerHitbox extends Rectangle2D.Float {
 
         public float playerHitboxPosXScreen, playerHitboxPosYScreen;
+
         LocalPlayerHitbox() {
-            super( playerPosXWorld,  playerPosYWorld,
-                    playerSpriteDOWN[0].getWidth(),playerSpriteDOWN[0].getHeight());
+            super(
+                    playerPosXWorld + hitboxOffsetX,
+                    playerPosYWorld + hitboxOffsetYAbovePlayerSprite,
+                    (playerSpriteMOVE_RIGHT[0].getWidth() - hitboxOffsetX * 2),
+                    playerSpriteMOVE_RIGHT[0].getHeight() - (hitboxOffsetYAbovePlayerSprite + 25));
         }
 
     }

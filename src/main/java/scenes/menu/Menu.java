@@ -46,7 +46,7 @@ public class Menu implements SceneEssentials {
         mainMenuPanel = new JPanel();
         mainMenuPanel.setLayout(new GridBagLayout());
         panelForMenuButtons = new JPanel();
-        panelForMenuButtons.setLayout(new BoxLayout(panelForMenuButtons, BoxLayout.Y_AXIS)); // Use BoxLayout for the entire panel
+        panelForMenuButtons.setLayout(new BoxLayout(panelForMenuButtons, BoxLayout.Y_AXIS));
         panelForMenuButtons.setOpaque(false);
         panelForMenuButtons.setPreferredSize(new Dimension(800, 600));
 

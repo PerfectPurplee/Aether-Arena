@@ -1,6 +1,7 @@
 package inputs;
 
 import entities.playercharacters.LocalPlayer;
+import main.EnumContainer;
 import main.GameEngine;
 import main.MainFrame;
 import networking.Client;
@@ -14,8 +15,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 
-import static main.EnumContainer.*;
+import static main.EnumContainer.AllScenes;
 import static main.EnumContainer.AllScenes.CHAMPION_SELECT;
+import static main.EnumContainer.ServerClientConnectionCopyObjects;
 
 
 public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
@@ -51,8 +53,7 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
         if (e.getY() < 30) {
             startingPosX = e.getX();
             startingPosY = e.getY();
-        }
-        else {
+        } else {
             startingPosX = -1;
             startingPosY = -1;
         }
@@ -80,12 +81,22 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
             }
             case CHAMPION_SELECT -> {
-                if (e.getSource() == championSelect.championChoice1) {
-                    localPlayer.setPlayerChampion(AllPlayableChampions.DON_OHL);
+                if (e.getSource() == championSelect.championLabels[0]) {
+                    localPlayer.setPlayerChampion(EnumContainer.AllPlayableChampions.BLUE_HAIR_DUDE);
                     gameEngine.changeScene(AllScenes.PLAYING);
-                } else if (e.getSource() == championSelect.championChoice2) {
-                    localPlayer.setPlayerChampion(AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE);
+                } else if (e.getSource() == championSelect.championLabels[1]) {
+                    localPlayer.setPlayerChampion(EnumContainer.AllPlayableChampions.PINK_HAIR_GIRL);
                     gameEngine.changeScene(AllScenes.PLAYING);
+                } else if (e.getSource() == championSelect.championLabels[2]) {
+                    localPlayer.setPlayerChampion(EnumContainer.AllPlayableChampions.BLOND_MOHAWK_DUDE);
+                    gameEngine.changeScene(AllScenes.PLAYING);
+                } else if (e.getSource() == championSelect.championLabels[3]) {
+                    localPlayer.setPlayerChampion(EnumContainer.AllPlayableChampions.CAPE_BALDY_DUDE);
+                    gameEngine.changeScene(AllScenes.PLAYING);
+                }
+
+                if (e.getSource() == championSelect.backToMenu) {
+                    gameEngine.changeScene(AllScenes.MENU);
                 }
 
             }
@@ -132,6 +143,25 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
                     Menu.exit.setFont(Menu.googleExo2.deriveFont(28F));
                 }
             }
+            case CHAMPION_SELECT -> {
+                if (e.getSource() == championSelect.championLabels[0]) {
+                    championSelect.isChampionBeingMouseHovered.put(0, true);
+                }
+                if (e.getSource() == championSelect.championLabels[1]) {
+                    championSelect.isChampionBeingMouseHovered.put(1, true);
+                }
+                if (e.getSource() == championSelect.championLabels[2]) {
+                    championSelect.isChampionBeingMouseHovered.put(2, true);
+                }
+                if (e.getSource() == championSelect.championLabels[3]) {
+                    championSelect.isChampionBeingMouseHovered.put(3, true);
+                }
+                if (e.getSource() == championSelect.backToMenu) {
+                    championSelect.backToMenu.setFont(Menu.googleExo2.deriveFont(32F));
+
+                }
+
+            }
         }
 
     }
@@ -151,6 +181,11 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
                 }
                 if (e.getSource() == Menu.exit) {
                     Menu.exit.setFont(Menu.googleExo2.deriveFont(26F));
+                }
+            }
+            case CHAMPION_SELECT -> {
+                if (e.getSource() == championSelect.backToMenu) {
+                    championSelect.backToMenu.setFont(Menu.googleExo2.deriveFont(30F));
                 }
             }
         }
@@ -181,8 +216,7 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
         }
 
         if (e.getY() < 30 && startingPosX != -1 || startingPosY != -1) {
-            mainFrame.setLocation(mainFrame.getX() + e.getX() - startingPosX,
-                    mainFrame.getY() + e.getY() - startingPosY);
+            mainFrame.setLocation(mainFrame.getX() + e.getX() - startingPosX, mainFrame.getY() + e.getY() - startingPosY);
 
         }
 

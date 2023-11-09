@@ -1,41 +1,38 @@
 package entities.playercharacters;
 
 import entities.Healthbar;
+import main.AssetLoader;
 import main.EnumContainer;
 import scenes.playing.Camera;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class OnlinePlayer {
 
     public BufferedImage allOnlinePlayerSprites;
 
-    public BufferedImage[] playerSpriteIDLE_UP = new BufferedImage[2];
-    public BufferedImage[] playerSpriteIDLE_DOWN = new BufferedImage[2];
-    public BufferedImage[] playerSpriteIDLE_LEFT = new BufferedImage[2];
-    public BufferedImage[] playerSpriteIDLE_RIGHT = new BufferedImage[2];
+    public BufferedImage[] playerSpriteIDLE_RIGHT = new BufferedImage[6];
+    public BufferedImage[] playerSpriteIDLE_LEFT = new BufferedImage[6];
 
-    public BufferedImage[] playerSpriteIDLE_UP_LEFT = new BufferedImage[2];
-    public BufferedImage[] playerSpriteIDLE_UP_RIGHT = new BufferedImage[2];
-    public BufferedImage[] playerSpriteIDLE_DOWN_LEFT = new BufferedImage[2];
-    public BufferedImage[] playerSpriteIDLE_DOWN_RIGHT = new BufferedImage[2];
+    public BufferedImage[] playerSpriteMOVE_LEFT = new BufferedImage[8];
+    public BufferedImage[] playerSpriteMOVE_RIGHT = new BufferedImage[8];
 
-    public BufferedImage[] playerSpriteUP = new BufferedImage[8];
-    public BufferedImage[] playerSpriteDOWN = new BufferedImage[8];
-    public BufferedImage[] playerSpriteLEFT = new BufferedImage[8];
-    public BufferedImage[] playerSpriteRIGHT = new BufferedImage[8];
+    public BufferedImage[] playerSpriteDEATH_RIGHT = new BufferedImage[10];
+    public BufferedImage[] playerSpriteDEATH_LEFT = new BufferedImage[10];
 
-    public BufferedImage[] playerSpriteUP_LEFT = new BufferedImage[8];
-    public BufferedImage[] playerSpriteUP_RIGHT = new BufferedImage[8];
-    public BufferedImage[] playerSpriteDOWN_LEFT = new BufferedImage[8];
-    public BufferedImage[] playerSpriteDOWN_RIGHT = new BufferedImage[8];
+
+    public BufferedImage[] playerSpriteTAKE_DMG_RIGHT = new BufferedImage[3];
+    public BufferedImage[] playerSpriteTAKE_DMG_LEFT = new BufferedImage[3];
+
+    public BufferedImage[] playerSpriteROLL_RIGHT = new BufferedImage[5];
+    public BufferedImage[] playerSpriteROLL_LEFT = new BufferedImage[5];
 
     public BufferedImage[] currentPlayerSpriteOnlinePlayer;
 
@@ -47,6 +44,8 @@ public class OnlinePlayer {
 
     public float playerPosXWorld, playerPosYWorld;
     public float playerPosXScreen, playerPosYScreen;
+
+    private Graphics2D g2d;
     private int animationTick, animationSpeed = 15;
     public int animationIndexMoving, animationIndexIdle;
 
@@ -54,16 +53,18 @@ public class OnlinePlayer {
     public boolean isPlayerMoving;
 
     public static List<OnlinePlayer> listOfAllConnectedOnlinePLayers = new ArrayList<>();
+    //    Assigned in a GameEngine
+    public static AssetLoader assetLoader;
 
 
     public OnlinePlayer(int onlinePlayerID) {
         onlinePlayerChampion = EnumContainer.ServerClientConnectionCopyObjects.PLayer_Champion_Shared;
-        getPlayerSprites8Directional(onlinePlayerChampion);
+        getPlayerSprites2Directional(onlinePlayerChampion);
         this.onlinePlayerID = onlinePlayerID;
-        this.Current_Player_State_Online_Player = EnumContainer.AllPlayerStates.IDLE_DOWN;
-        currentPlayerSpriteOnlinePlayer = playerSpriteController();
-        setPlayerHealthBar();
+        this.Current_Player_State_Online_Player = EnumContainer.AllPlayerStates.MOVING_RIGHT;
+        currentPlayerSpriteOnlinePlayer = setCurrentOnlinePlayerSprite();
         onlinePlayerHitbox = new OnlinePlayerHitbox();
+        setPlayerHealthBar();
 
 
         listOfAllConnectedOnlinePLayers.add(this);
@@ -71,117 +72,62 @@ public class OnlinePlayer {
     }
 
     private void setPlayerHealthBar() {
-        switch (onlinePlayerChampion) {
 
-            case DON_OHL -> {
-                healthbar = new Healthbar(4000, playerPosXScreen, playerPosYScreen);
-            }
-            case BIG_HAIRY_SWEATY_DUDE -> {
-                healthbar = new Healthbar(400, playerPosXScreen, playerPosYScreen);
+        healthbar = new Healthbar(4000, onlinePlayerHitbox.playerHitboxPosXScreen, onlinePlayerHitbox.playerHitboxPosYScreen);
 
-            }
-        }
+//        PROTOTYPE CODE IF YOU WANT DIFFERENT HEALTH CAPACITY FOR DIFFERENT CHAMPIONS
+//        switch (localPlayerChampion) {
+//
+//            case BLUE_HAIR_DUDE -> {
+//            }
+//            case PINK_HAIR_GIRL -> {
+//                healthbar = new Healthbar(3000, playerPosXScreen, playerPosYScreen);
+//
+//            }
+//        }
+
     }
 
-    public void getPlayerSprites8Directional(EnumContainer.AllPlayableChampions onlinePlayerChampion) {
-
-        int spriteSize = 0;
-        int spriteXpos = 0;
-        int numberOfSpritesInRow = 0;
-        if (onlinePlayerChampion == EnumContainer.AllPlayableChampions.DON_OHL) {
-            InputStream inputStream = getClass().getResourceAsStream("/DON_OHL.png");
-            try {
-                allOnlinePlayerSprites = ImageIO.read(Objects.requireNonNull(inputStream));
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    assert inputStream != null;
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            spriteSize = 72;
-            numberOfSpritesInRow = 4;
-
-
-//        Assigning moving sprites for all directions
-            for (int i = 0; i < numberOfSpritesInRow; i++) {
-                playerSpriteUP[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
-                playerSpriteUP_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
-                playerSpriteUP_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
-                playerSpriteLEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
-                playerSpriteRIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
-                playerSpriteDOWN_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
-                playerSpriteDOWN_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
-                playerSpriteDOWN[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
-
-                spriteXpos += spriteSize;
-            }
-
-            spriteXpos = 0;
-//       Assinging idle sprites for all directions
-            for (int i = 0; i < 1; i++) {
-                playerSpriteIDLE_UP[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
-                playerSpriteIDLE_UP_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
-                playerSpriteIDLE_UP_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
-                playerSpriteIDLE_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
-                playerSpriteIDLE_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
-                playerSpriteIDLE_DOWN_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
-                playerSpriteIDLE_DOWN_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
-                playerSpriteIDLE_DOWN[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
-
-
-                spriteXpos += spriteSize;
-            }
-
-        } else if (onlinePlayerChampion == EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE) {
-            InputStream inputStream = getClass().getResourceAsStream("/WIKING_RUN.png");
-            try {
-                allOnlinePlayerSprites = ImageIO.read(Objects.requireNonNull(inputStream));
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    assert inputStream != null;
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            spriteSize = 128;
-            numberOfSpritesInRow = 8;
-//        Assigning moving sprites for all directions
-            for (int i = 0; i < numberOfSpritesInRow; i++) {
-                playerSpriteDOWN[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
-                playerSpriteLEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
-                playerSpriteRIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
-                playerSpriteUP[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
-                playerSpriteDOWN_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
-                playerSpriteDOWN_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
-                playerSpriteUP_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
-                playerSpriteUP_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
-
-                spriteXpos += spriteSize;
-            }
-
-            spriteXpos = 0;
-//       Assinging idle sprites for all directions
-            for (int i = 0; i < 1; i++) {
-                playerSpriteIDLE_DOWN[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, 0, spriteSize, spriteSize);
-                playerSpriteIDLE_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize, spriteSize, spriteSize);
-                playerSpriteIDLE_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 2, spriteSize, spriteSize);
-                playerSpriteIDLE_UP[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 3, spriteSize, spriteSize);
-                playerSpriteIDLE_DOWN_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 4, spriteSize, spriteSize);
-                playerSpriteIDLE_DOWN_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 5, spriteSize, spriteSize);
-                playerSpriteIDLE_UP_RIGHT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 6, spriteSize, spriteSize);
-                playerSpriteIDLE_UP_LEFT[i] = allOnlinePlayerSprites.getSubimage(spriteXpos, spriteSize * 7, spriteSize, spriteSize);
-
-                spriteXpos += spriteSize;
-            }
+    private BufferedImage flipImageHorizontally(File imageFile) {
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(imageFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        int width = image.getWidth();
+        int height = image.getHeight();
+        BufferedImage flippedImage = new BufferedImage(width, height, image.getType());
+        g2d = flippedImage.createGraphics();
+        g2d.drawImage(image, width, 0, -width, height, null);
+
+        return flippedImage;
+    }
+
+    public void getPlayerSprites2Directional(EnumContainer.AllPlayableChampions onlinePlayerChampion) {
+        int indexOFChampionInAssetLoader;
+
+        switch (onlinePlayerChampion) {
+            case BLUE_HAIR_DUDE -> indexOFChampionInAssetLoader = 0;
+            case PINK_HAIR_GIRL -> indexOFChampionInAssetLoader = 1;
+            case BLOND_MOHAWK_DUDE -> indexOFChampionInAssetLoader = 2;
+            case CAPE_BALDY_DUDE -> indexOFChampionInAssetLoader = 3;
+            default -> indexOFChampionInAssetLoader = 99;
+        }
+        playerSpriteDEATH_RIGHT = assetLoader.playerSpriteDEATH_RIGHT[indexOFChampionInAssetLoader];
+        playerSpriteDEATH_LEFT = assetLoader.playerSpriteDEATH_LEFT[indexOFChampionInAssetLoader];
+
+        playerSpriteIDLE_RIGHT = assetLoader.playerSpriteIDLE_RIGHT[indexOFChampionInAssetLoader];
+        playerSpriteIDLE_LEFT = assetLoader.playerSpriteIDLE_LEFT[indexOFChampionInAssetLoader];
+
+        playerSpriteROLL_RIGHT = assetLoader.playerSpriteROLL_RIGHT[indexOFChampionInAssetLoader];
+        playerSpriteROLL_LEFT = assetLoader.playerSpriteROLL_LEFT[indexOFChampionInAssetLoader];
+
+        playerSpriteMOVE_RIGHT = assetLoader.playerSpriteMOVE_RIGHT[indexOFChampionInAssetLoader];
+        playerSpriteMOVE_LEFT = assetLoader.playerSpriteMOVE_LEFT[indexOFChampionInAssetLoader];
+
+        playerSpriteTAKE_DMG_RIGHT = assetLoader.playerSpriteTAKE_DMG_RIGHT[indexOFChampionInAssetLoader];
+        playerSpriteTAKE_DMG_LEFT = assetLoader.playerSpriteTAKE_DMG_LEFT[indexOFChampionInAssetLoader];
     }
 
     public void updatePlayerPositionOnScreenAndHitbox() {
@@ -191,55 +137,19 @@ public class OnlinePlayer {
     }
 
 
-    public BufferedImage[] playerSpriteController() {
+    public BufferedImage[] setCurrentOnlinePlayerSprite() {
         switch (Current_Player_State_Online_Player) {
-            case IDLE_UP -> {
-                return playerSpriteIDLE_UP;
-            }
-            case IDLE_DOWN -> {
-                return playerSpriteIDLE_DOWN;
-            }
             case IDLE_LEFT -> {
                 return playerSpriteIDLE_LEFT;
             }
             case IDLE_RIGHT -> {
                 return playerSpriteIDLE_RIGHT;
             }
-            case IDLE_UP_LEFT -> {
-                return playerSpriteIDLE_UP_LEFT;
-            }
-            case IDLE_UP_RIGHT -> {
-                return playerSpriteIDLE_UP_RIGHT;
-            }
-            case IDLE_DOWN_LEFT -> {
-                return playerSpriteIDLE_DOWN_LEFT;
-            }
-            case IDLE_DOWN_RIGHT -> {
-                return playerSpriteIDLE_DOWN_RIGHT;
-            }
-            case MOVING_UP -> {
-                return playerSpriteUP;
-            }
-            case MOVING_DOWN -> {
-                return playerSpriteDOWN;
-            }
             case MOVING_LEFT -> {
-                return playerSpriteLEFT;
+                return playerSpriteMOVE_LEFT;
             }
             case MOVING_RIGHT -> {
-                return playerSpriteRIGHT;
-            }
-            case MOVING_UP_LEFT -> {
-                return playerSpriteUP_LEFT;
-            }
-            case MOVING_UP_RIGHT -> {
-                return playerSpriteUP_RIGHT;
-            }
-            case MOVING_DOWN_LEFT -> {
-                return playerSpriteDOWN_LEFT;
-            }
-            case MOVING_DOWN_RIGHT -> {
-                return playerSpriteDOWN_RIGHT;
+                return playerSpriteMOVE_RIGHT;
             }
             default -> {
                 return null;
@@ -251,35 +161,12 @@ public class OnlinePlayer {
     public void animationController() {
         animationTick++;
         if (animationTick >= animationSpeed) {
-            if (playerSpriteController() == playerSpriteIDLE_UP |
-                    playerSpriteController() == playerSpriteIDLE_DOWN |
-                    playerSpriteController() == playerSpriteIDLE_LEFT |
-                    playerSpriteController() == playerSpriteIDLE_RIGHT |
-                    playerSpriteController() == playerSpriteIDLE_UP_LEFT |
-                    playerSpriteController() == playerSpriteIDLE_UP_RIGHT |
-                    playerSpriteController() == playerSpriteIDLE_DOWN_LEFT |
-                    playerSpriteController() == playerSpriteIDLE_DOWN_RIGHT) {
-
-                if (animationIndexIdle < 1)
-                    animationIndexIdle++;
+            if (currentPlayerSpriteOnlinePlayer == playerSpriteIDLE_LEFT || currentPlayerSpriteOnlinePlayer == playerSpriteIDLE_RIGHT) {
+                if (animationIndexIdle < 5) animationIndexIdle++;
                 else animationIndexIdle = 0;
-            } else if (playerSpriteController() == playerSpriteUP |
-                    playerSpriteController() == playerSpriteDOWN |
-                    playerSpriteController() == playerSpriteLEFT |
-                    playerSpriteController() == playerSpriteRIGHT |
-                    playerSpriteController() == playerSpriteUP_LEFT |
-                    playerSpriteController() == playerSpriteUP_RIGHT |
-                    playerSpriteController() == playerSpriteDOWN_LEFT |
-                    playerSpriteController() == playerSpriteDOWN_RIGHT) {
-                if (onlinePlayerChampion.equals(EnumContainer.AllPlayableChampions.DON_OHL)) {
-                    if (animationIndexMoving < 3)
-                        animationIndexMoving++;
-                    else animationIndexMoving = 0;
-                } else if (onlinePlayerChampion.equals(EnumContainer.AllPlayableChampions.BIG_HAIRY_SWEATY_DUDE)) {
-                    if (animationIndexMoving < 7)
-                        animationIndexMoving++;
-                    else animationIndexMoving = 0;
-                }
+            } else if (currentPlayerSpriteOnlinePlayer == playerSpriteMOVE_LEFT || currentPlayerSpriteOnlinePlayer == playerSpriteMOVE_RIGHT) {
+                if (animationIndexMoving < 7) animationIndexMoving++;
+                else animationIndexMoving = 0;
             }
             animationTick = 0;
         }
@@ -288,12 +175,10 @@ public class OnlinePlayer {
     public void checkIsOnlinePlayerMoving() {
 
         switch (Current_Player_State_Online_Player) {
-            case IDLE_UP, IDLE_DOWN_RIGHT, IDLE_UP_LEFT, IDLE_DOWN_LEFT,
-                    IDLE_UP_RIGHT, IDLE_RIGHT, IDLE_LEFT, IDLE_DOWN -> {
+            case IDLE_RIGHT, IDLE_LEFT -> {
                 isPlayerMoving = false;
             }
-            case MOVING_UP, MOVING_DOWN_RIGHT, MOVING_DOWN, MOVING_LEFT,
-                    MOVING_RIGHT, MOVING_UP_LEFT, MOVING_UP_RIGHT, MOVING_DOWN_LEFT -> {
+            case MOVING_LEFT, MOVING_RIGHT -> {
                 isPlayerMoving = true;
             }
             default -> throw new IllegalStateException("Unexpected value: " + Current_Player_State_Online_Player);
@@ -301,19 +186,27 @@ public class OnlinePlayer {
     }
 
     public void updatePlayerHitboxWorldAndPosOnScreen() {
-        onlinePlayerHitbox.x = playerPosXWorld;
-        onlinePlayerHitbox.y = playerPosYWorld;
-        onlinePlayerHitbox.playerHitboxPosXScreen = playerPosXScreen;
-        onlinePlayerHitbox.playerHitboxPosYScreen = playerPosYScreen;
-
+        onlinePlayerHitbox.x = playerPosXWorld + hitboxOffsetX;
+        onlinePlayerHitbox.y = playerPosYWorld + hitboxOffsetYAbovePlayerSprite;
+        onlinePlayerHitbox.playerHitboxPosXScreen = playerPosXScreen + hitboxOffsetX;
+        onlinePlayerHitbox.playerHitboxPosYScreen = playerPosYScreen + hitboxOffsetYAbovePlayerSprite;
     }
+
+    public void updateHealthBarCurrentHealthAndPositionOnScreen() {
+        healthbar.currentHealthToDraw = healthbar.setSizeOfCurrentHealthToDraw();
+        healthbar.healthbarPositionOnScreenX = (int) (onlinePlayerHitbox.playerHitboxPosXScreen);
+        healthbar.healthbarPositionOnScreenY = (int) (onlinePlayerHitbox.playerHitboxPosYScreen - healthbar.offsetY);
+    }
+
+    private final int hitboxOffsetX = 90;
+    private final int hitboxOffsetYAbovePlayerSprite = 130;
 
     public class OnlinePlayerHitbox extends Rectangle2D.Float {
 
         public float playerHitboxPosXScreen, playerHitboxPosYScreen;
+
         OnlinePlayerHitbox() {
-            super( playerPosXWorld,  playerPosYWorld,
-                    playerSpriteDOWN[0].getWidth(),playerSpriteDOWN[0].getHeight());
+            super(playerPosXWorld + hitboxOffsetX, playerPosYWorld + hitboxOffsetYAbovePlayerSprite, (playerSpriteMOVE_RIGHT[0].getWidth() - hitboxOffsetX * 2), playerSpriteMOVE_RIGHT[0].getHeight() - (hitboxOffsetYAbovePlayerSprite + 25));
         }
 
     }
