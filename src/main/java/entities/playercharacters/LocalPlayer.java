@@ -340,8 +340,8 @@ public class LocalPlayer {
     }
 
 
-    public int hitboxOffsetX = 90;
-    public int hitboxOffsetYAbovePlayerSprite = 130;
+    private final int hitboxOffsetX = 90;
+    private final int hitboxOffsetYAbovePlayerSprite = 130;
 
     public class LocalPlayerHitbox extends Rectangle2D.Float {
 

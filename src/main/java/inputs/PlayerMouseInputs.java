@@ -1,6 +1,7 @@
 package inputs;
 
 import entities.playercharacters.LocalPlayer;
+import main.EnumContainer;
 import main.GameEngine;
 import main.MainFrame;
 import networking.Client;
@@ -80,13 +81,23 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
             }
             case CHAMPION_SELECT -> {
-//                if (e.getSource() == championSelect.championChoice1) {
-//                    localPlayer.setPlayerChampion(AllPlayableChampions.BLUE_HAIR_DUDE);
-//                    gameEngine.changeScene(AllScenes.PLAYING);
-//                } else if (e.getSource() == championSelect.championChoice2) {
-//                    localPlayer.setPlayerChampion(AllPlayableChampions.PINK_HAIR_GIRL);
-//                    gameEngine.changeScene(AllScenes.PLAYING);
-//                }
+                if (e.getSource() == championSelect.championLabels[0]) {
+                    localPlayer.setPlayerChampion(EnumContainer.AllPlayableChampions.BLUE_HAIR_DUDE);
+                    gameEngine.changeScene(AllScenes.PLAYING);
+                } else if (e.getSource() == championSelect.championLabels[1]) {
+                    localPlayer.setPlayerChampion(EnumContainer.AllPlayableChampions.PINK_HAIR_GIRL);
+                    gameEngine.changeScene(AllScenes.PLAYING);
+                } else if (e.getSource() == championSelect.championLabels[2]) {
+                    localPlayer.setPlayerChampion(EnumContainer.AllPlayableChampions.BLOND_MOHAWK_DUDE);
+                    gameEngine.changeScene(AllScenes.PLAYING);
+                } else if (e.getSource() == championSelect.championLabels[3]) {
+                    localPlayer.setPlayerChampion(EnumContainer.AllPlayableChampions.CAPE_BALDY_DUDE);
+                    gameEngine.changeScene(AllScenes.PLAYING);
+                }
+
+                if (e.getSource() == championSelect.backToMenu) {
+                    gameEngine.changeScene(AllScenes.MENU);
+                }
 
             }
             case PLAYING -> {
@@ -135,23 +146,21 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
             case CHAMPION_SELECT -> {
                 if (e.getSource() == championSelect.championLabels[0]) {
                     championSelect.isChampionBeingMouseHovered.put(0, true);
-                    System.out.println("put 0");
                 }
                 if (e.getSource() == championSelect.championLabels[1]) {
                     championSelect.isChampionBeingMouseHovered.put(1, true);
-                    System.out.println("put 1");
-
                 }
                 if (e.getSource() == championSelect.championLabels[2]) {
                     championSelect.isChampionBeingMouseHovered.put(2, true);
-                    System.out.println("put 2");
-
                 }
                 if (e.getSource() == championSelect.championLabels[3]) {
                     championSelect.isChampionBeingMouseHovered.put(3, true);
-                    System.out.println("put 3");
+                }
+                if (e.getSource() == championSelect.backToMenu) {
+                    championSelect.backToMenu.setFont(Menu.googleExo2.deriveFont(32F));
 
                 }
+
             }
         }
 
@@ -175,18 +184,9 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
                 }
             }
             case CHAMPION_SELECT -> {
-//                if (e.getSource() == championSelect.championLabels[0]) {
-//                    championSelect.isChampionBeingMouseHovered[0] = false;
-//                }
-//                if (e.getSource() == championSelect.championLabels[1]) {
-//                    championSelect.isChampionBeingMouseHovered[1] = false;
-//                }
-//                if (e.getSource() == championSelect.championLabels[2]) {
-//                    championSelect.isChampionBeingMouseHovered[2] = false;
-//                }
-//                if (e.getSource() == championSelect.championLabels[3]) {
-//                    championSelect.isChampionBeingMouseHovered[3] = false;
-//                }
+                if (e.getSource() == championSelect.backToMenu) {
+                    championSelect.backToMenu.setFont(Menu.googleExo2.deriveFont(30F));
+                }
             }
         }
     }

@@ -28,14 +28,17 @@ public class ChampionSelect implements SceneEssentials {
     JPanel panelForChampionChoiceBox;
     public JLabel[] championLabels;
     public Map<Integer, Boolean> isChampionBeingMouseHovered;
+    public JLabel backToMenu;
 
     public MainPanel mainPanel;
     private final AssetLoader assetLoader;
 
-    private int animationTick;
-    private final int animationSpeed = 15;
+    private int animationTickDefault, animationTickRoll;
+    private final int defaultAnimationSpeed = 15;
+    private final int rollAnimationSpeed = 10;
     public int animationIndexMoving, animationIndexIdle;
     private int[] animationIndexRollForEveryChampion;
+    private int[] animationCyclesForRollEveryChampion;
 
 
     public ChampionSelect(AssetLoader assetLoader) {
@@ -43,7 +46,7 @@ public class ChampionSelect implements SceneEssentials {
         setPlayerSprites();
         championLabels = new JLabel[4];
         isChampionBeingMouseHovered = new HashMap<>();
-
+        animationCyclesForRollEveryChampion = new int[]{0, 0, 0, 0};
         animationIndexRollForEveryChampion = new int[4];
     }
 
@@ -101,6 +104,20 @@ public class ChampionSelect implements SceneEssentials {
         chooseYourHero.setAlignmentX(Component.CENTER_ALIGNMENT);
         chooseYourHero.setBorder(BorderFactory.createEmptyBorder(200, 0, 0, 0));
         mainPanel.add(chooseYourHero, BorderLayout.NORTH);
+
+        backToMenu = new JLabel("Back to menu");
+        backToMenu.setFont(Menu.googleExo2.deriveFont(30F));
+        backToMenu.setHorizontalAlignment(JLabel.CENTER);
+        backToMenu.setVerticalAlignment(JLabel.CENTER);
+        backToMenu.setFocusable(false);
+        backToMenu.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backToMenu.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 30));
+        backToMenu.addMouseListener(mainPanel.getMouseListeners()[0]);
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomPanel.setOpaque(false);
+        bottomPanel.add(backToMenu);
+
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
     }
 
     public void addComponentsToMainPanel() {
@@ -111,23 +128,31 @@ public class ChampionSelect implements SceneEssentials {
     }
 
     private void animationController() {
-        animationTick++;
-        if (animationTick >= animationSpeed) {
+        animationTickDefault++;
+        animationTickRoll++;
+        if (animationTickDefault >= defaultAnimationSpeed) {
             if (animationIndexIdle < 5) animationIndexIdle++;
             else animationIndexIdle = 0;
             if (animationIndexMoving < 7) animationIndexMoving++;
             else animationIndexMoving = 0;
 
+            animationTickDefault = 0;
+        }
+        if (animationTickRoll >= rollAnimationSpeed) {
             isChampionBeingMouseHovered.forEach((key, value) -> {
                 if (animationIndexRollForEveryChampion[key] < 3 && value) animationIndexRollForEveryChampion[key]++;
                 else {
-//                    animation finished
+                    animationCyclesForRollEveryChampion[key]++;
                     animationIndexRollForEveryChampion[key] = 0;
-                    isChampionBeingMouseHovered.put(key, false);
+//                    animation finished
+                    if (animationCyclesForRollEveryChampion[key] >= 2) {
+                        animationCyclesForRollEveryChampion[key] = 0;
+                        animationIndexRollForEveryChampion[key] = 0;
+                        isChampionBeingMouseHovered.put(key, false);
+                    }
                 }
             });
-
-            animationTick = 0;
+            animationTickRoll = 0;
         }
     }
 

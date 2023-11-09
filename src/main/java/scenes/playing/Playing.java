@@ -51,6 +51,7 @@ public class Playing implements SceneEssentials {
             onlinePlayer.currentPlayerSpriteOnlinePlayer = onlinePlayer.setCurrentOnlinePlayerSprite();
             onlinePlayer.animationController();
             onlinePlayer.updatePlayerPositionOnScreenAndHitbox();
+            onlinePlayer.updateHealthBarCurrentHealthAndPositionOnScreen();
             onlinePlayer.checkIsOnlinePlayerMoving();
         });
 
@@ -76,7 +77,7 @@ public class Playing implements SceneEssentials {
                     (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, null);
         } else {
             g.drawImage(localPlayer.currentPlayerSprite[localPlayer.animationIndexIdle],
-                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, 256, 256, null);
+                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, null);
 
         }
 
@@ -86,10 +87,10 @@ public class Playing implements SceneEssentials {
             OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer -> {
                 if (onlinePlayer.isPlayerMoving)
                     g.drawImage(onlinePlayer.currentPlayerSpriteOnlinePlayer[onlinePlayer.animationIndexMoving],
-                            (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen, 144, 144, null);
+                            (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen, null);
                 else {
-                    g.drawImage(onlinePlayer.currentPlayerSpriteOnlinePlayer[0],
-                            (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen, 144, 144, null);
+                    g.drawImage(onlinePlayer.currentPlayerSpriteOnlinePlayer[onlinePlayer.animationIndexIdle],
+                            (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen, null);
                 }
             });
         }
@@ -107,13 +108,13 @@ public class Playing implements SceneEssentials {
 
         OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer -> {
             g.setColor(Color.black);
-            g.fillRect((int) onlinePlayer.playerPosXScreen + 36, (int) (onlinePlayer.playerPosYScreen - 20),
+            g.fillRect(onlinePlayer.healthbar.healthbarPositionOnScreenX, onlinePlayer.healthbar.healthbarPositionOnScreenY,
                     onlinePlayer.healthbar.healthbarWidth, onlinePlayer.healthbar.healthbarHeight);
             g.setColor(Color.GREEN);
-            g.fillRect((int) onlinePlayer.playerPosXScreen + 36, (int) (onlinePlayer.playerPosYScreen - 20),
-                    onlinePlayer.healthbar.setSizeOfCurrentHealthToDraw(), onlinePlayer.healthbar.healthbarHeight);
+            g.fillRect(onlinePlayer.healthbar.healthbarPositionOnScreenX, onlinePlayer.healthbar.healthbarPositionOnScreenY,
+                    onlinePlayer.healthbar.currentHealthToDraw, onlinePlayer.healthbar.healthbarHeight);
             g.setColor(Color.YELLOW);
-            g.drawRect((int) onlinePlayer.playerPosXScreen + 36, (int) (onlinePlayer.playerPosYScreen - 20),
+            g.drawRect(onlinePlayer.healthbar.healthbarPositionOnScreenX, onlinePlayer.healthbar.healthbarPositionOnScreenY,
                     onlinePlayer.healthbar.healthbarWidth, onlinePlayer.healthbar.healthbarHeight);
         });
 
@@ -133,15 +134,15 @@ public class Playing implements SceneEssentials {
 //        DEBUGGING
 
 //        HITBOXES
-//        g.setColor(Color.red);
-//        g.drawRect((int) localPlayer.localPlayerHitbox.playerHitboxPosXScreen, (int) localPlayer.localPlayerHitbox.playerHitboxPosYScreen,
-//                (int) localPlayer.localPlayerHitbox.getWidth(), (int) localPlayer.localPlayerHitbox.getHeight());
-//        OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer ->
-//                g.drawRect((int) onlinePlayer.onlinePlayerHitbox.playerHitboxPosXScreen, (int) onlinePlayer.onlinePlayerHitbox.playerHitboxPosYScreen,
-//                        (int) onlinePlayer.onlinePlayerHitbox.getWidth(), (int) onlinePlayer.onlinePlayerHitbox.getHeight()));
-//        Spell01.listOfActiveSpell01s.forEach(spell01 ->
-//                g.drawRect((int) spell01.spell01Hitbox.spell01HitboxPosXScreen, (int) spell01.spell01Hitbox.spell01HitboxPosYScreen,
-//                        (int) spell01.spell01Hitbox.getWidth(), (int) spell01.spell01Hitbox.getHeight()));
+        g.setColor(Color.red);
+        g.drawRect((int) localPlayer.localPlayerHitbox.playerHitboxPosXScreen, (int) localPlayer.localPlayerHitbox.playerHitboxPosYScreen,
+                (int) localPlayer.localPlayerHitbox.getWidth(), (int) localPlayer.localPlayerHitbox.getHeight());
+        OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer ->
+                g.drawRect((int) onlinePlayer.onlinePlayerHitbox.playerHitboxPosXScreen, (int) onlinePlayer.onlinePlayerHitbox.playerHitboxPosYScreen,
+                        (int) onlinePlayer.onlinePlayerHitbox.getWidth(), (int) onlinePlayer.onlinePlayerHitbox.getHeight()));
+        Spell01.listOfActiveSpell01s.forEach(spell01 ->
+                g.drawRect((int) spell01.spell01Hitbox.spell01HitboxPosXScreen, (int) spell01.spell01Hitbox.spell01HitboxPosYScreen,
+                        (int) spell01.spell01Hitbox.getWidth(), (int) spell01.spell01Hitbox.getHeight()));
 
 //        g.drawRect((int) LocalPlayer.playerPosXWorld, (int) LocalPlayer.playerPosYWorld,
 //                localPlayer.playerSpriteIDLE_RIGHT[1].getWidth(),localPlayer.playerSpriteMOVE_RIGHT[1].getHeight());
