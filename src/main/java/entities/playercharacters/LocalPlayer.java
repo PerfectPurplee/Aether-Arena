@@ -3,6 +3,7 @@ package entities.playercharacters;
 import entities.Healthbar;
 import entities.spells.basicspells.Spell01;
 import inputs.PlayerKeyboardInputs;
+import main.AssetLoader;
 import main.EnumContainer;
 import main.EnumContainer.ServerClientConnectionCopyObjects;
 import networking.Client;
@@ -18,15 +19,13 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class LocalPlayer {
 
     public BufferedImage allLocalPlayerSprites;
+    public BufferedImage[] currentPlayerSprite;
 
     public BufferedImage[] playerSpriteIDLE_RIGHT = new BufferedImage[6];
     public BufferedImage[] playerSpriteIDLE_LEFT = new BufferedImage[6];
@@ -34,7 +33,7 @@ public class LocalPlayer {
     public BufferedImage[] playerSpriteMOVE_LEFT = new BufferedImage[8];
     public BufferedImage[] playerSpriteMOVE_RIGHT = new BufferedImage[8];
 
-    public BufferedImage[] playerSpriteDEATH_RIGHT = new BufferedImage[10];
+    public BufferedImage[] playerSpriteDEATH_RIGHT;
     public BufferedImage[] playerSpriteDEATH_LEFT = new BufferedImage[10];
 
 
@@ -43,9 +42,6 @@ public class LocalPlayer {
 
     public BufferedImage[] playerSpriteROLL_RIGHT = new BufferedImage[5];
     public BufferedImage[] playerSpriteROLL_LEFT = new BufferedImage[5];
-
-
-    public BufferedImage[] currentPlayerSprite;
 
     public EnumContainer.AllPlayerStates Current_Player_State;
     public EnumContainer.AllPlayableChampions localPlayerChampion;
@@ -56,17 +52,22 @@ public class LocalPlayer {
     public static float playerPosXWorld;
     public static float playerPosYWorld;
     public static float playerPosXScreen, playerPosYScreen;
+
     public int playerFeetX, playerFeetY;
     public int mouseClickXPos;
     public int mouseClickYPos;
     public float normalizedVectorX;
     public float normalizedVectorY;
-    int playerMoveSpeed = 2;
+
     public float playerMovementStartingPosX, playerMovementStartingPosY;
     public float distanceToTravel;
     public boolean isPlayerMoving;
 
+
     private Graphics2D g2d;
+    private AssetLoader assetLoader;
+    private int playerMoveSpeed = 2;
+
     private int animationTick;
     private final int animationSpeed = 15;
     public int animationIndexMoving, animationIndexIdle;
@@ -79,7 +80,8 @@ public class LocalPlayer {
     private long lastQSpellCastTime;
 
 
-    public LocalPlayer() {
+    public LocalPlayer(AssetLoader assetLoader) {
+        this.assetLoader = assetLoader;
         this.Current_Player_State = EnumContainer.AllPlayerStates.MOVING_RIGHT;
         currentPlayerSprite = setCurrentPlayerSprite();
 
@@ -88,7 +90,9 @@ public class LocalPlayer {
 
     private void setPlayerHealthBar() {
 
-        healthbar = new Healthbar(4000, playerPosXScreen, playerPosYScreen);
+        healthbar = new Healthbar(
+                4000, localPlayerHitbox.playerHitboxPosXScreen,
+                localPlayerHitbox.playerHitboxPosYScreen);
 
 //        PROTOTYPE CODE IF YOU WANT DIFFERENT HEALTH CAPACITY FOR DIFFERENT CHAMPIONS
 //        switch (localPlayerChampion) {
@@ -107,13 +111,14 @@ public class LocalPlayer {
         localPlayerChampion = champion;
         getPlayerSprites2Directional(localPlayerChampion);
         setPLayerFeetPos();
-        setPlayerHealthBar();
         localPlayerHitbox = new LocalPlayerHitbox();
+        setPlayerHealthBar();
+
     }
 
     public void setPLayerFeetPos() {
         playerFeetX = 128;
-        playerFeetY = 256;
+        playerFeetY = 220;
     }
 
     public void getVectorForPlayerMovement(MouseEvent e) {
@@ -150,7 +155,7 @@ public class LocalPlayer {
     public void setCurrent_Player_State() {
 
         if (isPlayerMoving) {
-            if (mouseClickXPos < playerMovementStartingPosY) {
+            if (mouseClickXPos < playerPosXScreen + playerFeetX) {
                 Current_Player_State = EnumContainer.AllPlayerStates.MOVING_LEFT;
             } else {
                 Current_Player_State = EnumContainer.AllPlayerStates.MOVING_RIGHT;
@@ -180,6 +185,34 @@ public class LocalPlayer {
 
     }
 
+
+    private void getPlayerSprites2Directional(EnumContainer.AllPlayableChampions localPlayerChampion) {
+
+        int indexOFChampionInAssetLoader;
+
+        switch (localPlayerChampion) {
+            case BLUE_HAIR_DUDE -> indexOFChampionInAssetLoader = 0;
+            case PINK_HAIR_GIRL -> indexOFChampionInAssetLoader = 1;
+            case BLOND_MOHAWK_DUDE -> indexOFChampionInAssetLoader = 2;
+            case CAPE_BALDY_DUDE -> indexOFChampionInAssetLoader = 3;
+            default -> indexOFChampionInAssetLoader = 99;
+        }
+        playerSpriteDEATH_RIGHT = assetLoader.playerSpriteDEATH_RIGHT[indexOFChampionInAssetLoader];
+        playerSpriteDEATH_LEFT = assetLoader.playerSpriteDEATH_LEFT[indexOFChampionInAssetLoader];
+
+        playerSpriteIDLE_RIGHT = assetLoader.playerSpriteIDLE_RIGHT[indexOFChampionInAssetLoader];
+        playerSpriteIDLE_LEFT = assetLoader.playerSpriteIDLE_LEFT[indexOFChampionInAssetLoader];
+
+        playerSpriteROLL_RIGHT = assetLoader.playerSpriteROLL_RIGHT[indexOFChampionInAssetLoader];
+        playerSpriteROLL_LEFT = assetLoader.playerSpriteROLL_LEFT[indexOFChampionInAssetLoader];
+
+        playerSpriteMOVE_RIGHT = assetLoader.playerSpriteMOVE_RIGHT[indexOFChampionInAssetLoader];
+        playerSpriteMOVE_LEFT = assetLoader.playerSpriteMOVE_LEFT[indexOFChampionInAssetLoader];
+
+        playerSpriteTAKE_DMG_RIGHT = assetLoader.playerSpriteTAKE_DMG_RIGHT[indexOFChampionInAssetLoader];
+        playerSpriteTAKE_DMG_LEFT = assetLoader.playerSpriteTAKE_DMG_LEFT[indexOFChampionInAssetLoader];
+    }
+
     private BufferedImage scaleImage(File imageFile) {
         try {
             BufferedImage originalImage = ImageIO.read(imageFile);
@@ -199,64 +232,6 @@ public class LocalPlayer {
             throw new RuntimeException(e);
         }
 
-    }
-
-
-    private void getPlayerSprites2Directional(EnumContainer.AllPlayableChampions localPlayerChampion) {
-        ClassLoader classLoader = getClass().getClassLoader();
-        URL resource;
-
-        if (localPlayerChampion == EnumContainer.AllPlayableChampions.BLUE_HAIR_DUDE) {
-
-            resource = classLoader.getResource("NewAssets/FullChar/Char1/withHands");
-            File folder = new File(Objects.requireNonNull(resource).getFile());
-            File[] spriteImages = folder.listFiles();
-
-            String fileNameTemp = null;
-            for (int i = 0, j = 0; i < Objects.requireNonNull(spriteImages).length; i++, j++) {
-                if (i != 0) {
-                    if (!spriteImages[i].getName().startsWith(String.valueOf(fileNameTemp.charAt(0)))) {
-                        j = 0;
-                    }
-                }
-                fileNameTemp = spriteImages[i].getName();
-                if (spriteImages[i].getName().startsWith("death")) {
-                    playerSpriteDEATH_RIGHT[j] = scaleImage(spriteImages[i]);
-                    playerSpriteDEATH_LEFT[j] = flipImageHorizontally(spriteImages[i]);
-
-                } else if (spriteImages[i].getName().startsWith("idle")) {
-                    playerSpriteIDLE_RIGHT[j] = scaleImage(spriteImages[i]);
-                    playerSpriteIDLE_LEFT[j] = flipImageHorizontally(spriteImages[i]);
-                } else if (spriteImages[i].getName().startsWith("roll")) {
-                    playerSpriteROLL_RIGHT[j] = scaleImage(spriteImages[i]);
-                    playerSpriteROLL_LEFT[j] = flipImageHorizontally(spriteImages[i]);
-                } else if (spriteImages[i].getName().startsWith("walk")) {
-                    playerSpriteMOVE_RIGHT[j] = scaleImage(spriteImages[i]);
-                    playerSpriteMOVE_LEFT[j] = flipImageHorizontally(spriteImages[i]);
-                } else if (spriteImages[i].getName().startsWith("hit")) {
-                    playerSpriteTAKE_DMG_RIGHT[j] = scaleImage(spriteImages[i]);;
-                    playerSpriteTAKE_DMG_LEFT[j] = flipImageHorizontally(spriteImages[i]);
-                }
-
-            }
-
-
-        } else if (localPlayerChampion == EnumContainer.AllPlayableChampions.PINK_HAIR_GIRL) {
-            InputStream inputStream = getClass().getResourceAsStream("/WIKING_RUN.png");
-            try {
-                allLocalPlayerSprites = ImageIO.read(Objects.requireNonNull(inputStream));
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    assert inputStream != null;
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-
-                }
-            }
-        }
     }
 
     private BufferedImage flipImageHorizontally(File imageFile) {
@@ -351,19 +326,33 @@ public class LocalPlayer {
     }
 
     public void updatePlayerHitboxWorldAndPosOnScreen() {
-        localPlayerHitbox.x = playerPosXWorld;
-        localPlayerHitbox.y = playerPosYWorld;
-        localPlayerHitbox.playerHitboxPosXScreen = playerPosXScreen;
-        localPlayerHitbox.playerHitboxPosYScreen = playerPosYScreen;
+        localPlayerHitbox.x = playerPosXWorld + hitboxOffsetX;
+        localPlayerHitbox.y = playerPosYWorld + hitboxOffsetYAbovePlayerSprite;
+        localPlayerHitbox.playerHitboxPosXScreen = playerPosXScreen + hitboxOffsetX;
+        localPlayerHitbox.playerHitboxPosYScreen = playerPosYScreen + hitboxOffsetYAbovePlayerSprite;
 
     }
+
+    public void updateHealthBarCurrentHealthAndPositionOnScreen() {
+        healthbar.currentHealthToDraw = healthbar.setSizeOfCurrentHealthToDraw();
+        healthbar.healthbarPositionOnScreenX = (int) (localPlayerHitbox.playerHitboxPosXScreen);
+        healthbar.healthbarPositionOnScreenY = (int) (localPlayerHitbox.playerHitboxPosYScreen - healthbar.offsetY);
+    }
+
+
+    public int hitboxOffsetX = 90;
+    public int hitboxOffsetYAbovePlayerSprite = 130;
 
     public class LocalPlayerHitbox extends Rectangle2D.Float {
 
         public float playerHitboxPosXScreen, playerHitboxPosYScreen;
 
         LocalPlayerHitbox() {
-            super(playerPosXWorld, playerPosYWorld, playerSpriteMOVE_RIGHT[0].getWidth(), playerSpriteMOVE_RIGHT[0].getHeight());
+            super(
+                    playerPosXWorld + hitboxOffsetX,
+                    playerPosYWorld + hitboxOffsetYAbovePlayerSprite,
+                    (playerSpriteMOVE_RIGHT[0].getWidth() - hitboxOffsetX * 2),
+                    playerSpriteMOVE_RIGHT[0].getHeight() - (hitboxOffsetYAbovePlayerSprite + 25));
         }
 
     }

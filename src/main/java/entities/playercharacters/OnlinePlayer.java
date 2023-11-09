@@ -1,6 +1,7 @@
 package entities.playercharacters;
 
 import entities.Healthbar;
+import main.AssetLoader;
 import main.EnumContainer;
 import scenes.playing.Camera;
 
@@ -55,6 +56,8 @@ public class OnlinePlayer {
     public boolean isPlayerMoving;
 
     public static List<OnlinePlayer> listOfAllConnectedOnlinePLayers = new ArrayList<>();
+//    Assigned in a GameEngine
+    public static AssetLoader assetLoader;
 
 
     public OnlinePlayer(int onlinePlayerID) {

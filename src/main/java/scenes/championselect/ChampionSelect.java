@@ -1,81 +1,178 @@
 package scenes.championselect;
 
-import inputs.PlayerMouseInputs;
+import main.AssetLoader;
 import main.MainPanel;
 import scenes.SceneEssentials;
+import scenes.menu.Menu;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ChampionSelect implements SceneEssentials {
 
+    public BufferedImage[][] playerSpriteIDLE_RIGHT;
+    public BufferedImage[][] playerSpriteIDLE_LEFT;
+    public BufferedImage[][] playerSpriteMOVE_LEFT;
+    public BufferedImage[][] playerSpriteMOVE_RIGHT;
+    public BufferedImage[][] playerSpriteDEATH_RIGHT;
+    public BufferedImage[][] playerSpriteDEATH_LEFT;
+    public BufferedImage[][] playerSpriteTAKE_DMG_RIGHT;
+    public BufferedImage[][] playerSpriteTAKE_DMG_LEFT;
+    public BufferedImage[][] playerSpriteROLL_RIGHT;
+    public BufferedImage[][] playerSpriteROLL_LEFT;
+
+    JPanel panelForChampionChoice;
+    JPanel panelForChampionChoiceBox;
+    public JLabel[] championLabels;
+    public Map<Integer, Boolean> isChampionBeingMouseHovered;
+
     public MainPanel mainPanel;
+    private final AssetLoader assetLoader;
 
-    public JLabel championChoice1;
-    public JLabel championChoice2;
+    private int animationTick;
+    private final int animationSpeed = 15;
+    public int animationIndexMoving, animationIndexIdle;
+    private int[] animationIndexRollForEveryChampion;
 
-    BufferedImage champion1;
-    BufferedImage champion2;
 
-    Queue<Throwable> yo = new ConcurrentLinkedQueue<>();
+    public ChampionSelect(AssetLoader assetLoader) {
+        this.assetLoader = assetLoader;
+        setPlayerSprites();
+        championLabels = new JLabel[4];
+        isChampionBeingMouseHovered = new HashMap<>();
 
-    public ChampionSelect() {
-        initComponents();
-        champion1 = getChampionImage("/DON_OHL.png");
-        champion2 = getChampionImage("/WIKING_RUN.png");
+        animationIndexRollForEveryChampion = new int[4];
+    }
+
+    private void setPlayerSprites() {
+        playerSpriteDEATH_RIGHT = assetLoader.playerSpriteDEATH_RIGHT;
+        playerSpriteDEATH_LEFT = assetLoader.playerSpriteDEATH_LEFT;
+        playerSpriteIDLE_RIGHT = assetLoader.playerSpriteIDLE_RIGHT;
+        playerSpriteIDLE_LEFT = assetLoader.playerSpriteIDLE_LEFT;
+        playerSpriteROLL_RIGHT = assetLoader.playerSpriteROLL_RIGHT;
+        playerSpriteROLL_LEFT = assetLoader.playerSpriteROLL_LEFT;
+        playerSpriteMOVE_RIGHT = assetLoader.playerSpriteMOVE_RIGHT;
+        playerSpriteMOVE_LEFT = assetLoader.playerSpriteMOVE_LEFT;
+        playerSpriteTAKE_DMG_RIGHT = assetLoader.playerSpriteTAKE_DMG_RIGHT;
+        playerSpriteTAKE_DMG_LEFT = assetLoader.playerSpriteTAKE_DMG_LEFT;
 
     }
 
     public void initComponents() {
-        championChoice1 = new JLabel();
-        championChoice1.setBackground(Color.BLUE);
-        championChoice2 = new JLabel();
-        championChoice2.setBackground(Color.BLUE);
+        panelForChampionChoice = new JPanel(new GridBagLayout());
+        panelForChampionChoiceBox = new JPanel();
+        panelForChampionChoiceBox.setLayout(new BoxLayout(panelForChampionChoiceBox, BoxLayout.X_AXIS));
+        panelForChampionChoiceBox.setOpaque(false);
 
+        panelForChampionChoiceBox.add(Box.createRigidArea(new Dimension(0, 10)));
+        for (int i = 0; i < 4; i++) {
+            JLabel label = new JLabel();
+            label.setHorizontalAlignment(JLabel.CENTER);
+            label.setVerticalAlignment(JLabel.CENTER);
+            label.setFocusable(false);
+            label.setAlignmentX(Component.CENTER_ALIGNMENT);
+            label.setMaximumSize(new Dimension(256, 256));
+            label.setMinimumSize(new Dimension(256, 256));
+            label.setPreferredSize(new Dimension(256, 256));
+            label.addMouseListener(mainPanel.getMouseListeners()[0]);
+            championLabels[i] = label;
+            panelForChampionChoiceBox.add(label);
 
+            if (i < 3) {
+                panelForChampionChoiceBox.add(Box.createRigidArea(new Dimension(40, 0)));
+            }
+        }
+        panelForChampionChoiceBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 250, 0));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.PAGE_START;
+        panelForChampionChoice.add(panelForChampionChoiceBox, gbc);
+        panelForChampionChoice.setOpaque(false);
+
+        JLabel chooseYourHero = new JLabel("CHOOSE YOUR HERO");
+        chooseYourHero.setFont(Menu.googleExo2.deriveFont(60F));
+        chooseYourHero.setHorizontalAlignment(JLabel.CENTER);
+        chooseYourHero.setVerticalAlignment(JLabel.CENTER);
+        chooseYourHero.setFocusable(false);
+        chooseYourHero.setAlignmentX(Component.CENTER_ALIGNMENT);
+        chooseYourHero.setBorder(BorderFactory.createEmptyBorder(200, 0, 0, 0));
+        mainPanel.add(chooseYourHero, BorderLayout.NORTH);
     }
 
     public void addComponentsToMainPanel() {
-        championChoice1.addMouseListener(mainPanel.getMouseListeners()[0]);
-        championChoice2.addMouseListener(mainPanel.getMouseListeners()[0]);
-        championChoice2.setBounds(mainPanel.getWidth() / 2 + 20, 300, 144, 144);
-        championChoice1.setBounds(mainPanel.getWidth() / 2 - 164, 300, 144, 144);
-        mainPanel.add(championChoice1);
-        mainPanel.add(championChoice2);
+        initComponents();
 
+        mainPanel.add(panelForChampionChoice, BorderLayout.CENTER);
+        mainPanel.revalidate();
+    }
+
+    private void animationController() {
+        animationTick++;
+        if (animationTick >= animationSpeed) {
+            if (animationIndexIdle < 5) animationIndexIdle++;
+            else animationIndexIdle = 0;
+            if (animationIndexMoving < 7) animationIndexMoving++;
+            else animationIndexMoving = 0;
+
+            isChampionBeingMouseHovered.forEach((key, value) -> {
+                if (animationIndexRollForEveryChampion[key] < 3 && value) animationIndexRollForEveryChampion[key]++;
+                else {
+//                    animation finished
+                    animationIndexRollForEveryChampion[key] = 0;
+                    isChampionBeingMouseHovered.put(key, false);
+                }
+            });
+
+            animationTick = 0;
+        }
+    }
+
+
+    public void update() {
+        animationController();
     }
 
 
     @Override
     public void draw(Graphics g) {
-        g.drawImage(champion1, mainPanel.getWidth() / 2 - 164, 300, 144, 144, null);
-        g.drawImage(champion2, mainPanel.getWidth() / 2 + 20, 300, 144, 144, null);
+        Component[] components = panelForChampionChoiceBox.getComponents();
 
-    }
+        for (int i = 1, j = 0; i < components.length; i += 2, j++) {
+            Component component = components[i];
 
+            if (component instanceof JLabel) {
+                JLabel label = (JLabel) component;
+                Rectangle bounds = label.getBounds();
+                // Convert bounds to mainPanel's coordinate system
+                bounds = SwingUtilities.convertRectangle(panelForChampionChoiceBox, bounds, panelForChampionChoice);
+                bounds = SwingUtilities.convertRectangle(panelForChampionChoice, bounds, mainPanel);
 
-    private BufferedImage getChampionImage(String imagePath) {
-
-        InputStream inputStream = getClass().getResourceAsStream(imagePath);
-        try {
-            assert inputStream != null;
-            if (imagePath.equals("/DON_OHL.png")) {
-                return ImageIO.read(inputStream).getSubimage(0, 72 * 7, 72, 72);
-            } else if (imagePath.equals("/WIKING_RUN.png")) {
-                return ImageIO.read(inputStream).getSubimage(0, 0, 128, 128);
-
+                if (isChampionBeingMouseHovered.containsKey(j) && isChampionBeingMouseHovered.get(j)) {
+                    g.drawImage(playerSpriteROLL_RIGHT[j][animationIndexRollForEveryChampion[j]], bounds.x, bounds.y, null);
+                } else {
+                    g.drawImage(playerSpriteIDLE_RIGHT[j][animationIndexIdle], bounds.x, bounds.y, null);
+                }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
-        return null;
+
+//   For debugging
+//        for (int i = 1; i < components.length; i += 2) {
+//            Component component = components[i];
+//
+//            if (component instanceof JLabel) {
+//                JLabel label = (JLabel) component;
+//                Rectangle bounds = label.getBounds();
+//                bounds = SwingUtilities.convertRectangle(panelForChampionChoiceBox, bounds, panelForChampionChoice);
+//                bounds = SwingUtilities.convertRectangle(panelForChampionChoice, bounds, mainPanel);
+//
+//                g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+//            }
+//        }
     }
 }
+
+

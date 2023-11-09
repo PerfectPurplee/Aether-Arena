@@ -20,15 +20,15 @@ import java.io.InputStream;
 import java.util.Objects;
 
 import static main.EnumContainer.AllScenes.Current_Scene;
-import static main.EnumContainer.AllScenes.PLAYING;
 
 public class GameEngine extends Thread {
 
     static Playing playing;
     static Menu menu;
     static ChampionSelect championSelect;
-    MainFrame mainFrame;
     static MainPanel mainPanel;
+    MainFrame mainFrame;
+    AssetLoader assetLoader;
     LocalPlayer localPlayer;
     OnlinePlayer onlinePlayer;
     PlayerKeyboardInputs playerKeyboardInputs;
@@ -47,9 +47,11 @@ public class GameEngine extends Thread {
     public GameEngine() {
 
         getAllBasicSpellsSpriteSheet();
+        assetLoader = new AssetLoader();
 
-        localPlayer = new LocalPlayer();
-        championSelect = new ChampionSelect();
+        localPlayer = new LocalPlayer(assetLoader);
+        championSelect = new ChampionSelect(assetLoader);
+        OnlinePlayer.assetLoader = assetLoader;
 
         playerKeyboardInputs = new PlayerKeyboardInputs(localPlayer);
         playerMouseInputs = new PlayerMouseInputs(localPlayer, championSelect);
@@ -69,10 +71,10 @@ public class GameEngine extends Thread {
 
     private void update() {
 
-        if (Current_Scene == PLAYING) {
-            playing.update();
+        switch (Current_Scene) {
+            case PLAYING -> playing.update();
+            case CHAMPION_SELECT -> championSelect.update();
         }
-
     }
 
     public static void render(Graphics g) {

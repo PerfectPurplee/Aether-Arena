@@ -2,24 +2,22 @@ package entities.spells.basicspells;
 
 import datatransferobjects.Spell01DTO;
 import entities.playercharacters.LocalPlayer;
-import entities.playercharacters.OnlinePlayer;
 import main.GameEngine;
 import networking.Client;
 import scenes.playing.Camera;
 
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static main.EnumContainer.*;
+import static main.EnumContainer.ServerClientConnectionCopyObjects;
 
 
 public class Spell01 {
 
+    LocalPlayer localPlayer;
 
     private static final int NUMBER_OF_SPRITES = 4;
     private static final int SPEED = 2;
@@ -39,7 +37,7 @@ public class Spell01 {
     public int spellCasterClientID;
     public final int spellID;
 
-//    If true, object will be soon removed from active spell list;
+    //    If true, object will be soon removed from active spell list;
     public boolean flagForRemoval;
 
     public Spell01Hitbox spell01Hitbox;
@@ -49,16 +47,20 @@ public class Spell01 {
     public static boolean QSpellCreatedOnThisMousePress = false;
 
     public Spell01(LocalPlayer playerCastingThisSpell) {
+        localPlayer = playerCastingThisSpell;
+
         getVector();
         getSpellSprites();
-        spellPosXWorld = (LocalPlayer.playerPosXWorld + 62) + (normalizedVectorX * 150);
-        spellPosYWorld = (LocalPlayer.playerPosYWorld + 62) + (normalizedVectorY * 150);
+        spellPosXWorld = ((localPlayer.localPlayerHitbox.x + (localPlayer.localPlayerHitbox.width / 2 - 32)
+                + (normalizedVectorX * 125)));
+        spellPosYWorld = ((localPlayer.localPlayerHitbox.y + localPlayer.localPlayerHitbox.height / 2 - 32)
+                + (normalizedVectorY * 125));
         spellPosXScreen = spellPosXWorld - Camera.cameraPosX;
         spellPosYScreen = spellPosYWorld - Camera.cameraPosY;
 
         spellCasterClientID = Client.ClientID;
-        spellID = playerCastingThisSpell.counterOfThisPlayerQSpells;
-        playerCastingThisSpell.counterOfThisPlayerQSpells++;
+        spellID = localPlayer.counterOfThisPlayerQSpells;
+        localPlayer.counterOfThisPlayerQSpells++;
 
         spell01Hitbox = new Spell01Hitbox();
         flagForRemoval = false;
@@ -100,8 +102,8 @@ public class Spell01 {
     private void getVector() {
         mousePosXWorld = (int) (ServerClientConnectionCopyObjects.currentMousePosition.getX());
         mousePosYWorld = (int) (ServerClientConnectionCopyObjects.currentMousePosition.getY());
-        float vectorX = (float) (mousePosXWorld - (LocalPlayer.playerPosXWorld + 72));
-        float vectorY = (float) (mousePosYWorld - (LocalPlayer.playerPosYWorld + 72));
+        float vectorX = (float) (mousePosXWorld - (localPlayer.localPlayerHitbox.x + localPlayer.localPlayerHitbox.width / 2));
+        float vectorY = (float) (mousePosYWorld - (localPlayer.localPlayerHitbox.y + localPlayer.localPlayerHitbox.height / 2));
         float magnitude = (float) Math.sqrt(vectorX * vectorX + vectorY * vectorY);
         normalizedVectorX = (vectorX / magnitude);
         normalizedVectorY = (vectorY / magnitude);

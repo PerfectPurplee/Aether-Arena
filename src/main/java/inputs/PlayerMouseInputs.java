@@ -14,8 +14,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 
-import static main.EnumContainer.*;
+import static main.EnumContainer.AllScenes;
 import static main.EnumContainer.AllScenes.CHAMPION_SELECT;
+import static main.EnumContainer.ServerClientConnectionCopyObjects;
 
 
 public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
@@ -51,8 +52,7 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
         if (e.getY() < 30) {
             startingPosX = e.getX();
             startingPosY = e.getY();
-        }
-        else {
+        } else {
             startingPosX = -1;
             startingPosY = -1;
         }
@@ -80,13 +80,13 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
 
             }
             case CHAMPION_SELECT -> {
-                if (e.getSource() == championSelect.championChoice1) {
-                    localPlayer.setPlayerChampion(AllPlayableChampions.BLUE_HAIR_DUDE);
-                    gameEngine.changeScene(AllScenes.PLAYING);
-                } else if (e.getSource() == championSelect.championChoice2) {
-                    localPlayer.setPlayerChampion(AllPlayableChampions.PINK_HAIR_GIRL);
-                    gameEngine.changeScene(AllScenes.PLAYING);
-                }
+//                if (e.getSource() == championSelect.championChoice1) {
+//                    localPlayer.setPlayerChampion(AllPlayableChampions.BLUE_HAIR_DUDE);
+//                    gameEngine.changeScene(AllScenes.PLAYING);
+//                } else if (e.getSource() == championSelect.championChoice2) {
+//                    localPlayer.setPlayerChampion(AllPlayableChampions.PINK_HAIR_GIRL);
+//                    gameEngine.changeScene(AllScenes.PLAYING);
+//                }
 
             }
             case PLAYING -> {
@@ -132,6 +132,27 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
                     Menu.exit.setFont(Menu.googleExo2.deriveFont(28F));
                 }
             }
+            case CHAMPION_SELECT -> {
+                if (e.getSource() == championSelect.championLabels[0]) {
+                    championSelect.isChampionBeingMouseHovered.put(0, true);
+                    System.out.println("put 0");
+                }
+                if (e.getSource() == championSelect.championLabels[1]) {
+                    championSelect.isChampionBeingMouseHovered.put(1, true);
+                    System.out.println("put 1");
+
+                }
+                if (e.getSource() == championSelect.championLabels[2]) {
+                    championSelect.isChampionBeingMouseHovered.put(2, true);
+                    System.out.println("put 2");
+
+                }
+                if (e.getSource() == championSelect.championLabels[3]) {
+                    championSelect.isChampionBeingMouseHovered.put(3, true);
+                    System.out.println("put 3");
+
+                }
+            }
         }
 
     }
@@ -152,6 +173,20 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
                 if (e.getSource() == Menu.exit) {
                     Menu.exit.setFont(Menu.googleExo2.deriveFont(26F));
                 }
+            }
+            case CHAMPION_SELECT -> {
+//                if (e.getSource() == championSelect.championLabels[0]) {
+//                    championSelect.isChampionBeingMouseHovered[0] = false;
+//                }
+//                if (e.getSource() == championSelect.championLabels[1]) {
+//                    championSelect.isChampionBeingMouseHovered[1] = false;
+//                }
+//                if (e.getSource() == championSelect.championLabels[2]) {
+//                    championSelect.isChampionBeingMouseHovered[2] = false;
+//                }
+//                if (e.getSource() == championSelect.championLabels[3]) {
+//                    championSelect.isChampionBeingMouseHovered[3] = false;
+//                }
             }
         }
     }
@@ -181,8 +216,7 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
         }
 
         if (e.getY() < 30 && startingPosX != -1 || startingPosY != -1) {
-            mainFrame.setLocation(mainFrame.getX() + e.getX() - startingPosX,
-                    mainFrame.getY() + e.getY() - startingPosY);
+            mainFrame.setLocation(mainFrame.getX() + e.getX() - startingPosX, mainFrame.getY() + e.getY() - startingPosY);
 
         }
 
