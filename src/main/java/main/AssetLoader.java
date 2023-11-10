@@ -3,10 +3,12 @@ package main;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Objects;
 
@@ -33,12 +35,46 @@ public class AssetLoader {
     public BufferedImage[][] playerSpriteROLL_RIGHT = new BufferedImage[NUMBER_OF_PLAYABLE_CHARACTERS][5];
     public BufferedImage[][] playerSpriteROLL_LEFT = new BufferedImage[NUMBER_OF_PLAYABLE_CHARACTERS][5];
 
+//    Map Objects Sprites
+
+    public BufferedImage ground2White;
+    public BufferedImage ground3White;
+    public BufferedImage rock1;
+    public BufferedImage rock2;
+    public BufferedImage rock3;
 
     AssetLoader() {
-
         getPlayerSprites2Directional();
+        getMapObjects();
     }
 
+    private void getMapObjects() {
+        InputStream is1 = getClass().getResourceAsStream("/NewAssets/Environment/ground2_white.png");
+        InputStream is2 = getClass().getResourceAsStream("/NewAssets/Environment/ground3_white.png");
+        InputStream is3 = getClass().getResourceAsStream("/NewAssets/Environment/rock1.png");
+        InputStream is4 = getClass().getResourceAsStream("/NewAssets/Environment/rock2.png");
+        InputStream is5 = getClass().getResourceAsStream("/NewAssets/Environment/rock3.png");
+        try {
+            ground2White = ImageIO.read(Objects.requireNonNull(is1));
+            ground3White = ImageIO.read(Objects.requireNonNull(is2));
+            rock1 = ImageIO.read(Objects.requireNonNull(is3));
+            rock2 = ImageIO.read(Objects.requireNonNull(is4));
+            rock3 = ImageIO.read(Objects.requireNonNull(is5));
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            is1.close();
+            is2.close();
+            is3.close();
+            is4.close();
+            is5.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
     private void getPlayerSprites2Directional() {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -93,6 +129,34 @@ public class AssetLoader {
                 }
             }
         }
+
+    }
+
+    private BufferedImage addShadowToPlayerSprite(BufferedImage image) {
+        BufferedImage shadowImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = shadowImage.createGraphics();
+
+        try {
+            RadialGradientPaint gradient = new RadialGradientPaint(
+                    (float) image.getWidth() / 2, image.getHeight(), (float) image.getWidth() / 2,
+                    new float[]{0.0f, 1.0f},
+                    new Color[]{new Color(0, 0, 0, 100), new Color(80, 80, 80, 0)});
+
+            g2d.setPaint(gradient);
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            int shadowX = 90;
+            int shadowY = image.getHeight() - 45;
+            int shadowWidth = image.getWidth() - 90 * 2;
+            int shadowHeight = 20;
+
+            g2d.fill(new Ellipse2D.Double(shadowX, shadowY, shadowWidth, shadowHeight));
+            g2d.drawImage(image, 0, 0, null);
+        } finally {
+            g2d.dispose();
+        }
+
+        return shadowImage;
     }
 
     private BufferedImage scaleImage(File imageFile) {
@@ -104,7 +168,8 @@ public class AssetLoader {
             int newHeight = (int) (originalImage.getHeight() * scale);
 
             AffineTransformOp transform = new AffineTransformOp(AffineTransform.getScaleInstance(scale, scale), AffineTransformOp.TYPE_BICUBIC);
-            return transform.filter(originalImage, new BufferedImage(newWidth, newHeight, originalImage.getType()));
+            originalImage = transform.filter(originalImage, new BufferedImage(newWidth, newHeight, originalImage.getType()));
+            return addShadowToPlayerSprite(originalImage);
 
         } catch (IOException e) {
             throw new RuntimeException(e);

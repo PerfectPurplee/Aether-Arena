@@ -110,7 +110,7 @@ public class Playing implements SceneEssentials {
             g.setColor(Color.black);
             g.fillRect(onlinePlayer.healthbar.healthbarPositionOnScreenX, onlinePlayer.healthbar.healthbarPositionOnScreenY,
                     onlinePlayer.healthbar.healthbarWidth, onlinePlayer.healthbar.healthbarHeight);
-            g.setColor(Color.GREEN);
+            g.setColor(Color.RED);
             g.fillRect(onlinePlayer.healthbar.healthbarPositionOnScreenX, onlinePlayer.healthbar.healthbarPositionOnScreenY,
                     onlinePlayer.healthbar.currentHealthToDraw, onlinePlayer.healthbar.healthbarHeight);
             g.setColor(Color.YELLOW);
@@ -134,18 +134,15 @@ public class Playing implements SceneEssentials {
 //        DEBUGGING
 
 //        HITBOXES
-        g.setColor(Color.red);
-        g.drawRect((int) localPlayer.localPlayerHitbox.playerHitboxPosXScreen, (int) localPlayer.localPlayerHitbox.playerHitboxPosYScreen,
-                (int) localPlayer.localPlayerHitbox.getWidth(), (int) localPlayer.localPlayerHitbox.getHeight());
-        OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer ->
-                g.drawRect((int) onlinePlayer.onlinePlayerHitbox.playerHitboxPosXScreen, (int) onlinePlayer.onlinePlayerHitbox.playerHitboxPosYScreen,
-                        (int) onlinePlayer.onlinePlayerHitbox.getWidth(), (int) onlinePlayer.onlinePlayerHitbox.getHeight()));
-        Spell01.listOfActiveSpell01s.forEach(spell01 ->
-                g.drawRect((int) spell01.spell01Hitbox.spell01HitboxPosXScreen, (int) spell01.spell01Hitbox.spell01HitboxPosYScreen,
-                        (int) spell01.spell01Hitbox.getWidth(), (int) spell01.spell01Hitbox.getHeight()));
-
-//        g.drawRect((int) LocalPlayer.playerPosXWorld, (int) LocalPlayer.playerPosYWorld,
-//                localPlayer.playerSpriteIDLE_RIGHT[1].getWidth(),localPlayer.playerSpriteMOVE_RIGHT[1].getHeight());
+//        g.setColor(Color.red);
+//        g.drawRect((int) localPlayer.localPlayerHitbox.playerHitboxPosXScreen, (int) localPlayer.localPlayerHitbox.playerHitboxPosYScreen,
+//                (int) localPlayer.localPlayerHitbox.getWidth(), (int) localPlayer.localPlayerHitbox.getHeight());
+//        OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer ->
+//                g.drawRect((int) onlinePlayer.onlinePlayerHitbox.playerHitboxPosXScreen, (int) onlinePlayer.onlinePlayerHitbox.playerHitboxPosYScreen,
+//                        (int) onlinePlayer.onlinePlayerHitbox.getWidth(), (int) onlinePlayer.onlinePlayerHitbox.getHeight()));
+//        Spell01.listOfActiveSpell01s.forEach(spell01 ->
+//                g.drawRect((int) spell01.spell01Hitbox.spell01HitboxPosXScreen, (int) spell01.spell01Hitbox.spell01HitboxPosYScreen,
+//                        (int) spell01.spell01Hitbox.getWidth(), (int) spell01.spell01Hitbox.getHeight()));
 
     }
 

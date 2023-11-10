@@ -1,6 +1,7 @@
 package scenes.playing;
 
 import main.MainPanel;
+import main.MapGenerator;
 
 import javax.imageio.ImageIO;
 import java.awt.event.MouseEvent;
@@ -31,7 +32,7 @@ public class Camera {
     public BufferedImage currentCameraPosition;
     public BufferedImage currentObjectsPosition;
 
-    public Camera() {
+    public Camera(MapGenerator mapGenerator) {
         cameraPosX = 0;
         cameraPosY = 0;
 
@@ -39,8 +40,8 @@ public class Camera {
         cameraMovingDown = false;
         cameraMovingLeft = false;
         cameraMovingRight = false;
-        getWholeMapImage();
-//        getWholeMapObjectsImage();
+        WHOLE_MAP = mapGenerator.Whole_Map;
+//        getWholeMapImage();
         distanceToEdgeToMoveCamera = 100;
 
     }
@@ -67,7 +68,7 @@ public class Camera {
         }
     }
 
-//Not used in game loop, rather on MouseEvent
+    //Not used in game loop, rather on MouseEvent
     public static void updateCameraState(MouseEvent e) {
         cameraMovingDown = e.getY() >= MainPanel.gameSize.getHeight() - distanceToEdgeToMoveCamera;
         cameraMovingUP = e.getY() <= distanceToEdgeToMoveCamera;

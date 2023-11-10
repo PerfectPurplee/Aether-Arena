@@ -34,6 +34,7 @@ public class GameEngine extends Thread {
     PlayerKeyboardInputs playerKeyboardInputs;
     PlayerMouseInputs playerMouseInputs;
     ActionListener actionListener;
+    MapGenerator mapGenerator;
     Camera camera;
     //    Server server;
     Client client;
@@ -48,6 +49,7 @@ public class GameEngine extends Thread {
 
         getAllBasicSpellsSpriteSheet();
         assetLoader = new AssetLoader();
+        mapGenerator = new MapGenerator(assetLoader);
 
         localPlayer = new LocalPlayer(assetLoader);
         championSelect = new ChampionSelect(assetLoader);
@@ -58,7 +60,7 @@ public class GameEngine extends Thread {
         mainPanel = new MainPanel(playerKeyboardInputs, playerMouseInputs);
         actionListener = new ActionListener(mainPanel, this);
         menu = new Menu(mainPanel, playerMouseInputs);
-        camera = new Camera();
+        camera = new Camera(mapGenerator);
         playing = new Playing(localPlayer, camera);
         mainFrame = new MainFrame(mainPanel);
 
