@@ -2,6 +2,7 @@ package entities.spells.basicspells;
 
 import datatransferobjects.Spell01DTO;
 import entities.playercharacters.LocalPlayer;
+import main.AssetLoader;
 import main.GameEngine;
 import networking.Client;
 import scenes.playing.Camera;
@@ -19,7 +20,7 @@ public class Spell01 {
 
     LocalPlayer localPlayer;
 
-    private static final int NUMBER_OF_SPRITES = 4;
+    public static final int NUMBER_OF_SPRITES = 4;
     private static final int SPEED = 2;
     public static final long SPELL01COOLDOWN = 3000; // 3 seconds in milliseconds
     //  object starting position on screen. Character pos + (vector * int)
@@ -93,10 +94,7 @@ public class Spell01 {
     }
 
     private void getSpellSprites() {
-        for (int i = 0; i < NUMBER_OF_SPRITES; i++) {
-            spellSprites[i] = BasicSpellsSpriteSheet.getSubimage(xSpriteStartPos, 18, 16, 16);
-            xSpriteStartPos += 16;
-        }
+        spellSprites = AssetLoader.QSpellViolet;
     }
 
     private void getVector() {

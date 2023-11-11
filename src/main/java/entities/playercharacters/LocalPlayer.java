@@ -137,7 +137,7 @@ public class LocalPlayer {
 
     public void moveController() {
 //
-        if (distanceToTravel > 0) {
+        if (distanceToTravel > 2) {
 
             playerPosXWorld += (playerMoveSpeed * normalizedVectorX);
             playerPosYWorld += (playerMoveSpeed * normalizedVectorY);
@@ -155,7 +155,7 @@ public class LocalPlayer {
     public void setCurrent_Player_State() {
 
         if (isPlayerMoving) {
-            if (mouseClickXPos < playerPosXScreen + playerFeetX) {
+            if (mouseClickXPos < playerPosXWorld + playerFeetX) {
                 Current_Player_State = EnumContainer.AllPlayerStates.MOVING_LEFT;
             } else {
                 Current_Player_State = EnumContainer.AllPlayerStates.MOVING_RIGHT;

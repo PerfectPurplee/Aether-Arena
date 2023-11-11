@@ -16,14 +16,14 @@ public abstract class PacketManager {
         final int packetType = 0;
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream dataOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
 
         PLayer_Champion_Shared = localPlayer.localPlayerChampion;
 
         try {
-            dataOutputStream.writeInt(packetType);
-            dataOutputStream.writeObject(PLayer_Champion_Shared);
-            dataOutputStream.flush();
+            objectOutputStream.writeInt(packetType);
+            objectOutputStream.writeObject(PLayer_Champion_Shared);
+            objectOutputStream.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -33,7 +33,7 @@ public abstract class PacketManager {
 
         try {
             byteArrayOutputStream.close();
-            dataOutputStream.close();
+            objectOutputStream.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

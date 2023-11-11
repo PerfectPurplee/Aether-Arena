@@ -5,10 +5,10 @@ import entities.playercharacters.LocalPlayer;
 import entities.playercharacters.OnlinePlayer;
 import entities.spells.basicspells.Spell01;
 
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.*;
-import java.util.List;
 import java.util.Optional;
 
 import static main.EnumContainer.*;
@@ -114,29 +114,47 @@ public class Client extends Thread {
                 }
             }
             if (packetType == 2) {
-//                clientID na razie do niczego nie uzyte
                 int clientID = objectInputStream.readInt();
-                Spell01DTO.listOfAllSpell01DTO = (List<Spell01DTO>) objectInputStream.readObject();
+
+                while (objectInputStream.available() > 0) {
+                    int spellID = objectInputStream.readInt();
+                    int spellCasterClientID = objectInputStream.readInt();
+                    float normalizedVectorX = objectInputStream.readFloat();
+                    float normalizedVectorY = objectInputStream.readFloat();
+                    float spellPosXWorld = objectInputStream.readFloat();
+                    float spellPosYWorld = objectInputStream.readFloat();
+                    Optional<Spell01> optionalSpell01 = Spell01.listOfActiveSpell01s.stream().filter(element ->
+                            (element.spellCasterClientID == spellCasterClientID) && (element.spellID == spellID)).findFirst();
+                    if (optionalSpell01.isPresent()) {
+                        optionalSpell01.get().spellPosXWorld = spellPosXWorld;
+                        optionalSpell01.get().spellPosYWorld = spellPosYWorld;
+                    } else {
+                        new Spell01(new Spell01DTO(spellPosXWorld, spellPosYWorld, normalizedVectorX,
+                                normalizedVectorY, spellID, spellCasterClientID));
+                    }
+
+                }
 
 
-                for (Spell01DTO spellDTO : Spell01DTO.listOfAllSpell01DTO) {
+//                Spell01DTO.listOfAllSpell01DTO = (List<Spell01DTO>) objectInputStream.readObject();
+//                for (Spell01DTO spellDTO : Spell01DTO.listOfAllSpell01DTO) {
 //                    System.out.println("Caster:  " + spellDTO.spellCasterClientID +  "SpellID: " + spellDTO.spellID + "Pos X: "
 //                            + spellDTO.spellPosXWorld + "Pos Y" + spellDTO.spellPosYWorld);
-                    boolean found = false;
-                    synchronized (Spell01.listOfActiveSpell01s) {
-                        for (Spell01 spell01 : Spell01.listOfActiveSpell01s) {
-                            if (spell01.spellCasterClientID == spellDTO.spellCasterClientID && spell01.spellID == spellDTO.spellID) {
-                                spell01.spellPosXWorld = spellDTO.spellPosXWorld;
-                                spell01.spellPosYWorld = spellDTO.spellPosYWorld;
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-                    if(!found) {
-                        new Spell01(spellDTO);
-                    }
-                }
+//                    boolean found = false;
+//                    synchronized (Spell01.listOfActiveSpell01s) {
+//                        for (Spell01 spell01 : Spell01.listOfActiveSpell01s) {
+//                            if (spell01.spellCasterClientID == spellDTO.spellCasterClientID && spell01.spellID == spellDTO.spellID) {
+//                                spell01.spellPosXWorld = spellDTO.spellPosXWorld;
+//                                spell01.spellPosYWorld = spellDTO.spellPosYWorld;
+//                                found = true;
+//                                break;
+//                            }
+//                        }
+//                    }
+//                    if(!found) {
+//                        new Spell01(spellDTO);
+//                    }
+//                }
 
 
             }

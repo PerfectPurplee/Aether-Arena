@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Objects;
 
+import static entities.spells.basicspells.Spell01.NUMBER_OF_SPRITES;
+
 public class AssetLoader {
 
 
@@ -43,8 +45,16 @@ public class AssetLoader {
     public BufferedImage rock2;
     public BufferedImage rock3;
 
+    //    Spells Sprites
+    public BufferedImage BasicSpellsSpriteSheetViolet;
+
+    public static  BufferedImage[] QSpellViolet;
+
+
     AssetLoader() {
         getPlayerSprites2Directional();
+        getAllBasicSpellsSpriteSheet();
+        getSpriteForQSpellViolet();
         getMapObjects();
     }
 
@@ -159,6 +169,33 @@ public class AssetLoader {
         return shadowImage;
     }
 
+    private BufferedImage addShadowToQSpell(BufferedImage image) {
+        BufferedImage shadowImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = shadowImage.createGraphics();
+
+        try {
+            RadialGradientPaint gradient = new RadialGradientPaint(
+                    (float) image.getWidth() / 2, image.getHeight(), (float) image.getWidth() / 2,
+                    new float[]{0.0f, 1.0f},
+                    new Color[]{new Color(0, 0, 0, 255), new Color(0, 0, 0, 0)});
+
+            g2d.setPaint(gradient);
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            int shadowX = 0;
+            int shadowY = image.getHeight() - 20;
+            int shadowWidth = image.getWidth();
+            int shadowHeight = 20;
+
+            g2d.fill(new Ellipse2D.Double(shadowX, shadowY, shadowWidth, shadowHeight));
+            g2d.drawImage(image, 0, 0, null);
+        } finally {
+            g2d.dispose();
+        }
+
+        return shadowImage;
+    }
+
     private BufferedImage scaleImage(File imageFile) {
         try {
             BufferedImage originalImage = ImageIO.read(imageFile);
@@ -186,6 +223,25 @@ public class AssetLoader {
         g2d.drawImage(image, width, 0, -width, height, null);
 
         return flippedImage;
+    }
+
+    private void getAllBasicSpellsSpriteSheet() {
+        InputStream inputStream = getClass().getResourceAsStream("/AttackSprites.png");
+        try {
+            BasicSpellsSpriteSheetViolet = ImageIO.read(Objects.requireNonNull(inputStream));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private BufferedImage getSpriteForQSpellViolet() {
+        QSpellViolet = new BufferedImage[NUMBER_OF_SPRITES];
+        int xSpriteStartPos = 0;
+        for (int i = 0; i < NUMBER_OF_SPRITES; i++) {
+            QSpellViolet[i] = addShadowToQSpell(BasicSpellsSpriteSheetViolet.getSubimage(xSpriteStartPos, 18, 16, 16));
+            xSpriteStartPos += 16;
+        }
+        return null;
     }
 
 

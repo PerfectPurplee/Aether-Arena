@@ -47,7 +47,7 @@ public class GameEngine extends Thread {
 
     public GameEngine() {
 
-        getAllBasicSpellsSpriteSheet();
+
         assetLoader = new AssetLoader();
         mapGenerator = new MapGenerator(assetLoader);
 
@@ -148,14 +148,7 @@ public class GameEngine extends Thread {
 
     }
 
-    private void getAllBasicSpellsSpriteSheet() {
-        InputStream inputStream = getClass().getResourceAsStream("/AttackSprites.png");
-        try {
-            BasicSpellsSpriteSheet = ImageIO.read(Objects.requireNonNull(inputStream));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
 
 //    public void createServer() {
 //        server = new Server(onlinePlayer);
