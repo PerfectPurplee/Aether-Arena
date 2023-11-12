@@ -43,6 +43,9 @@ public class LocalPlayer {
     public BufferedImage[] playerSpriteROLL_RIGHT = new BufferedImage[5];
     public BufferedImage[] playerSpriteROLL_LEFT = new BufferedImage[5];
 
+    public BufferedImage[] playerSpriteCAST_SPELL_LEFT = new BufferedImage[5];
+    public BufferedImage[] playerSpriteCAST_SPELL_RIGHT = new BufferedImage[5];
+
     public EnumContainer.AllPlayerStates Current_Player_State;
     public EnumContainer.AllPlayableChampions localPlayerChampion;
 
@@ -62,6 +65,7 @@ public class LocalPlayer {
     public float playerMovementStartingPosX, playerMovementStartingPosY;
     public float distanceToTravel;
     public boolean isPlayerMoving;
+    public boolean isPlayerStateLocked;
 
 
     private Graphics2D g2d;
@@ -70,7 +74,7 @@ public class LocalPlayer {
 
     private int animationTick;
     private final int animationSpeed = 15;
-    public int animationIndexMoving, animationIndexIdle;
+    public int animationIndexIdle, animationIndexMoving, animationIndexCasting;
 
     //    This player Spells
     public int counterOfThisPlayerQSpells;
@@ -81,6 +85,7 @@ public class LocalPlayer {
 
 
     public LocalPlayer(AssetLoader assetLoader) {
+        isPlayerStateLocked = false;
         this.assetLoader = assetLoader;
         this.Current_Player_State = EnumContainer.AllPlayerStates.MOVING_RIGHT;
         currentPlayerSprite = setCurrentPlayerSprite();
@@ -154,19 +159,23 @@ public class LocalPlayer {
 
     public void setCurrent_Player_State() {
 
-        if (isPlayerMoving) {
-            if (mouseClickXPos < playerPosXWorld + playerFeetX) {
-                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_LEFT;
-            } else {
-                Current_Player_State = EnumContainer.AllPlayerStates.MOVING_RIGHT;
-            }
-        } else {
-            switch (Current_Player_State) {
-                case MOVING_LEFT -> {
-                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_LEFT;
+        if (!isPlayerStateLocked) {
+            if (isPlayerMoving) {
+                if (mouseClickXPos < playerPosXWorld + playerFeetX) {
+                    Current_Player_State = EnumContainer.AllPlayerStates.MOVING_LEFT;
+                } else {
+                    Current_Player_State = EnumContainer.AllPlayerStates.MOVING_RIGHT;
                 }
-                case MOVING_RIGHT -> {
-                    Current_Player_State = EnumContainer.AllPlayerStates.IDLE_RIGHT;
+            } else {
+                switch (Current_Player_State) {
+
+                    case MOVING_LEFT, CASTING_SPELL_LEFT -> {
+                        Current_Player_State = EnumContainer.AllPlayerStates.IDLE_LEFT;
+                    }
+                    case MOVING_RIGHT, CASTING_SPELL_RIGHT -> {
+                        Current_Player_State = EnumContainer.AllPlayerStates.IDLE_RIGHT;
+                    }
+
                 }
             }
         }
@@ -211,6 +220,9 @@ public class LocalPlayer {
 
         playerSpriteTAKE_DMG_RIGHT = assetLoader.playerSpriteTAKE_DMG_RIGHT[indexOFChampionInAssetLoader];
         playerSpriteTAKE_DMG_LEFT = assetLoader.playerSpriteTAKE_DMG_LEFT[indexOFChampionInAssetLoader];
+
+        playerSpriteCAST_SPELL_LEFT = assetLoader.playerSpriteCAST_SPELL_LEFT[indexOFChampionInAssetLoader];
+        playerSpriteCAST_SPELL_RIGHT = assetLoader.playerSpriteCAST_SPELL_RIGHT[indexOFChampionInAssetLoader];
     }
 
     private BufferedImage scaleImage(File imageFile) {
@@ -260,6 +272,12 @@ public class LocalPlayer {
             case MOVING_RIGHT -> {
                 return playerSpriteMOVE_RIGHT;
             }
+            case CASTING_SPELL_LEFT -> {
+                return playerSpriteCAST_SPELL_LEFT;
+            }
+            case CASTING_SPELL_RIGHT -> {
+                return playerSpriteCAST_SPELL_RIGHT;
+            }
             default -> {
                 return null;
             }
@@ -275,9 +293,27 @@ public class LocalPlayer {
             } else if (currentPlayerSprite == playerSpriteMOVE_LEFT || currentPlayerSprite == playerSpriteMOVE_RIGHT) {
                 if (animationIndexMoving < 7) animationIndexMoving++;
                 else animationIndexMoving = 0;
+            } else if (currentPlayerSprite == playerSpriteCAST_SPELL_RIGHT || currentPlayerSprite == playerSpriteCAST_SPELL_LEFT) {
+                if (animationIndexCasting < 4) animationIndexCasting++;
+                else {
+                    isPlayerStateLocked = false;
+                    setCurrent_Player_State();
+                    animationIndexCasting = 0;
+                }
+
             }
             animationTick = 0;
         }
+    }
+
+    public int currentIndexerForAnimation() {
+        if (currentPlayerSprite == playerSpriteIDLE_LEFT || currentPlayerSprite == playerSpriteIDLE_RIGHT)
+            return animationIndexIdle;
+        else if (currentPlayerSprite == playerSpriteMOVE_LEFT || currentPlayerSprite == playerSpriteMOVE_RIGHT)
+            return animationIndexMoving;
+        else if (currentPlayerSprite == playerSpriteCAST_SPELL_RIGHT || currentPlayerSprite == playerSpriteCAST_SPELL_LEFT)
+            return animationIndexCasting;
+        else return 0;
     }
 
     public void spellCastController() {

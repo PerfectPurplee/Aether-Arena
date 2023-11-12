@@ -52,7 +52,7 @@ public class Playing implements SceneEssentials {
             onlinePlayer.animationController();
             onlinePlayer.updatePlayerPositionOnScreenAndHitbox();
             onlinePlayer.updateHealthBarCurrentHealthAndPositionOnScreen();
-            onlinePlayer.checkIsOnlinePlayerMoving();
+
         });
 
         checkIfAnyPlayerGotHit();
@@ -72,26 +72,16 @@ public class Playing implements SceneEssentials {
 
 
 //        Rysowanie Localplayera
-        if (localPlayer.isPlayerMoving) {
-            g.drawImage(localPlayer.currentPlayerSprite[localPlayer.animationIndexMoving],
-                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, null);
-        } else {
-            g.drawImage(localPlayer.currentPlayerSprite[localPlayer.animationIndexIdle],
-                    (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, null);
-
-        }
-
+        g.drawImage(localPlayer.currentPlayerSprite[localPlayer.currentIndexerForAnimation()],
+                (int) LocalPlayer.playerPosXScreen, (int) LocalPlayer.playerPosYScreen, null);
 
         //       Rysowanie ONLINE postaci
         synchronized (OnlinePlayer.listOfAllConnectedOnlinePLayers) {
             OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer -> {
-                if (onlinePlayer.isPlayerMoving)
-                    g.drawImage(onlinePlayer.currentPlayerSpriteOnlinePlayer[onlinePlayer.animationIndexMoving],
+
+                    g.drawImage(onlinePlayer.currentPlayerSpriteOnlinePlayer[onlinePlayer.currentIndexerForAnimation()],
                             (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen, null);
-                else {
-                    g.drawImage(onlinePlayer.currentPlayerSpriteOnlinePlayer[onlinePlayer.animationIndexIdle],
-                            (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen, null);
-                }
+
             });
         }
 //        Rysowanie Zaklec

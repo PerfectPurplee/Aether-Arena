@@ -2,9 +2,9 @@ package entities.spells.basicspells;
 
 import datatransferobjects.Spell01DTO;
 import entities.playercharacters.LocalPlayer;
+import entities.playercharacters.OnlinePlayer;
 import main.AssetLoader;
 import main.EnumContainer;
-import main.GameEngine;
 import networking.Client;
 import scenes.playing.Camera;
 
@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static main.EnumContainer.ServerClientConnectionCopyObjects;
@@ -23,7 +24,7 @@ import static main.EnumContainer.ServerClientConnectionCopyObjects;
 public class Spell01 {
 
     LocalPlayer localPlayer;
-    public final BufferedImage BasicSpellsSpriteSheet = GameEngine.BasicSpellsSpriteSheet;
+    Optional<OnlinePlayer> onlinePlayer;
     public BufferedImage[] spellSprites_START = new BufferedImage[NUMBER_OF_SPRITES];
     public BufferedImage[] spellSprites_FLYING = new BufferedImage[NUMBER_OF_SPRITES];
     public BufferedImage[] spellSprites_END = new BufferedImage[NUMBER_OF_SPRITES];
@@ -34,7 +35,7 @@ public class Spell01 {
     public static final int NUMBER_OF_SPRITES = 5;
     private static final int SPEED = 2;
     public static final long SPELL01COOLDOWN = 1000; // 1 seconds in milliseconds
-    private final int RANGE = 500;
+    private final int RANGE = 1000;
     private float distanceTraveled = 0;
     //  object starting position on screen. Character pos + (vector * int)
     public float spellPosXWorld, spellPosYWorld;
@@ -46,7 +47,7 @@ public class Spell01 {
     public float normalizedVectorY;
     public int mousePosXWorld, mousePosYWorld;
 
-    public int spellCasterClientID;
+    public final int spellCasterClientID;
     public final int spellID;
     //    If true, object will be soon removed from active spell list;
     public boolean playerGotHit;
@@ -59,9 +60,10 @@ public class Spell01 {
 
     public Spell01(LocalPlayer playerCastingThisSpell) {
         localPlayer = playerCastingThisSpell;
-
         getVector();
-        getSpellSprites();
+        localPlayer.isPlayerStateLocked = true;
+        setPlayerCastingThisSpellStateLocalPlayer();
+        getSpellSprites(localPlayer);
         current_Spell_State = EnumContainer.AllQspellStates.Q_SPELL_START;
         setCurrent_Spell_Sprite();
         spellPosXWorld = ((localPlayer.localPlayerHitbox.x + (localPlayer.localPlayerHitbox.width / 2 - 32) + (normalizedVectorX * 125)));
@@ -84,7 +86,9 @@ public class Spell01 {
     }
 
     public Spell01(Spell01DTO spell01DTO) {
-        getSpellSprites();
+        spellCasterClientID = spell01DTO.spellCasterClientID;
+        setOnlinePlayerCastingThisSpell();
+        getSpellSprites(onlinePlayer);
         current_Spell_State = EnumContainer.AllQspellStates.Q_SPELL_START;
         setCurrent_Spell_Sprite();
         normalizedVectorX = spell01DTO.normalizedVectorX;
@@ -93,8 +97,9 @@ public class Spell01 {
         spellPosYWorld = spell01DTO.spellPosYWorld;
         spellPosXScreen = spellPosXWorld - Camera.cameraPosX;
         spellPosYScreen = spellPosYWorld - Camera.cameraPosY;
+        onlinePlayer.ifPresent(player -> player.isPlayerStateLocked = true);
+        setPlayerCastingThisSpellStateOnlinePlayer();
 
-        spellCasterClientID = spell01DTO.spellCasterClientID;
         spellID = spell01DTO.spellID;
 
         spell01Hitbox = new Spell01Hitbox();
@@ -107,11 +112,31 @@ public class Spell01 {
         }
     }
 
-//    public void setCurrent_Spell_State() {
-//
-//        Current_Spell = EnumContainer.AllPlayerStates.MOVING_LEFT;
-//
-//    }
+    private void setPlayerCastingThisSpellStateLocalPlayer() {
+        if (localPlayer != null) {
+            if (mousePosXWorld <= LocalPlayer.playerPosXWorld + localPlayer.playerFeetX)
+                localPlayer.Current_Player_State = EnumContainer.AllPlayerStates.CASTING_SPELL_LEFT;
+            else
+                localPlayer.Current_Player_State = EnumContainer.AllPlayerStates.CASTING_SPELL_RIGHT;
+        }
+    }
+
+    private void setPlayerCastingThisSpellStateOnlinePlayer() {
+        if (onlinePlayer.isPresent()) {
+            if (spellPosXWorld <= onlinePlayer.get().playerPosXWorld + onlinePlayer.get().onlinePlayerHitbox.getWidth() / 2)
+                onlinePlayer.get().Current_Player_State_Online_Player = EnumContainer.AllPlayerStates.CASTING_SPELL_LEFT;
+            else
+                onlinePlayer.get().Current_Player_State_Online_Player = EnumContainer.AllPlayerStates.CASTING_SPELL_RIGHT;
+        }
+    }
+
+    private void setOnlinePlayerCastingThisSpell() {
+        onlinePlayer = OnlinePlayer.listOfAllConnectedOnlinePLayers.stream()
+                .filter(onlineplayer -> onlineplayer.onlinePlayerID == spellCasterClientID).findFirst();
+        if (onlinePlayer.isEmpty()) {
+            System.out.println("NO ONLINE PLAYER FOR SPELL FOUND");
+        }
+    }
 
     public void setCurrent_Spell_Sprite() {
 
@@ -133,7 +158,7 @@ public class Spell01 {
         distanceTraveled += (float) Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
-    private void getSpellSprites() {
+    private void getSpellSpritesDefault() {
         BufferedImage[] spellAssets;
         for (EnumContainer.AllQspellStates element : EnumContainer.AllQspellStates.values()) {
             switch (element) {
@@ -142,6 +167,127 @@ public class Spell01 {
                 case Q_SPELL_END -> spellAssets = AssetLoader.QSpellFireBallCastEnd;
                 default -> spellAssets = AssetLoader.QSpellViolet;
             }
+
+            BufferedImage[] spellAssetsRotated = new BufferedImage[NUMBER_OF_SPRITES];
+            double angle = Math.atan2(normalizedVectorY, normalizedVectorX);
+            Graphics2D g2d;
+            for (int i = 0; i < spellAssets.length; i++) {
+                BufferedImage spellAsset = new BufferedImage(spellAssets[i].getWidth(), spellAssets[i].getHeight(), BufferedImage.TYPE_INT_ARGB);
+                g2d = spellAsset.createGraphics();
+
+                AffineTransform transform = new AffineTransform();
+                transform.rotate(angle, (double) spellAsset.getWidth() / 2, (double) spellAsset.getHeight() / 2);
+                g2d.setTransform(transform);
+                g2d.drawImage(spellAssets[i], 0, 0, null);
+                spellAssetsRotated[i] = spellAsset;
+            }
+            if (element == EnumContainer.AllQspellStates.Q_SPELL_START) spellSprites_START = spellAssetsRotated;
+            else if (element == EnumContainer.AllQspellStates.Q_SPELL_FLYING)
+                spellSprites_FLYING = spellAssetsRotated;
+            else spellSprites_END = spellAssetsRotated;
+        }
+    }
+
+    private void getSpellSprites(Optional<OnlinePlayer> onlinePlayer) {
+        BufferedImage[] spellAssets;
+        if (onlinePlayer.isPresent()) {
+            System.out.println(onlinePlayer.get().onlinePlayerChampion.name());
+            for (EnumContainer.AllQspellStates element : EnumContainer.AllQspellStates.values()) {
+                switch (element) {
+                    case Q_SPELL_START -> {
+                        if (onlinePlayer.get().onlinePlayerChampion == EnumContainer.AllPlayableChampions.BLUE_HAIR_DUDE)
+                            spellAssets = AssetLoader.QSpellWaterBallCastStart;
+                        else if (onlinePlayer.get().onlinePlayerChampion == EnumContainer.AllPlayableChampions.PINK_HAIR_GIRL)
+                            spellAssets = AssetLoader.QSpellFireBallCastStart;
+                        else if (onlinePlayer.get().onlinePlayerChampion == EnumContainer.AllPlayableChampions.BLOND_MOHAWK_DUDE)
+                            spellAssets = AssetLoader.QSpellRockBallCastStart;
+                        else
+                            spellAssets = AssetLoader.QSpellWindBallCastStart;
+                    }
+                    case Q_SPELL_FLYING -> {
+                        if (onlinePlayer.get().onlinePlayerChampion == EnumContainer.AllPlayableChampions.BLUE_HAIR_DUDE)
+                            spellAssets = AssetLoader.QSpellWaterBallCastFlying;
+                        else if (onlinePlayer.get().onlinePlayerChampion == EnumContainer.AllPlayableChampions.PINK_HAIR_GIRL)
+                            spellAssets = AssetLoader.QSpellFireballCastFlying;
+                        else if (onlinePlayer.get().onlinePlayerChampion == EnumContainer.AllPlayableChampions.BLOND_MOHAWK_DUDE)
+                            spellAssets = AssetLoader.QSpellRockBallCastFlying;
+                        else
+                            spellAssets = AssetLoader.QSpellWindBallCastFlying;
+                    }
+                    case Q_SPELL_END -> {
+                        if (onlinePlayer.get().onlinePlayerChampion == EnumContainer.AllPlayableChampions.BLUE_HAIR_DUDE)
+                            spellAssets = AssetLoader.QSpellWaterBallCastEnd;
+                        else if (onlinePlayer.get().onlinePlayerChampion == EnumContainer.AllPlayableChampions.PINK_HAIR_GIRL)
+                            spellAssets = AssetLoader.QSpellFireBallCastEnd;
+                        else if (onlinePlayer.get().onlinePlayerChampion == EnumContainer.AllPlayableChampions.BLOND_MOHAWK_DUDE)
+                            spellAssets = AssetLoader.QSpellRockBallCastEnd;
+                        else
+                            spellAssets = AssetLoader.QSpellWindBallCastEnd;
+                    }
+                    default -> spellAssets = AssetLoader.QSpellViolet;
+                }
+
+                BufferedImage[] spellAssetsRotated = new BufferedImage[NUMBER_OF_SPRITES];
+                double angle = Math.atan2(normalizedVectorY, normalizedVectorX);
+                Graphics2D g2d;
+                for (int i = 0; i < spellAssets.length; i++) {
+                    BufferedImage spellAsset = new BufferedImage(spellAssets[i].getWidth(), spellAssets[i].getHeight(), BufferedImage.TYPE_INT_ARGB);
+                    g2d = spellAsset.createGraphics();
+
+                    AffineTransform transform = new AffineTransform();
+                    transform.rotate(angle, (double) spellAsset.getWidth() / 2, (double) spellAsset.getHeight() / 2);
+                    g2d.setTransform(transform);
+                    g2d.drawImage(spellAssets[i], 0, 0, null);
+                    spellAssetsRotated[i] = spellAsset;
+                }
+                if (element == EnumContainer.AllQspellStates.Q_SPELL_START) spellSprites_START = spellAssetsRotated;
+                else if (element == EnumContainer.AllQspellStates.Q_SPELL_FLYING)
+                    spellSprites_FLYING = spellAssetsRotated;
+                else spellSprites_END = spellAssetsRotated;
+            }
+        } else {
+            System.out.println("Online player not present, cant get Sprites");
+            getSpellSpritesDefault();
+        }
+    }
+
+    private void getSpellSprites(LocalPlayer localPlayer) {
+        BufferedImage[] spellAssets;
+        for (EnumContainer.AllQspellStates element : EnumContainer.AllQspellStates.values()) {
+            switch (element) {
+                case Q_SPELL_START -> {
+                    if (localPlayer.localPlayerChampion == EnumContainer.AllPlayableChampions.BLUE_HAIR_DUDE)
+                        spellAssets = AssetLoader.QSpellWaterBallCastStart;
+                    else if (localPlayer.localPlayerChampion == EnumContainer.AllPlayableChampions.PINK_HAIR_GIRL)
+                        spellAssets = AssetLoader.QSpellFireBallCastStart;
+                    else if (localPlayer.localPlayerChampion == EnumContainer.AllPlayableChampions.BLOND_MOHAWK_DUDE)
+                        spellAssets = AssetLoader.QSpellRockBallCastStart;
+                    else
+                        spellAssets = AssetLoader.QSpellWindBallCastStart;
+                }
+                case Q_SPELL_FLYING -> {
+                    if (localPlayer.localPlayerChampion == EnumContainer.AllPlayableChampions.BLUE_HAIR_DUDE)
+                        spellAssets = AssetLoader.QSpellWaterBallCastFlying;
+                    else if (localPlayer.localPlayerChampion == EnumContainer.AllPlayableChampions.PINK_HAIR_GIRL)
+                        spellAssets = AssetLoader.QSpellFireballCastFlying;
+                    else if (localPlayer.localPlayerChampion == EnumContainer.AllPlayableChampions.BLOND_MOHAWK_DUDE)
+                        spellAssets = AssetLoader.QSpellRockBallCastFlying;
+                    else
+                        spellAssets = AssetLoader.QSpellWindBallCastFlying;
+                }
+                case Q_SPELL_END -> {
+                    if (localPlayer.localPlayerChampion == EnumContainer.AllPlayableChampions.BLUE_HAIR_DUDE)
+                        spellAssets = AssetLoader.QSpellWaterBallCastEnd;
+                    else if (localPlayer.localPlayerChampion == EnumContainer.AllPlayableChampions.PINK_HAIR_GIRL)
+                        spellAssets = AssetLoader.QSpellFireBallCastEnd;
+                    else if (localPlayer.localPlayerChampion == EnumContainer.AllPlayableChampions.BLOND_MOHAWK_DUDE)
+                        spellAssets = AssetLoader.QSpellRockBallCastEnd;
+                    else
+                        spellAssets = AssetLoader.QSpellWindBallCastEnd;
+                }
+                default -> spellAssets = AssetLoader.QSpellViolet;
+            }
+
             BufferedImage[] spellAssetsRotated = new BufferedImage[NUMBER_OF_SPRITES];
             double angle = Math.atan2(normalizedVectorY, normalizedVectorX);
             Graphics2D g2d;
@@ -191,7 +337,6 @@ public class Spell01 {
                 case Q_SPELL_END -> {
                     if (animationIndex < NUMBER_OF_SPRITES - 1) animationIndex++;
                     else {
-                        animationIndex = 0;
                         flagForRemoval = true;
                     }
                     animationTick = 0;
@@ -208,20 +353,25 @@ public class Spell01 {
             spellPosYWorld += (normalizedVectorY * SPEED);
             spellPosXScreen = spellPosXWorld - Camera.cameraPosX;
             spellPosYScreen = spellPosYWorld - Camera.cameraPosY;
-        } else if (current_Spell_State != EnumContainer.AllQspellStates.Q_SPELL_END) {
-            current_Spell_State = EnumContainer.AllQspellStates.Q_SPELL_END;
-            spell01Hitbox = null;
+        } else {
+            spellPosXScreen = spellPosXWorld - Camera.cameraPosX;
+            spellPosYScreen = spellPosYWorld - Camera.cameraPosY;
+            if ((current_Spell_State != EnumContainer.AllQspellStates.Q_SPELL_END)) {
+                current_Spell_State = EnumContainer.AllQspellStates.Q_SPELL_END;
+                animationIndex = 0;
+                spell01Hitbox = null;
+            }
         }
     }
 
     public static void updateAllSpells01() {
         synchronized (listOfActiveSpell01s) {
             listOfActiveSpell01s = listOfActiveSpell01s.stream().filter(
-                    spell01 -> spell01.spellPosXWorld >= -64 &&
+                    spell01 -> (spell01.spellPosXWorld >= -64 &&
                             spell01.spellPosYWorld >= -64 &&
                             spell01.spellPosXWorld <= Camera.WHOLE_MAP.getWidth() + 64 &&
                             spell01.spellPosYWorld <= Camera.WHOLE_MAP.getHeight() + 64 &&
-                            !spell01.flagForRemoval).collect(Collectors.toList());
+                            !spell01.flagForRemoval)).collect(Collectors.toList());
 
 
             listOfActiveSpell01s.forEach(spell01 -> {

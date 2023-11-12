@@ -95,7 +95,8 @@ public class Client extends Thread {
                     } else if (OptionalOnlinePlayer.isPresent()) {
                         ServerClientConnectionCopyObjects.Current_Player_State_Shared = (AllPlayerStates) objectInputStream.readObject();
                         ServerClientConnectionCopyObjects.PLayer_Champion_Shared = (AllPlayableChampions) objectInputStream.readObject();
-                        OptionalOnlinePlayer.get().Current_Player_State_Online_Player = ServerClientConnectionCopyObjects.Current_Player_State_Shared;
+                        if (!OptionalOnlinePlayer.get().isPlayerStateLocked)
+                            OptionalOnlinePlayer.get().Current_Player_State_Online_Player = ServerClientConnectionCopyObjects.Current_Player_State_Shared;
 
                         OptionalOnlinePlayer.get().playerPosXWorld = objectInputStream.readFloat();
                         OptionalOnlinePlayer.get().playerPosYWorld = objectInputStream.readFloat();
@@ -104,8 +105,8 @@ public class Client extends Thread {
                         ServerClientConnectionCopyObjects.Current_Player_State_Shared = (AllPlayerStates) objectInputStream.readObject();
                         ServerClientConnectionCopyObjects.PLayer_Champion_Shared = (AllPlayableChampions) objectInputStream.readObject();
                         OnlinePlayer onlinePlayer = new OnlinePlayer(serverClientID);
-
-                        onlinePlayer.Current_Player_State_Online_Player = ServerClientConnectionCopyObjects.Current_Player_State_Shared;
+                        if (!onlinePlayer.isPlayerStateLocked)
+                            onlinePlayer.Current_Player_State_Online_Player = ServerClientConnectionCopyObjects.Current_Player_State_Shared;
                         onlinePlayer.playerPosXWorld = objectInputStream.readFloat();
                         onlinePlayer.playerPosYWorld = objectInputStream.readFloat();
 

@@ -34,6 +34,9 @@ public class OnlinePlayer {
     public BufferedImage[] playerSpriteROLL_RIGHT = new BufferedImage[5];
     public BufferedImage[] playerSpriteROLL_LEFT = new BufferedImage[5];
 
+    public BufferedImage[] playerSpriteCAST_SPELL_LEFT = new BufferedImage[5];
+    public BufferedImage[] playerSpriteCAST_SPELL_RIGHT = new BufferedImage[5];
+
     public BufferedImage[] currentPlayerSpriteOnlinePlayer;
 
     public EnumContainer.AllPlayerStates Current_Player_State_Online_Player;
@@ -47,10 +50,11 @@ public class OnlinePlayer {
 
     private Graphics2D g2d;
     private int animationTick, animationSpeed = 15;
-    public int animationIndexMoving, animationIndexIdle;
+    public int animationIndexMoving, animationIndexIdle, animationIndexCasting;
 
     public final int onlinePlayerID;
     public boolean isPlayerMoving;
+    public boolean isPlayerStateLocked;
 
     public static List<OnlinePlayer> listOfAllConnectedOnlinePLayers = new ArrayList<>();
     //    Assigned in a GameEngine
@@ -58,6 +62,7 @@ public class OnlinePlayer {
 
 
     public OnlinePlayer(int onlinePlayerID) {
+        isPlayerStateLocked = false;
         onlinePlayerChampion = EnumContainer.ServerClientConnectionCopyObjects.PLayer_Champion_Shared;
         getPlayerSprites2Directional(onlinePlayerChampion);
         this.onlinePlayerID = onlinePlayerID;
@@ -128,6 +133,9 @@ public class OnlinePlayer {
 
         playerSpriteTAKE_DMG_RIGHT = assetLoader.playerSpriteTAKE_DMG_RIGHT[indexOFChampionInAssetLoader];
         playerSpriteTAKE_DMG_LEFT = assetLoader.playerSpriteTAKE_DMG_LEFT[indexOFChampionInAssetLoader];
+
+        playerSpriteCAST_SPELL_LEFT = assetLoader.playerSpriteCAST_SPELL_LEFT[indexOFChampionInAssetLoader];
+        playerSpriteCAST_SPELL_RIGHT = assetLoader.playerSpriteCAST_SPELL_RIGHT[indexOFChampionInAssetLoader];
     }
 
     public void updatePlayerPositionOnScreenAndHitbox() {
@@ -151,6 +159,12 @@ public class OnlinePlayer {
             case MOVING_RIGHT -> {
                 return playerSpriteMOVE_RIGHT;
             }
+            case CASTING_SPELL_LEFT -> {
+                return playerSpriteCAST_SPELL_LEFT;
+            }
+            case CASTING_SPELL_RIGHT -> {
+                return playerSpriteCAST_SPELL_RIGHT;
+            }
             default -> {
                 return null;
             }
@@ -167,22 +181,39 @@ public class OnlinePlayer {
             } else if (currentPlayerSpriteOnlinePlayer == playerSpriteMOVE_LEFT || currentPlayerSpriteOnlinePlayer == playerSpriteMOVE_RIGHT) {
                 if (animationIndexMoving < 7) animationIndexMoving++;
                 else animationIndexMoving = 0;
+            } else if (currentPlayerSpriteOnlinePlayer == playerSpriteCAST_SPELL_RIGHT || currentPlayerSpriteOnlinePlayer == playerSpriteCAST_SPELL_LEFT) {
+                if (animationIndexCasting < 4) animationIndexCasting++;
+                else {
+                    isPlayerStateLocked = false;
+                    animationIndexCasting = 0;
+                }
+
             }
             animationTick = 0;
         }
     }
 
-    public void checkIsOnlinePlayerMoving() {
+//    public void checkIsOnlinePlayerMoving() {
+//
+//        switch (Current_Player_State_Online_Player) {
+//            case IDLE_RIGHT, IDLE_LEFT -> {
+//                isPlayerMoving = false;
+//            }
+//            case MOVING_LEFT, MOVING_RIGHT -> {
+//                isPlayerMoving = true;
+//            }
+//            default -> throw new IllegalStateException("Unexpected value: " + Current_Player_State_Online_Player);
+//        }
+//    }
 
-        switch (Current_Player_State_Online_Player) {
-            case IDLE_RIGHT, IDLE_LEFT -> {
-                isPlayerMoving = false;
-            }
-            case MOVING_LEFT, MOVING_RIGHT -> {
-                isPlayerMoving = true;
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + Current_Player_State_Online_Player);
-        }
+    public int currentIndexerForAnimation() {
+        if (currentPlayerSpriteOnlinePlayer == playerSpriteIDLE_LEFT || currentPlayerSpriteOnlinePlayer == playerSpriteIDLE_RIGHT)
+            return animationIndexIdle;
+        else if (currentPlayerSpriteOnlinePlayer == playerSpriteMOVE_LEFT || currentPlayerSpriteOnlinePlayer == playerSpriteMOVE_RIGHT)
+            return animationIndexMoving;
+        else if (currentPlayerSpriteOnlinePlayer == playerSpriteCAST_SPELL_RIGHT || currentPlayerSpriteOnlinePlayer == playerSpriteCAST_SPELL_LEFT)
+            return animationIndexCasting;
+        else return 0;
     }
 
     public void updatePlayerHitboxWorldAndPosOnScreen() {
