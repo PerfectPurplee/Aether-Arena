@@ -34,7 +34,7 @@ public class Spell01 {
 
     public static final int NUMBER_OF_SPRITES = 5;
     private static final int SPEED = 2;
-    public static final long SPELL01COOLDOWN = 1000; // 1 seconds in milliseconds
+    public static final long SPELL01COOLDOWN = 500; // 0.5 seconds in milliseconds
     private final int RANGE = 1000;
     private float distanceTraveled = 0;
     //  object starting position on screen. Character pos + (vector * int)
@@ -55,8 +55,9 @@ public class Spell01 {
     public Spell01Hitbox spell01Hitbox;
 
     public static List<Spell01> listOfActiveSpell01s = new ArrayList<>();
-
     public static boolean QSpellCreatedOnThisMousePress = false;
+
+    public static long LastLocalSpellCreationTime;
 
     public Spell01(LocalPlayer playerCastingThisSpell) {
         localPlayer = playerCastingThisSpell;
@@ -78,6 +79,8 @@ public class Spell01 {
         spell01Hitbox = new Spell01Hitbox();
         playerGotHit = false;
         flagForRemoval = false;
+
+        LastLocalSpellCreationTime = System.currentTimeMillis();
 
 
         synchronized (listOfActiveSpell01s) {
@@ -122,7 +125,9 @@ public class Spell01 {
     }
 
     private void setPlayerCastingThisSpellStateOnlinePlayer() {
-        if (onlinePlayer.isPresent()) {
+        if (onlinePlayer.isPresent()
+                && (onlinePlayer.get().Current_Player_State_Online_Player != EnumContainer.AllPlayerStates.CASTING_SPELL_LEFT
+                || onlinePlayer.get().Current_Player_State_Online_Player != EnumContainer.AllPlayerStates.CASTING_SPELL_RIGHT)) {
             if (spellPosXWorld <= onlinePlayer.get().playerPosXWorld + onlinePlayer.get().onlinePlayerHitbox.getWidth() / 2)
                 onlinePlayer.get().Current_Player_State_Online_Player = EnumContainer.AllPlayerStates.CASTING_SPELL_LEFT;
             else

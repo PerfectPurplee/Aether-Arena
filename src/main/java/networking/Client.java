@@ -130,8 +130,10 @@ public class Client extends Thread {
                         optionalSpell01.get().spellPosXWorld = spellPosXWorld;
                         optionalSpell01.get().spellPosYWorld = spellPosYWorld;
                     } else {
-                        new Spell01(new Spell01DTO(spellPosXWorld, spellPosYWorld, normalizedVectorX,
-                                normalizedVectorY, spellID, spellCasterClientID));
+                        if (spellCasterClientID != ClientID) {
+                            new Spell01(new Spell01DTO(spellPosXWorld, spellPosYWorld, normalizedVectorX,
+                                    normalizedVectorY, spellID, spellCasterClientID));
+                        }
                     }
 
                 }

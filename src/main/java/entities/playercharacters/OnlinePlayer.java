@@ -171,6 +171,21 @@ public class OnlinePlayer {
         }
     }
 
+    //    Used only for predicting info from server
+    private void setCurrentPlayerStateOnlinePlayer() {
+        switch (Current_Player_State_Online_Player) {
+
+            case CASTING_SPELL_LEFT -> {
+                Current_Player_State_Online_Player = EnumContainer.AllPlayerStates.IDLE_LEFT;
+
+            }
+            case CASTING_SPELL_RIGHT -> {
+                Current_Player_State_Online_Player = EnumContainer.AllPlayerStates.IDLE_RIGHT;
+            }
+
+        }
+    }
+
 
     public void animationController() {
         animationTick++;
@@ -185,6 +200,8 @@ public class OnlinePlayer {
                 if (animationIndexCasting < 4) animationIndexCasting++;
                 else {
                     isPlayerStateLocked = false;
+                    setCurrentPlayerStateOnlinePlayer();
+
                     animationIndexCasting = 0;
                 }
 

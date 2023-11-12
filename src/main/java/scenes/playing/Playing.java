@@ -39,9 +39,8 @@ public class Playing implements SceneEssentials {
         localPlayer.updatePlayerPositionOnScreenAndPlayerHitbox();
         localPlayer.updateHealthBarCurrentHealthAndPositionOnScreen();
 //      spellCastController creates spells, but also sends data to server
-        if (!Spell01.QSpellCreatedOnThisMousePress) {
-            localPlayer.spellCastController();
-        }
+        localPlayer.spellCastController();
+
         Spell01.updateAllSpells01();
 
 
@@ -79,8 +78,8 @@ public class Playing implements SceneEssentials {
         synchronized (OnlinePlayer.listOfAllConnectedOnlinePLayers) {
             OnlinePlayer.listOfAllConnectedOnlinePLayers.forEach(onlinePlayer -> {
 
-                    g.drawImage(onlinePlayer.currentPlayerSpriteOnlinePlayer[onlinePlayer.currentIndexerForAnimation()],
-                            (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen, null);
+                g.drawImage(onlinePlayer.currentPlayerSpriteOnlinePlayer[onlinePlayer.currentIndexerForAnimation()],
+                        (int) onlinePlayer.playerPosXScreen, (int) onlinePlayer.playerPosYScreen, null);
 
             });
         }

@@ -5,7 +5,7 @@ import entities.spells.basicspells.Spell01;
 import inputs.PlayerKeyboardInputs;
 import main.AssetLoader;
 import main.EnumContainer;
-import main.EnumContainer.ServerClientConnectionCopyObjects;
+import main.GameEngine;
 import networking.Client;
 import networking.PacketManager;
 import scenes.playing.Camera;
@@ -82,6 +82,9 @@ public class LocalPlayer {
     public List<Spell01> listOfAllActive_Q_Spells = new ArrayList<>();
 
     private long lastQSpellCastTime;
+    private long lastWSpellCastTime;
+    private long lastESpellCastTime;
+    private long lastRSpellCastTime;
 
 
     public LocalPlayer(AssetLoader assetLoader) {
@@ -318,48 +321,70 @@ public class LocalPlayer {
 
     public void spellCastController() {
 
-        ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[0] = PlayerKeyboardInputs.Q_Pressed;
-        ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[1] = PlayerKeyboardInputs.W_Pressed;
-        ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[2] = PlayerKeyboardInputs.E_Pressed;
-        ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[3] = PlayerKeyboardInputs.R_Pressed;
 
-        boolean shouldWeSendPacketToServer = false;
+        boolean shouldCreateQSpell = PlayerKeyboardInputs.Q_Pressed && isSpellQOffCooldown() && GameEngine.isOffGCD();
+        boolean shouldCreateWSpell = PlayerKeyboardInputs.W_Pressed && isSpellWOffCooldown() && GameEngine.isOffGCD();
+        boolean shouldCreateESpell = PlayerKeyboardInputs.E_Pressed && isSpellEOffCooldown() && GameEngine.isOffGCD();
+        boolean shouldCreateRSpell = PlayerKeyboardInputs.R_Pressed && isSpellROffCooldown() && GameEngine.isOffGCD();
 
-        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[0] && isSpellQoffCooldown()) {
-            new Spell01(this);
-            Spell01.QSpellCreatedOnThisMousePress = true;
-            lastQSpellCastTime = System.currentTimeMillis();
-            shouldWeSendPacketToServer = true;
-        }
-        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[1]) {
-            new Spell01(this);
-            Spell01.QSpellCreatedOnThisMousePress = true;
-            shouldWeSendPacketToServer = true;
-        }
-        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[2]) {
-            new Spell01(this);
-            Spell01.QSpellCreatedOnThisMousePress = true;
-            shouldWeSendPacketToServer = true;
-        }
-        if (ServerClientConnectionCopyObjects.ArrayOfPlayerCreateSpellRequests[3]) {
-            new Spell01(this);
-            Spell01.QSpellCreatedOnThisMousePress = true;
-            shouldWeSendPacketToServer = true;
-        }
-        if (shouldWeSendPacketToServer) {
-            try {
-                Client.socket.send(PacketManager.spellRequestPacket());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        try {
+            if (shouldCreateQSpell) {
+              Spell01 spell01 = new Spell01(this);
+                lastQSpellCastTime = System.currentTimeMillis();
+                Client.socket.send(PacketManager.spellRequestPacket('Q', spell01.spellID));
             }
+            if (shouldCreateWSpell) {
+                Spell01 spell01 =  new Spell01(this);
+                lastWSpellCastTime = System.currentTimeMillis();
+                Client.socket.send(PacketManager.spellRequestPacket('W', spell01.spellID));
+            }
+            if (shouldCreateESpell) {
+                Spell01 spell01 = new Spell01(this);
+                lastESpellCastTime = System.currentTimeMillis();
+                Client.socket.send(PacketManager.spellRequestPacket('E', spell01.spellID));
+            }
+            if (shouldCreateRSpell) {
+                Spell01 spell01 = new Spell01(this);
+                lastRSpellCastTime = System.currentTimeMillis();
+                Client.socket.send(PacketManager.spellRequestPacket('R', spell01.spellID));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+//        if (shouldWeSendPacketToServer) {
+//            try {
+//                Client.socket.send(PacketManager.spellRequestPacket(shouldCreateQSpell, shouldCreateWSpell,
+//                        shouldCreateESpell, shouldCreateRSpell));
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
     }
 
-    private boolean isSpellQoffCooldown() {
+    private boolean isSpellQOffCooldown() {
         long currentTime = System.currentTimeMillis();
         return currentTime - lastQSpellCastTime >= Spell01.SPELL01COOLDOWN;
 
     }
+
+    private boolean isSpellWOffCooldown() {
+        long currentTime = System.currentTimeMillis();
+        return currentTime - lastWSpellCastTime >= Spell01.SPELL01COOLDOWN;
+
+    }
+
+    private boolean isSpellEOffCooldown() {
+        long currentTime = System.currentTimeMillis();
+        return currentTime - lastESpellCastTime >= Spell01.SPELL01COOLDOWN;
+
+    }
+
+    private boolean isSpellROffCooldown() {
+        long currentTime = System.currentTimeMillis();
+        return currentTime - lastRSpellCastTime >= Spell01.SPELL01COOLDOWN;
+
+    }
+
 
     public void updatePlayerHitboxWorldAndPosOnScreen() {
         localPlayerHitbox.x = playerPosXWorld + hitboxOffsetX;

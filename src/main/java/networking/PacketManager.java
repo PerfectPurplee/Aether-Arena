@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 
-import static main.EnumContainer.ServerClientConnectionCopyObjects.*;
+import static main.EnumContainer.ServerClientConnectionCopyObjects.PLayer_Champion_Shared;
+import static main.EnumContainer.ServerClientConnectionCopyObjects.currentMousePosition;
 
 public abstract class PacketManager {
 
@@ -71,7 +72,9 @@ public abstract class PacketManager {
         return datagramPacket;
     }
 
-    public static DatagramPacket spellRequestPacket() throws IOException {
+    public static DatagramPacket spellRequestPacket(
+            boolean shouldCreateSpellQ, boolean shouldCreateSpellW,
+            boolean shouldCreateSpellE, boolean shouldCreateSpellR) throws IOException {
 
         final int packetType = 2;
         final int clinetID = Client.ClientID;
@@ -83,7 +86,44 @@ public abstract class PacketManager {
         try {
             dataOutputStream.writeInt(packetType);
             dataOutputStream.writeInt(clinetID);
-            dataOutputStream.writeObject(ArrayOfPlayerCreateSpellRequests);
+            dataOutputStream.writeBoolean(shouldCreateSpellQ);
+            dataOutputStream.writeBoolean(shouldCreateSpellW);
+            dataOutputStream.writeBoolean(shouldCreateSpellE);
+            dataOutputStream.writeBoolean(shouldCreateSpellR);
+            dataOutputStream.writeObject(currentMousePosition);
+            dataOutputStream.flush();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        byte[] data = byteArrayOutputStream.toByteArray();
+        DatagramPacket datagramPacket = new DatagramPacket(data, data.length, Client.serverIPaddress, 1337);
+
+
+        try {
+            byteArrayOutputStream.close();
+            dataOutputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return datagramPacket;
+    }
+
+    public static DatagramPacket spellRequestPacket(char spellName, int spellID) throws IOException {
+
+        final int packetType = 2;
+        final int clinetID = Client.ClientID;
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream dataOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+
+
+        try {
+            dataOutputStream.writeInt(packetType);
+            dataOutputStream.writeInt(clinetID);
+            dataOutputStream.writeChar(spellName);
+            dataOutputStream.writeInt(spellID);
             dataOutputStream.writeObject(currentMousePosition);
             dataOutputStream.flush();
 

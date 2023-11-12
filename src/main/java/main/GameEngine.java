@@ -2,6 +2,7 @@ package main;
 
 import entities.playercharacters.LocalPlayer;
 import entities.playercharacters.OnlinePlayer;
+import entities.spells.basicspells.Spell01;
 import inputs.ActionListener;
 import inputs.PlayerKeyboardInputs;
 import inputs.PlayerMouseInputs;
@@ -42,6 +43,9 @@ public class GameEngine extends Thread {
 
     private final int FPS_SET = 120;
     private final int UPS_SET = 128;
+
+//    Global cooldown after using each spell given in milliseconds;
+    public static final int GCD = 200;
 
     public static BufferedImage BasicSpellsSpriteSheet;
 
@@ -191,6 +195,10 @@ public class GameEngine extends Thread {
         }
         EnumContainer.AllScenes.Current_Scene = scene;
 
+    }
+
+    public static boolean isOffGCD() {
+        return   System.currentTimeMillis() - Spell01.LastLocalSpellCreationTime >= GCD;
     }
 
 }
