@@ -8,6 +8,13 @@ import java.util.List;
 
 public class EnumContainer {
 
+    public enum AllQspellStates {
+
+        Q_SPELL_START,
+        Q_SPELL_FLYING,
+        Q_SPELL_END
+    }
+
 
     public enum AllPlayerStates {
 

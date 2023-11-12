@@ -97,8 +97,8 @@ public class Playing implements SceneEssentials {
 //        Rysowanie Zaklec
         synchronized (Spell01.listOfActiveSpell01s) {
             Spell01.listOfActiveSpell01s.forEach(spell01 -> {
-                g.drawImage(spell01.spellSprites[spell01.animationIndex], (int) spell01.spellPosXScreen,
-                        (int) spell01.spellPosYScreen, 32, 32, null);
+                g.drawImage(spell01.currentSpellSprites[spell01.animationIndex], (int) spell01.spellPosXScreen,
+                        (int) spell01.spellPosYScreen, null);
             });
         }
 //        Rysowanie Obiektów Mapy
@@ -161,24 +161,25 @@ public class Playing implements SceneEssentials {
 
         synchronized (Spell01.listOfActiveSpell01s) {
             Spell01.listOfActiveSpell01s.forEach(spell -> {
+                if (spell.spell01Hitbox != null) {
+                    if (localPlayer.localPlayerHitbox.intersects(spell.spell01Hitbox)) {
+                        if (localPlayer.healthbar.currentHealth > 0)
+                            localPlayer.healthbar.currentHealth = localPlayer.healthbar.currentHealth - 50;
+                        spell.playerGotHit = true;
+                    }
+                    synchronized (OnlinePlayer.listOfAllConnectedOnlinePLayers) {
+                        OnlinePlayer.listOfAllConnectedOnlinePLayers
+                                .stream()
+                                .filter(onlinePlayer -> onlinePlayer.onlinePlayerHitbox.intersects(spell.spell01Hitbox))
+                                .forEach(onlinePlayerFiltered -> {
+                                    if (onlinePlayerFiltered.healthbar.currentHealth > 0) {
+                                        onlinePlayerFiltered.healthbar.currentHealth = onlinePlayerFiltered.healthbar.currentHealth - 50;
+                                    }
+                                    spell.playerGotHit = true;
+                                });
+                    }
 
-                if (localPlayer.localPlayerHitbox.intersects(spell.spell01Hitbox)) {
-                    if (localPlayer.healthbar.currentHealth > 0)
-                        localPlayer.healthbar.currentHealth = localPlayer.healthbar.currentHealth - 50;
-                    spell.flagForRemoval = true;
                 }
-                synchronized (OnlinePlayer.listOfAllConnectedOnlinePLayers) {
-                    OnlinePlayer.listOfAllConnectedOnlinePLayers
-                            .stream()
-                            .filter(onlinePlayer -> onlinePlayer.onlinePlayerHitbox.intersects(spell.spell01Hitbox))
-                            .forEach(onlinePlayerFiltered -> {
-                                if (onlinePlayerFiltered.healthbar.currentHealth > 0) {
-                                    onlinePlayerFiltered.healthbar.currentHealth = onlinePlayerFiltered.healthbar.currentHealth - 50;
-                                }
-                                spell.flagForRemoval = true;
-                            });
-                }
-
             });
 //            synchronized (Spell01.listOfActiveSpell01s) {
 //                Spell01.listOfActiveSpell01s = Spell01.listOfActiveSpell01s.stream().filter(spell01 -> !spell01.flagForRemoval).collect(Collectors.toList());

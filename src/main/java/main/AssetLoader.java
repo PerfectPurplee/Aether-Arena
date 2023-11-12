@@ -45,15 +45,20 @@ public class AssetLoader {
     public BufferedImage rock2;
     public BufferedImage rock3;
 
-    //    Spells Sprites
+    //    Spells Sprites OLD
     public BufferedImage BasicSpellsSpriteSheetViolet;
+    public static BufferedImage[] QSpellViolet;
 
-    public static  BufferedImage[] QSpellViolet;
+    //    Spells Sprites NEW
+    public static BufferedImage[] QSpellFireBallCastStart;
+    public static BufferedImage[] QSpellFireballCastFlying;
+    public static BufferedImage[] QSpellFireBallCastEnd;
 
 
     AssetLoader() {
         getPlayerSprites2Directional();
         getAllBasicSpellsSpriteSheet();
+        getSpritesForSpells();
         getSpriteForQSpellViolet();
         getMapObjects();
     }
@@ -142,6 +147,80 @@ public class AssetLoader {
 
     }
 
+    private void getAllBasicSpellsSpriteSheet() {
+        InputStream inputStream = getClass().getResourceAsStream("/AttackSprites.png");
+        try {
+            BasicSpellsSpriteSheetViolet = ImageIO.read(Objects.requireNonNull(inputStream));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void getSpriteForQSpellViolet() {
+        QSpellViolet = new BufferedImage[NUMBER_OF_SPRITES];
+        int xSpriteStartPos = 0;
+        for (int i = 0; i < NUMBER_OF_SPRITES; i++) {
+            QSpellViolet[i] = addShadowToQSpell(BasicSpellsSpriteSheetViolet.getSubimage(xSpriteStartPos, 18, 16, 16));
+            xSpriteStartPos += 16;
+        }
+    }
+
+    private void getSpritesForSpells() {
+        ClassLoader classLoader = getClass().getClassLoader();
+        URL resource;
+        File folder;
+        File[] spriteImagesCast_Start;
+        File[] spriteImagesCast_Flying;
+        File[] spriteImagesCast_End;
+
+
+        int numberOfUniqueSpells = 2;
+
+        for (int i = 0; i < numberOfUniqueSpells; i++) {
+            switch (i) {
+                case 0 -> {
+                    resource = classLoader.getResource("SpellSprites/Fire_Ball/cast_start");
+                    folder = new File(Objects.requireNonNull(resource).getFile());
+                    spriteImagesCast_Start = folder.listFiles();
+
+                    resource = classLoader.getResource("SpellSprites/Fire_Ball/cast_flying");
+                    folder = new File(Objects.requireNonNull(resource).getFile());
+                    spriteImagesCast_Flying = folder.listFiles();
+
+                    resource = classLoader.getResource("SpellSprites/Fire_Ball/cast_end");
+                    folder = new File(Objects.requireNonNull(resource).getFile());
+                    spriteImagesCast_End = folder.listFiles();
+
+                    QSpellFireBallCastStart = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Start));
+                    QSpellFireballCastFlying = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Flying));
+                    QSpellFireBallCastEnd = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_End));
+                }
+                case 1 -> {
+                }
+                case 2 -> {
+                }
+                case 3 -> {
+                }
+            }
+
+
+        }
+
+
+    }
+
+    private BufferedImage[] loadImagesFromFolder(File[] folderWithImages) {
+        BufferedImage[] sprites = new BufferedImage[folderWithImages.length];
+        for (int i = 0; i < folderWithImages.length; i++) {
+            try {
+                sprites[i] = ImageIO.read(folderWithImages[i]);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return sprites;
+    }
+
     private BufferedImage addShadowToPlayerSprite(BufferedImage image) {
         BufferedImage shadowImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = shadowImage.createGraphics();
@@ -223,25 +302,6 @@ public class AssetLoader {
         g2d.drawImage(image, width, 0, -width, height, null);
 
         return flippedImage;
-    }
-
-    private void getAllBasicSpellsSpriteSheet() {
-        InputStream inputStream = getClass().getResourceAsStream("/AttackSprites.png");
-        try {
-            BasicSpellsSpriteSheetViolet = ImageIO.read(Objects.requireNonNull(inputStream));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private BufferedImage getSpriteForQSpellViolet() {
-        QSpellViolet = new BufferedImage[NUMBER_OF_SPRITES];
-        int xSpriteStartPos = 0;
-        for (int i = 0; i < NUMBER_OF_SPRITES; i++) {
-            QSpellViolet[i] = addShadowToQSpell(BasicSpellsSpriteSheetViolet.getSubimage(xSpriteStartPos, 18, 16, 16));
-            xSpriteStartPos += 16;
-        }
-        return null;
     }
 
 
