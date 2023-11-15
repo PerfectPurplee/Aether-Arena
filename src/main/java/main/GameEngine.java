@@ -2,7 +2,7 @@ package main;
 
 import entities.playercharacters.LocalPlayer;
 import entities.playercharacters.OnlinePlayer;
-import entities.spells.basicspells.Spell01;
+import entities.spells.basicspells.QSpell;
 import inputs.ActionListener;
 import inputs.PlayerKeyboardInputs;
 import inputs.PlayerMouseInputs;
@@ -12,13 +12,9 @@ import scenes.menu.Menu;
 import scenes.playing.Camera;
 import scenes.playing.Playing;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Objects;
 
 import static main.EnumContainer.AllScenes.Current_Scene;
 
@@ -198,7 +194,7 @@ public class GameEngine extends Thread {
     }
 
     public static boolean isOffGCD() {
-        return   System.currentTimeMillis() - Spell01.LastLocalSpellCreationTime >= GCD;
+        return   System.currentTimeMillis() - QSpell.LastLocalSpellCreationTime >= GCD;
     }
 
 }

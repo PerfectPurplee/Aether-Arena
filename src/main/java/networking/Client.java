@@ -3,7 +3,8 @@ package networking;
 import datatransferobjects.Spell01DTO;
 import entities.playercharacters.LocalPlayer;
 import entities.playercharacters.OnlinePlayer;
-import entities.spells.basicspells.Spell01;
+import entities.spells.basicspells.QSpell;
+import entities.spells.basicspells.Ultimate;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -52,7 +53,7 @@ public class Client extends Thread {
 
     }
 
-    private synchronized void receiveDataFromServer() {
+    private void receiveDataFromServer() {
         byte[] buffer = new byte[2048];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
@@ -90,16 +91,20 @@ public class Client extends Thread {
 
                         LocalPlayer.playerPosXWorld = objectInputStream.readFloat();
                         LocalPlayer.playerPosYWorld = objectInputStream.readFloat();
+                        localPlayer.healthbar.currentHealth = objectInputStream.readInt();
 
 //                    Online player
                     } else if (OptionalOnlinePlayer.isPresent()) {
                         ServerClientConnectionCopyObjects.Current_Player_State_Shared = (AllPlayerStates) objectInputStream.readObject();
                         ServerClientConnectionCopyObjects.PLayer_Champion_Shared = (AllPlayableChampions) objectInputStream.readObject();
-                        if (!OptionalOnlinePlayer.get().isPlayerStateLocked)
+                        if (!OptionalOnlinePlayer.get().isPlayerStateLocked
+                                || ServerClientConnectionCopyObjects.Current_Player_State_Shared == AllPlayerStates.DASHING_LEFT
+                                || ServerClientConnectionCopyObjects.Current_Player_State_Shared == AllPlayerStates.DASHING_RIGHT)
                             OptionalOnlinePlayer.get().Current_Player_State_Online_Player = ServerClientConnectionCopyObjects.Current_Player_State_Shared;
 
                         OptionalOnlinePlayer.get().playerPosXWorld = objectInputStream.readFloat();
                         OptionalOnlinePlayer.get().playerPosYWorld = objectInputStream.readFloat();
+                        OptionalOnlinePlayer.get().healthbar.currentHealth = objectInputStream.readInt();
 //                    New online player
                     } else {
                         ServerClientConnectionCopyObjects.Current_Player_State_Shared = (AllPlayerStates) objectInputStream.readObject();
@@ -109,6 +114,7 @@ public class Client extends Thread {
                             onlinePlayer.Current_Player_State_Online_Player = ServerClientConnectionCopyObjects.Current_Player_State_Shared;
                         onlinePlayer.playerPosXWorld = objectInputStream.readFloat();
                         onlinePlayer.playerPosYWorld = objectInputStream.readFloat();
+                        onlinePlayer.healthbar.currentHealth = objectInputStream.readInt();
 
                     }
 
@@ -124,42 +130,26 @@ public class Client extends Thread {
                     float normalizedVectorY = objectInputStream.readFloat();
                     float spellPosXWorld = objectInputStream.readFloat();
                     float spellPosYWorld = objectInputStream.readFloat();
-                    Optional<Spell01> optionalSpell01 = Spell01.listOfActiveSpell01s.stream().filter(element ->
+                    double spriteAngle = objectInputStream.readDouble();
+                    int spellType = objectInputStream.readInt();
+                    Optional<QSpell> optionalSpell01 = QSpell.listOfActiveQSpells.stream().filter(element ->
                             (element.spellCasterClientID == spellCasterClientID) && (element.spellID == spellID)).findFirst();
                     if (optionalSpell01.isPresent()) {
                         optionalSpell01.get().spellPosXWorld = spellPosXWorld;
                         optionalSpell01.get().spellPosYWorld = spellPosYWorld;
                     } else {
                         if (spellCasterClientID != ClientID) {
-                            new Spell01(new Spell01DTO(spellPosXWorld, spellPosYWorld, normalizedVectorX,
-                                    normalizedVectorY, spellID, spellCasterClientID));
+                            if (spellType == 0)
+                                new QSpell(new Spell01DTO(spellPosXWorld, spellPosYWorld, normalizedVectorX,
+                                        normalizedVectorY, spellID, spellCasterClientID, spriteAngle));
+                            else if (spellType == 1) {
+                                new Ultimate(new Spell01DTO(spellPosXWorld, spellPosYWorld, normalizedVectorX,
+                                        normalizedVectorY, spellID, spellCasterClientID, spriteAngle));
+                            }
                         }
                     }
 
                 }
-
-
-//                Spell01DTO.listOfAllSpell01DTO = (List<Spell01DTO>) objectInputStream.readObject();
-//                for (Spell01DTO spellDTO : Spell01DTO.listOfAllSpell01DTO) {
-//                    System.out.println("Caster:  " + spellDTO.spellCasterClientID +  "SpellID: " + spellDTO.spellID + "Pos X: "
-//                            + spellDTO.spellPosXWorld + "Pos Y" + spellDTO.spellPosYWorld);
-//                    boolean found = false;
-//                    synchronized (Spell01.listOfActiveSpell01s) {
-//                        for (Spell01 spell01 : Spell01.listOfActiveSpell01s) {
-//                            if (spell01.spellCasterClientID == spellDTO.spellCasterClientID && spell01.spellID == spellDTO.spellID) {
-//                                spell01.spellPosXWorld = spellDTO.spellPosXWorld;
-//                                spell01.spellPosYWorld = spellDTO.spellPosYWorld;
-//                                found = true;
-//                                break;
-//                            }
-//                        }
-//                    }
-//                    if(!found) {
-//                        new Spell01(spellDTO);
-//                    }
-//                }
-
-
             }
 
             objectInputStream.close();

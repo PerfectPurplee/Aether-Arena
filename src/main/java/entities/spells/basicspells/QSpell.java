@@ -12,16 +12,14 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static main.EnumContainer.ServerClientConnectionCopyObjects;
 
 
-public class Spell01 {
+public class QSpell {
 
     LocalPlayer localPlayer;
     Optional<OnlinePlayer> onlinePlayer;
@@ -34,9 +32,10 @@ public class Spell01 {
 
     public static final int NUMBER_OF_SPRITES = 5;
     private static final int SPEED = 2;
-    public static final long SPELL01COOLDOWN = 500; // 0.5 seconds in milliseconds
+    public static long SPELLQCOOLDOWN = 1000; // 1 seconds in milliseconds
     private final int RANGE = 1000;
     private float distanceTraveled = 0;
+    public double spriteAngle;
     //  object starting position on screen. Character pos + (vector * int)
     public float spellPosXWorld, spellPosYWorld;
     public float spellPosXScreen, spellPosYScreen;
@@ -54,12 +53,13 @@ public class Spell01 {
     private boolean flagForRemoval;
     public Spell01Hitbox spell01Hitbox;
 
-    public static List<Spell01> listOfActiveSpell01s = new ArrayList<>();
+    public static CopyOnWriteArrayList<QSpell> listOfActiveQSpells = new CopyOnWriteArrayList<>();
     public static boolean QSpellCreatedOnThisMousePress = false;
 
     public static long LastLocalSpellCreationTime;
 
-    public Spell01(LocalPlayer playerCastingThisSpell) {
+    public QSpell(LocalPlayer playerCastingThisSpell) {
+
         localPlayer = playerCastingThisSpell;
         getVector();
         localPlayer.isPlayerStateLocked = true;
@@ -67,10 +67,7 @@ public class Spell01 {
         getSpellSprites(localPlayer);
         current_Spell_State = EnumContainer.AllQspellStates.Q_SPELL_START;
         setCurrent_Spell_Sprite();
-        spellPosXWorld = ((localPlayer.localPlayerHitbox.x + (localPlayer.localPlayerHitbox.width / 2 - 32) + (normalizedVectorX * 125)));
-        spellPosYWorld = ((localPlayer.localPlayerHitbox.y + localPlayer.localPlayerHitbox.height / 2 - 32) + (normalizedVectorY * 125));
-        spellPosXScreen = spellPosXWorld - Camera.cameraPosX;
-        spellPosYScreen = spellPosYWorld - Camera.cameraPosY;
+        setInitialProjectilePosition();
 
         spellCasterClientID = Client.ClientID;
         spellID = localPlayer.counterOfThisPlayerQSpells;
@@ -82,14 +79,14 @@ public class Spell01 {
 
         LastLocalSpellCreationTime = System.currentTimeMillis();
 
+            listOfActiveQSpells.add(this);
 
-        synchronized (listOfActiveSpell01s) {
-            listOfActiveSpell01s.add(this);
-        }
     }
 
-    public Spell01(Spell01DTO spell01DTO) {
+    public QSpell(Spell01DTO spell01DTO) {
+
         spellCasterClientID = spell01DTO.spellCasterClientID;
+        spriteAngle = spell01DTO.spriteAngle;
         setOnlinePlayerCastingThisSpell();
         getSpellSprites(onlinePlayer);
         current_Spell_State = EnumContainer.AllQspellStates.Q_SPELL_START;
@@ -109,10 +106,19 @@ public class Spell01 {
         playerGotHit = false;
         flagForRemoval = false;
 
+            listOfActiveQSpells.add(this);
 
-        synchronized (listOfActiveSpell01s) {
-            listOfActiveSpell01s.add(this);
-        }
+    }
+
+    protected void setInitialProjectilePosition() {
+        spellPosXWorld = ((localPlayer.localPlayerHitbox.x +
+                (localPlayer.localPlayerHitbox.width / 2 - ((float) spellSprites_FLYING[0].getWidth() / 2)) + (normalizedVectorX * 10)));
+        spellPosYWorld = ((localPlayer.localPlayerHitbox.y +
+                localPlayer.localPlayerHitbox.height / 2 - ((float) spellSprites_FLYING[0].getHeight() / 2)) + (normalizedVectorY * 10));
+        spellPosXScreen = spellPosXWorld - Camera.cameraPosX;
+        spellPosYScreen = spellPosYWorld - Camera.cameraPosY;
+//        this is for debugging, and for server to scale
+        System.out.println("Width: " + (float) spellSprites_FLYING[0].getHeight() / 2 + " Height:  " + (float) (spellSprites_FLYING[0].getWidth() / 2));
     }
 
     private void setPlayerCastingThisSpellStateLocalPlayer() {
@@ -193,7 +199,7 @@ public class Spell01 {
         }
     }
 
-    private void getSpellSprites(Optional<OnlinePlayer> onlinePlayer) {
+    protected void getSpellSprites(Optional<OnlinePlayer> onlinePlayer) {
         BufferedImage[] spellAssets;
         if (onlinePlayer.isPresent()) {
             System.out.println(onlinePlayer.get().onlinePlayerChampion.name());
@@ -233,14 +239,13 @@ public class Spell01 {
                 }
 
                 BufferedImage[] spellAssetsRotated = new BufferedImage[NUMBER_OF_SPRITES];
-                double angle = Math.atan2(normalizedVectorY, normalizedVectorX);
                 Graphics2D g2d;
                 for (int i = 0; i < spellAssets.length; i++) {
                     BufferedImage spellAsset = new BufferedImage(spellAssets[i].getWidth(), spellAssets[i].getHeight(), BufferedImage.TYPE_INT_ARGB);
                     g2d = spellAsset.createGraphics();
 
                     AffineTransform transform = new AffineTransform();
-                    transform.rotate(angle, (double) spellAsset.getWidth() / 2, (double) spellAsset.getHeight() / 2);
+                    transform.rotate(spriteAngle, (double) spellAsset.getWidth() / 2, (double) spellAsset.getHeight() / 2);
                     g2d.setTransform(transform);
                     g2d.drawImage(spellAssets[i], 0, 0, null);
                     spellAssetsRotated[i] = spellAsset;
@@ -256,7 +261,7 @@ public class Spell01 {
         }
     }
 
-    private void getSpellSprites(LocalPlayer localPlayer) {
+    protected void getSpellSprites(LocalPlayer localPlayer) {
         BufferedImage[] spellAssets;
         for (EnumContainer.AllQspellStates element : EnumContainer.AllQspellStates.values()) {
             switch (element) {
@@ -294,14 +299,14 @@ public class Spell01 {
             }
 
             BufferedImage[] spellAssetsRotated = new BufferedImage[NUMBER_OF_SPRITES];
-            double angle = Math.atan2(normalizedVectorY, normalizedVectorX);
+            spriteAngle = Math.atan2(normalizedVectorY, normalizedVectorX);
             Graphics2D g2d;
             for (int i = 0; i < spellAssets.length; i++) {
                 BufferedImage spellAsset = new BufferedImage(spellAssets[i].getWidth(), spellAssets[i].getHeight(), BufferedImage.TYPE_INT_ARGB);
                 g2d = spellAsset.createGraphics();
 
                 AffineTransform transform = new AffineTransform();
-                transform.rotate(angle, (double) spellAsset.getWidth() / 2, (double) spellAsset.getHeight() / 2);
+                transform.rotate(spriteAngle, (double) spellAsset.getWidth() / 2, (double) spellAsset.getHeight() / 2);
                 g2d.setTransform(transform);
                 g2d.drawImage(spellAssets[i], 0, 0, null);
                 spellAssetsRotated[i] = spellAsset;
@@ -370,16 +375,17 @@ public class Spell01 {
     }
 
     public static void updateAllSpells01() {
-        synchronized (listOfActiveSpell01s) {
-            listOfActiveSpell01s = listOfActiveSpell01s.stream().filter(
-                    spell01 -> (spell01.spellPosXWorld >= -64 &&
-                            spell01.spellPosYWorld >= -64 &&
-                            spell01.spellPosXWorld <= Camera.WHOLE_MAP.getWidth() + 64 &&
-                            spell01.spellPosYWorld <= Camera.WHOLE_MAP.getHeight() + 64 &&
-                            !spell01.flagForRemoval)).collect(Collectors.toList());
+
+        listOfActiveQSpells.removeIf(spell01 ->
+                (spell01.spellPosXWorld < -64 ||
+                        spell01.spellPosYWorld < -64 ||
+                        spell01.spellPosXWorld > Camera.WHOLE_MAP.getWidth() + 64 ||
+                        spell01.spellPosYWorld > Camera.WHOLE_MAP.getHeight() + 64 ||
+                        spell01.flagForRemoval)
+        );
 
 
-            listOfActiveSpell01s.forEach(spell01 -> {
+            listOfActiveQSpells.forEach(spell01 -> {
                 spell01.setCurrent_Spell_Sprite();
                 spell01.spellPositionUpdate();
                 spell01.animationController();
@@ -387,7 +393,7 @@ public class Spell01 {
 //                System.out.println("Caster:  " + spell01.spellCasterClientID +  "SpellID: " + spell01.spellID + "Pos X: "
 //                        + spell01.spellPosXWorld + "Pos Y" + spell01.spellPosYWorld
             });
-        }
+
     }
 
     public void updateSpellHitboxWorldAndPosOnScreen() {
@@ -398,6 +404,8 @@ public class Spell01 {
             spell01Hitbox.spell01HitboxPosYScreen = spellPosYScreen;
         }
     }
+
+    private final int HitBoxOffset = 40;
 
     public class Spell01Hitbox extends Rectangle2D.Float {
 

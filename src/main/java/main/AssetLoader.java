@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 
-import static entities.spells.basicspells.Spell01.NUMBER_OF_SPRITES;
+import static entities.spells.basicspells.QSpell.NUMBER_OF_SPRITES;
 
 public class AssetLoader {
 
@@ -22,9 +22,11 @@ public class AssetLoader {
     private Graphics2D g2d;
     private final int NUMBER_OF_PLAYABLE_CHARACTERS = 4;
 
-    //    Player Sprites
     private final double scaleForPlayerSprites = 0.125;
+    private final double scaleForSpellSprites = 1.5;
+    private final double ScaleForUltimateSpells = 3;
 
+    //    Player Sprites
     public BufferedImage[][] playerSpriteIDLE_RIGHT = new BufferedImage[NUMBER_OF_PLAYABLE_CHARACTERS][6];
     public BufferedImage[][] playerSpriteIDLE_LEFT = new BufferedImage[NUMBER_OF_PLAYABLE_CHARACTERS][6];
 
@@ -45,12 +47,17 @@ public class AssetLoader {
 
 
 //    Map Objects Sprites
-
     public BufferedImage ground2White;
     public BufferedImage ground3White;
     public BufferedImage rock1;
     public BufferedImage rock2;
     public BufferedImage rock3;
+
+//    USER INTEFACE
+    public BufferedImage[] QSpellICON;
+    public BufferedImage[] WSpellICON;
+    public BufferedImage[] ESpellICON;
+    public BufferedImage[] UltimateSpellICON;
 
     //    Spells Sprites OLD
     public BufferedImage BasicSpellsSpriteSheetViolet;
@@ -74,12 +81,35 @@ public class AssetLoader {
     public static BufferedImage[] QSpellWindBallCastFlying;
     public static BufferedImage[] QSpellWindBallCastEnd;
 
+    //    Spell Sprites For Ultimate
+    //    Fire
+    public static BufferedImage[] ULTFireSpellCastStart;
+    public static BufferedImage[] ULTFireSpellCastFlying;
+    public static BufferedImage[] ULTFireSpellCastEnd;
+    //    Water
+    public static BufferedImage[] ULTWaterSpellCastStart;
+    public static BufferedImage[] ULTWaterSpellCastFlying;
+    public static BufferedImage[] ULTWaterSpellCastEnd;
+    //    Rock
+    public static BufferedImage[] ULTRockSpellCastStart;
+    public static BufferedImage[] ULTRockSpellCastFlying;
+    public static BufferedImage[] ULTRockSpellCastEnd;
+    //    Wind
+    public static BufferedImage[] ULTWindSpellCastStart;
+    public static BufferedImage[] ULTWindSpellCastFlying;
+    public static BufferedImage[] ULTWindSpellCastEnd;
+
     AssetLoader() {
         getPlayerSprites2Directional();
         getAllBasicSpellsSpriteSheet();
         getSpritesForSpells();
         getSpriteForQSpellViolet();
         getMapObjects();
+        getSpritesForUltimateSpells();
+    }
+
+    private void getUserInterfaceIcons() {
+
     }
 
     private void getMapObjects() {
@@ -146,23 +176,28 @@ public class AssetLoader {
                 }
                 fileNameTemp = spriteImages[j].getName();
                 if (spriteImages[j].getName().startsWith("death")) {
-                    playerSpriteDEATH_RIGHT[i][k] = scaleImage(spriteImages[j], scaleForPlayerSprites);
+                    playerSpriteDEATH_RIGHT[i][k] = addShadowToPlayerSprite(scaleImage(spriteImages[j], scaleForPlayerSprites));
                     playerSpriteDEATH_LEFT[i][k] = flipImageHorizontally(spriteImages[j], scaleForPlayerSprites);
+
                 } else if (spriteImages[j].getName().startsWith("idle")) {
-                    playerSpriteIDLE_RIGHT[i][k] = scaleImage(spriteImages[j], scaleForPlayerSprites);
-                    playerSpriteIDLE_LEFT[i][k] = flipImageHorizontally(spriteImages[j], scaleForPlayerSprites);
+                    playerSpriteIDLE_RIGHT[i][k] = addShadowToPlayerSprite(scaleImage(spriteImages[j], scaleForPlayerSprites));
+                    playerSpriteIDLE_LEFT[i][k] = addShadowToPlayerSprite(flipImageHorizontally(spriteImages[j], scaleForPlayerSprites));
+
                 } else if (spriteImages[j].getName().startsWith("roll")) {
-                    playerSpriteROLL_RIGHT[i][k] = scaleImage(spriteImages[j], scaleForPlayerSprites);
-                    playerSpriteROLL_LEFT[i][k] = flipImageHorizontally(spriteImages[j], scaleForPlayerSprites);
+                    playerSpriteROLL_RIGHT[i][k] = addShadowToPlayerSprite(scaleImage(spriteImages[j], scaleForPlayerSprites));
+                    playerSpriteROLL_LEFT[i][k] = addShadowToPlayerSprite(flipImageHorizontally(spriteImages[j], scaleForPlayerSprites));
+
                 } else if (spriteImages[j].getName().startsWith("walk")) {
-                    playerSpriteMOVE_RIGHT[i][k] = scaleImage(spriteImages[j], scaleForPlayerSprites);
-                    playerSpriteMOVE_LEFT[i][k] = flipImageHorizontally(spriteImages[j], scaleForPlayerSprites);
+                    playerSpriteMOVE_RIGHT[i][k] = addShadowToPlayerSprite(scaleImage(spriteImages[j], scaleForPlayerSprites));
+                    playerSpriteMOVE_LEFT[i][k] = addShadowToPlayerSprite(flipImageHorizontally(spriteImages[j], scaleForPlayerSprites));
+
                 } else if (spriteImages[j].getName().startsWith("hit")) {
-                    playerSpriteTAKE_DMG_RIGHT[i][k] = scaleImage(spriteImages[j], scaleForPlayerSprites);
-                    playerSpriteTAKE_DMG_LEFT[i][k] = flipImageHorizontally(spriteImages[j], scaleForPlayerSprites);
+                    playerSpriteTAKE_DMG_RIGHT[i][k] = addShadowToPlayerSprite(scaleImage(spriteImages[j], scaleForPlayerSprites));
+                    playerSpriteTAKE_DMG_LEFT[i][k] = addShadowToPlayerSprite(flipImageHorizontally(spriteImages[j], scaleForPlayerSprites));
+
                 } else if (spriteImages[j].getName().startsWith("jump")) {
-                    playerSpriteCAST_SPELL_RIGHT[i][k] = scaleImage(spriteImages[j], scaleForPlayerSprites);
-                    playerSpriteCAST_SPELL_LEFT[i][k] = flipImageHorizontally(spriteImages[j], scaleForPlayerSprites);
+                    playerSpriteCAST_SPELL_RIGHT[i][k] = addShadowToPlayerSprite(scaleImage(spriteImages[j], scaleForPlayerSprites));
+                    playerSpriteCAST_SPELL_LEFT[i][k] = addShadowToPlayerSprite(flipImageHorizontally(spriteImages[j], scaleForPlayerSprites));
                 }
             }
         }
@@ -214,9 +249,9 @@ public class AssetLoader {
                     folder = new File(Objects.requireNonNull(resource).getFile());
                     spriteImagesCast_End = folder.listFiles();
 
-                    QSpellFireBallCastStart = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Start));
-                    QSpellFireballCastFlying = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Flying));
-                    QSpellFireBallCastEnd = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_End));
+                    QSpellFireBallCastStart = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Start), scaleForSpellSprites);
+                    QSpellFireballCastFlying = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Flying), scaleForSpellSprites);
+                    QSpellFireBallCastEnd = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_End), scaleForSpellSprites);
                 }
 //                WaterBall
                 case 1 -> {
@@ -232,9 +267,9 @@ public class AssetLoader {
                     folder = new File(Objects.requireNonNull(resource).getFile());
                     spriteImagesCast_End = folder.listFiles();
 
-                    QSpellWaterBallCastStart = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Start));
-                    QSpellWaterBallCastFlying = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Flying));
-                    QSpellWaterBallCastEnd = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_End));
+                    QSpellWaterBallCastStart = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Start), scaleForSpellSprites);
+                    QSpellWaterBallCastFlying = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Flying), scaleForSpellSprites);
+                    QSpellWaterBallCastEnd = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_End), scaleForSpellSprites);
                 }
 //                RockBall
                 case 2 -> {
@@ -250,9 +285,9 @@ public class AssetLoader {
                     folder = new File(Objects.requireNonNull(resource).getFile());
                     spriteImagesCast_End = folder.listFiles();
 
-                    QSpellRockBallCastStart = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Start));
-                    QSpellRockBallCastFlying = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Flying));
-                    QSpellRockBallCastEnd = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_End));
+                    QSpellRockBallCastStart = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Start), scaleForSpellSprites);
+                    QSpellRockBallCastFlying = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Flying), scaleForSpellSprites);
+                    QSpellRockBallCastEnd = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_End), scaleForSpellSprites);
                 }
 //                WindBall
                 case 3 -> {
@@ -268,9 +303,11 @@ public class AssetLoader {
                     folder = new File(Objects.requireNonNull(resource).getFile());
                     spriteImagesCast_End = folder.listFiles();
 
-                    QSpellWindBallCastStart = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Start));
-                    QSpellWindBallCastFlying = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Flying));
-                    QSpellWindBallCastEnd = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_End));
+                    QSpellWindBallCastStart = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Start), scaleForSpellSprites);
+                    QSpellWindBallCastFlying = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_Flying), scaleForSpellSprites);
+                    QSpellWindBallCastEnd = loadImagesFromFolder(Objects.requireNonNull(spriteImagesCast_End), scaleForSpellSprites);
+                    System.out.println("BASIC: " + " W " + QSpellFireballCastFlying[1].getWidth() + " H " + QSpellFireballCastFlying[1].getHeight());
+                    System.out.println("BASIC: " + " W " + QSpellWindBallCastFlying[1].getWidth() + " H " + QSpellWaterBallCastFlying[1].getHeight());
                 }
             }
 
@@ -278,6 +315,30 @@ public class AssetLoader {
         }
 
 
+    }
+
+    private void getSpritesForUltimateSpells() {
+
+        for (int i = 0; i < 5; i++) {
+//            fireball
+            ULTFireSpellCastStart = scaleImage(QSpellFireBallCastStart, ScaleForUltimateSpells);
+            ULTFireSpellCastFlying = scaleImage(QSpellFireballCastFlying, ScaleForUltimateSpells);
+            ULTFireSpellCastEnd = scaleImage(QSpellFireBallCastEnd, ScaleForUltimateSpells);
+            //    waterBall
+            ULTWaterSpellCastStart = scaleImage(QSpellWaterBallCastStart, ScaleForUltimateSpells);
+            ULTWaterSpellCastFlying = scaleImage(QSpellWaterBallCastFlying, ScaleForUltimateSpells);
+            ULTWaterSpellCastEnd = scaleImage(QSpellWaterBallCastEnd, ScaleForUltimateSpells);
+            //    rockBall
+            ULTRockSpellCastStart = scaleImage(QSpellRockBallCastStart, ScaleForUltimateSpells);
+            ULTRockSpellCastFlying = scaleImage(QSpellRockBallCastFlying, ScaleForUltimateSpells);
+            ULTRockSpellCastEnd = scaleImage(QSpellRockBallCastEnd, ScaleForUltimateSpells);
+            //    windBall
+            ULTWindSpellCastStart = scaleImage(QSpellWindBallCastStart, ScaleForUltimateSpells);
+            ULTWindSpellCastFlying = scaleImage(QSpellWindBallCastFlying, ScaleForUltimateSpells);
+            ULTWindSpellCastEnd = scaleImage(QSpellWindBallCastEnd, ScaleForUltimateSpells);
+        }
+        System.out.println("ULTIMATE: " + " W " + ULTFireSpellCastFlying[1].getWidth() + " H " + ULTFireSpellCastFlying[1].getHeight());
+        System.out.println("ULTIMATE: " + " W " + ULTRockSpellCastEnd[1].getWidth() + " H " + ULTRockSpellCastEnd[1].getHeight());
     }
 
     private BufferedImage[] loadImagesFromFolder(File[] folderWithImages) {
@@ -361,17 +422,58 @@ public class AssetLoader {
         try {
             BufferedImage originalImage = ImageIO.read(imageFile);
 
-
             int newWidth = (int) (originalImage.getWidth() * scale);
             int newHeight = (int) (originalImage.getHeight() * scale);
 
-            AffineTransformOp transform = new AffineTransformOp(AffineTransform.getScaleInstance(scale, scale), AffineTransformOp.TYPE_BICUBIC);
-            originalImage = transform.filter(originalImage, new BufferedImage(newWidth, newHeight, originalImage.getType()));
-            return addShadowToPlayerSprite(originalImage);
+            BufferedImage scaledImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+
+            // Use RenderingHints to improve image quality
+            RenderingHints hints = new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            AffineTransformOp transform = new AffineTransformOp(
+                    AffineTransform.getScaleInstance(scale, scale),
+                    hints
+            );
+
+            Graphics2D g2d = scaledImage.createGraphics();
+            g2d.setRenderingHints(hints);
+            g2d.drawImage(originalImage, transform, 0, 0);
+            g2d.dispose();
+
+            return scaledImage;
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private BufferedImage[] scaleImage(BufferedImage[] imageArray, double scale) {
+        BufferedImage[] scaledImageArray = new BufferedImage[imageArray.length];
+        for (int i = 0; i < imageArray.length; i++) {
+
+            int newWidth = (int) (imageArray[i].getWidth() * scale);
+            int newHeight = (int) (imageArray[i].getHeight() * scale);
+
+            BufferedImage scaledImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+
+            RenderingHints hints = new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            AffineTransformOp transform = new AffineTransformOp(
+                    AffineTransform.getScaleInstance(scale, scale),
+                    hints
+            );
+
+            Graphics2D g2d = scaledImage.createGraphics();
+            g2d.setRenderingHints(hints);
+            g2d.drawImage(imageArray[i], transform, 0, 0);
+            g2d.dispose();
+
+            scaledImageArray[i] = scaledImage;
+        }
+
+        return scaledImageArray;
 
     }
 

@@ -11,8 +11,6 @@ public class Healthbar {
     public int healthbarPositionOnScreenY;
     public int offsetY;
 
-//    public static List<Healthbar> listOfAllHealthbars = new ArrayList<>();
-
     public Healthbar(int maxHealth, float playerHitboxPosOnScreenX, float playerHitboxPosOnScreenY) {
         healthbarWidth = 72;
         healthbarHeight = 10;

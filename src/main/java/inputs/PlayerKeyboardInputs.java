@@ -1,7 +1,7 @@
 package inputs;
 
 import entities.playercharacters.LocalPlayer;
-import entities.spells.basicspells.Spell01;
+import entities.spells.basicspells.QSpell;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -11,12 +11,12 @@ public class PlayerKeyboardInputs implements KeyListener {
 
 
     LocalPlayer localPlayer;
-    private HashSet<Integer> activeKeys = new HashSet<>();
 
     public static boolean Q_Pressed;
     public static boolean W_Pressed;
     public static boolean E_Pressed;
     public static boolean R_Pressed;
+    public static boolean SHIFT_Pressed;
 
 
     public PlayerKeyboardInputs(LocalPlayer localPlayer) {
@@ -40,14 +40,15 @@ public class PlayerKeyboardInputs implements KeyListener {
             E_Pressed = true;
         if (e.getKeyCode() == KeyEvent.VK_R)
             R_Pressed = true;
+        if (e.getKeyCode() == KeyEvent.VK_SHIFT)
+            SHIFT_Pressed = true;
 
-//        if (e.getKeyCode() == KeyEvent.VK_Q) {
-//            new FirstSpell();
-//        }
     }
+
     @Override
     public void keyReleased(KeyEvent e) {
-        Spell01.QSpellCreatedOnThisMousePress = false;
+//        this one not used, but could be if you want to create only one spell on one key press.
+        QSpell.QSpellCreatedOnThisMousePress = false;
 
         if (e.getKeyCode() == KeyEvent.VK_Q)
             Q_Pressed = false;
@@ -57,6 +58,8 @@ public class PlayerKeyboardInputs implements KeyListener {
             E_Pressed = false;
         if (e.getKeyCode() == KeyEvent.VK_R)
             R_Pressed = false;
+        if (e.getKeyCode() == KeyEvent.VK_SHIFT)
+            SHIFT_Pressed = false;
     }
 
 }
