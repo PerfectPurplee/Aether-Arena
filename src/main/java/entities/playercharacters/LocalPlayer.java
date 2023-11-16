@@ -1,7 +1,8 @@
 package entities.playercharacters;
 
 import entities.Healthbar;
-import entities.spells.basicspells.Spell01;
+import entities.spells.basicspells.QSpell;
+import entities.spells.basicspells.Ultimate;
 import inputs.PlayerKeyboardInputs;
 import main.AssetLoader;
 import main.EnumContainer;
@@ -19,12 +20,9 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class LocalPlayer {
 
-    public BufferedImage allLocalPlayerSprites;
     public BufferedImage[] currentPlayerSprite;
 
     public BufferedImage[] playerSpriteIDLE_RIGHT = new BufferedImage[6];
@@ -35,7 +33,6 @@ public class LocalPlayer {
 
     public BufferedImage[] playerSpriteDEATH_RIGHT;
     public BufferedImage[] playerSpriteDEATH_LEFT = new BufferedImage[10];
-
 
     public BufferedImage[] playerSpriteTAKE_DMG_RIGHT = new BufferedImage[3];
     public BufferedImage[] playerSpriteTAKE_DMG_LEFT = new BufferedImage[3];
@@ -74,17 +71,16 @@ public class LocalPlayer {
 
     private int animationTick;
     private final int animationSpeed = 15;
-    public int animationIndexIdle, animationIndexMoving, animationIndexCasting;
+    public int animationIndexIdle, animationIndexMoving, animationIndexCasting, animationIndexDashing;
 
     //    This player Spells
+    private final long DASH_COOLDOWN = 3000;   //in milliseconds
     public int counterOfThisPlayerQSpells;
-
-    public List<Spell01> listOfAllActive_Q_Spells = new ArrayList<>();
-
     private long lastQSpellCastTime;
     private long lastWSpellCastTime;
     private long lastESpellCastTime;
     private long lastRSpellCastTime;
+    private long lastDashCastTime;
 
 
     public LocalPlayer(AssetLoader assetLoader) {
@@ -172,10 +168,10 @@ public class LocalPlayer {
             } else {
                 switch (Current_Player_State) {
 
-                    case MOVING_LEFT, CASTING_SPELL_LEFT -> {
+                    case MOVING_LEFT, CASTING_SPELL_LEFT, DASHING_LEFT -> {
                         Current_Player_State = EnumContainer.AllPlayerStates.IDLE_LEFT;
                     }
-                    case MOVING_RIGHT, CASTING_SPELL_RIGHT -> {
+                    case MOVING_RIGHT, CASTING_SPELL_RIGHT, DASHING_RIGHT -> {
                         Current_Player_State = EnumContainer.AllPlayerStates.IDLE_RIGHT;
                     }
 
@@ -281,6 +277,12 @@ public class LocalPlayer {
             case CASTING_SPELL_RIGHT -> {
                 return playerSpriteCAST_SPELL_RIGHT;
             }
+            case DASHING_LEFT -> {
+                return playerSpriteROLL_LEFT;
+            }
+            case DASHING_RIGHT -> {
+                return playerSpriteROLL_RIGHT;
+            }
             default -> {
                 return null;
             }
@@ -303,7 +305,14 @@ public class LocalPlayer {
                     setCurrent_Player_State();
                     animationIndexCasting = 0;
                 }
-
+            } else if (currentPlayerSprite == playerSpriteROLL_RIGHT || currentPlayerSprite == playerSpriteROLL_LEFT) {
+                if (animationIndexDashing < 3) animationIndexDashing++;
+                else {
+                    playerMoveSpeed = 2;
+                    isPlayerStateLocked = false;
+                    setCurrent_Player_State();
+                    animationIndexDashing = 0;
+                }
             }
             animationTick = 0;
         }
@@ -316,6 +325,8 @@ public class LocalPlayer {
             return animationIndexMoving;
         else if (currentPlayerSprite == playerSpriteCAST_SPELL_RIGHT || currentPlayerSprite == playerSpriteCAST_SPELL_LEFT)
             return animationIndexCasting;
+        else if (currentPlayerSprite == playerSpriteROLL_LEFT || currentPlayerSprite == playerSpriteROLL_RIGHT)
+            return animationIndexDashing;
         else return 0;
     }
 
@@ -326,27 +337,36 @@ public class LocalPlayer {
         boolean shouldCreateWSpell = PlayerKeyboardInputs.W_Pressed && isSpellWOffCooldown() && GameEngine.isOffGCD();
         boolean shouldCreateESpell = PlayerKeyboardInputs.E_Pressed && isSpellEOffCooldown() && GameEngine.isOffGCD();
         boolean shouldCreateRSpell = PlayerKeyboardInputs.R_Pressed && isSpellROffCooldown() && GameEngine.isOffGCD();
+        boolean shouldDash = PlayerKeyboardInputs.SHIFT_Pressed && isDashOffCooldown() && GameEngine.isOffGCD();
 
         try {
             if (shouldCreateQSpell) {
-              Spell01 spell01 = new Spell01(this);
+                QSpell QSpell = new QSpell(this);
                 lastQSpellCastTime = System.currentTimeMillis();
-                Client.socket.send(PacketManager.spellRequestPacket('Q', spell01.spellID));
+                Client.socket.send(PacketManager.spellRequestPacket('Q', QSpell.spellID, QSpell.spriteAngle));
             }
             if (shouldCreateWSpell) {
-                Spell01 spell01 =  new Spell01(this);
+                QSpell QSpell = new QSpell(this);
                 lastWSpellCastTime = System.currentTimeMillis();
-                Client.socket.send(PacketManager.spellRequestPacket('W', spell01.spellID));
+                Client.socket.send(PacketManager.spellRequestPacket('W', QSpell.spellID, QSpell.spriteAngle));
             }
             if (shouldCreateESpell) {
-                Spell01 spell01 = new Spell01(this);
+                QSpell QSpell = new QSpell(this);
                 lastESpellCastTime = System.currentTimeMillis();
-                Client.socket.send(PacketManager.spellRequestPacket('E', spell01.spellID));
+                Client.socket.send(PacketManager.spellRequestPacket('E', QSpell.spellID, QSpell.spriteAngle));
             }
             if (shouldCreateRSpell) {
-                Spell01 spell01 = new Spell01(this);
+                Ultimate UltimateSpell = new Ultimate(this);
                 lastRSpellCastTime = System.currentTimeMillis();
-                Client.socket.send(PacketManager.spellRequestPacket('R', spell01.spellID));
+                Client.socket.send(PacketManager.spellRequestPacket('R', UltimateSpell.spellID, UltimateSpell.spriteAngle));
+            }
+            if (shouldDash) {
+                isPlayerStateLocked = true;
+                Current_Player_State = setDashStateForAnimation();
+                playerMoveSpeed = 4;
+                lastDashCastTime = System.currentTimeMillis();
+                Client.socket.send(PacketManager.spellRequestPacket('D', 404, 404));
+
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -361,28 +381,48 @@ public class LocalPlayer {
 //        }
     }
 
+    private boolean isDashOffCooldown() {
+        long currentTime = System.currentTimeMillis();
+        return currentTime - lastDashCastTime >= DASH_COOLDOWN;
+    }
+
     private boolean isSpellQOffCooldown() {
         long currentTime = System.currentTimeMillis();
-        return currentTime - lastQSpellCastTime >= Spell01.SPELL01COOLDOWN;
+        return currentTime - lastQSpellCastTime >= QSpell.SPELLQCOOLDOWN;
 
     }
 
     private boolean isSpellWOffCooldown() {
         long currentTime = System.currentTimeMillis();
-        return currentTime - lastWSpellCastTime >= Spell01.SPELL01COOLDOWN;
+        return currentTime - lastWSpellCastTime >= QSpell.SPELLQCOOLDOWN;
 
     }
 
     private boolean isSpellEOffCooldown() {
         long currentTime = System.currentTimeMillis();
-        return currentTime - lastESpellCastTime >= Spell01.SPELL01COOLDOWN;
+        return currentTime - lastESpellCastTime >= QSpell.SPELLQCOOLDOWN;
 
     }
 
     private boolean isSpellROffCooldown() {
         long currentTime = System.currentTimeMillis();
-        return currentTime - lastRSpellCastTime >= Spell01.SPELL01COOLDOWN;
+        return currentTime - lastRSpellCastTime >= Ultimate.ULTIMATESPELLCOOLDOWN;
 
+    }
+
+    private EnumContainer.AllPlayerStates setDashStateForAnimation() {
+        switch (Current_Player_State) {
+
+            case IDLE_LEFT, MOVING_LEFT, CASTING_SPELL_LEFT -> {
+                return EnumContainer.AllPlayerStates.DASHING_LEFT;
+            }
+            case IDLE_RIGHT, MOVING_RIGHT, CASTING_SPELL_RIGHT -> {
+                return EnumContainer.AllPlayerStates.DASHING_RIGHT;
+            }
+            default -> {
+                return EnumContainer.AllPlayerStates.DASHING_RIGHT;
+            }
+        }
     }
 
 
@@ -413,7 +453,7 @@ public class LocalPlayer {
                     playerPosXWorld + hitboxOffsetX,
                     playerPosYWorld + hitboxOffsetYAbovePlayerSprite,
                     (playerSpriteMOVE_RIGHT[0].getWidth() - hitboxOffsetX * 2),
-                    playerSpriteMOVE_RIGHT[0].getHeight() - (hitboxOffsetYAbovePlayerSprite + 25));
+                    playerSpriteMOVE_RIGHT[0].getHeight() - (hitboxOffsetYAbovePlayerSprite + 40));
         }
 
     }

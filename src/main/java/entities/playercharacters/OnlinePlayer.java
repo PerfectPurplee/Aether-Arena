@@ -13,10 +13,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class OnlinePlayer {
 
-    public BufferedImage allOnlinePlayerSprites;
 
     public BufferedImage[] playerSpriteIDLE_RIGHT = new BufferedImage[6];
     public BufferedImage[] playerSpriteIDLE_LEFT = new BufferedImage[6];
@@ -50,13 +50,13 @@ public class OnlinePlayer {
 
     private Graphics2D g2d;
     private int animationTick, animationSpeed = 15;
-    public int animationIndexMoving, animationIndexIdle, animationIndexCasting;
+    public int animationIndexMoving, animationIndexIdle, animationIndexCasting, animationIndexDashing;
 
     public final int onlinePlayerID;
     public boolean isPlayerMoving;
     public boolean isPlayerStateLocked;
 
-    public static List<OnlinePlayer> listOfAllConnectedOnlinePLayers = new ArrayList<>();
+    public static CopyOnWriteArrayList<OnlinePlayer> listOfAllConnectedOnlinePLayers = new CopyOnWriteArrayList<>();
     //    Assigned in a GameEngine
     public static AssetLoader assetLoader;
 
@@ -165,6 +165,13 @@ public class OnlinePlayer {
             case CASTING_SPELL_RIGHT -> {
                 return playerSpriteCAST_SPELL_RIGHT;
             }
+            case DASHING_LEFT -> {
+                return playerSpriteROLL_LEFT;
+            }
+            case DASHING_RIGHT -> {
+                return playerSpriteROLL_RIGHT;
+            }
+
             default -> {
                 return null;
             }
@@ -201,10 +208,14 @@ public class OnlinePlayer {
                 else {
                     isPlayerStateLocked = false;
                     setCurrentPlayerStateOnlinePlayer();
-
                     animationIndexCasting = 0;
                 }
-
+            } else if (currentPlayerSpriteOnlinePlayer == playerSpriteROLL_RIGHT || currentPlayerSpriteOnlinePlayer == playerSpriteROLL_LEFT) {
+                if (animationIndexDashing < 3) animationIndexDashing++;
+                else {
+                    isPlayerStateLocked = false;
+                    animationIndexDashing = 0;
+                }
             }
             animationTick = 0;
         }
@@ -230,6 +241,8 @@ public class OnlinePlayer {
             return animationIndexMoving;
         else if (currentPlayerSpriteOnlinePlayer == playerSpriteCAST_SPELL_RIGHT || currentPlayerSpriteOnlinePlayer == playerSpriteCAST_SPELL_LEFT)
             return animationIndexCasting;
+        else if (currentPlayerSpriteOnlinePlayer == playerSpriteROLL_LEFT || currentPlayerSpriteOnlinePlayer == playerSpriteROLL_RIGHT)
+            return animationIndexDashing;
         else return 0;
     }
 

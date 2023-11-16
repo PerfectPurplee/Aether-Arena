@@ -1,6 +1,6 @@
 package main;
 
-import entities.spells.basicspells.Spell01;
+import entities.spells.basicspells.QSpell;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -57,11 +57,8 @@ public class EnumContainer {
 
         public static AllPlayableChampions PLayer_Champion_Shared;
 
-        public static Boolean[] ArrayOfPlayerCreateSpellRequests = new Boolean[4];
-
         public static Point currentMousePosition = new Point();
 
-        public static List<Spell01> listOfAllActiveSpellsCopy = new ArrayList<>();
 
 
     }
