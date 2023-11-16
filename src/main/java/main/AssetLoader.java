@@ -20,7 +20,7 @@ public class AssetLoader {
 
 
     private Graphics2D g2d;
-    private final int NUMBER_OF_PLAYABLE_CHARACTERS = 4;
+    private static final int NUMBER_OF_PLAYABLE_CHARACTERS = 4;
 
     private final double scaleForPlayerSprites = 0.125;
     private final double scaleForSpellSprites = 1.5;
@@ -57,10 +57,10 @@ public class AssetLoader {
     public BufferedImage rock3;
 
     //    USER INTEFACE
-    public BufferedImage[] QSpellICON;
-    public BufferedImage[] WSpellICON;
-    public BufferedImage[] ESpellICON;
-    public BufferedImage[] UltimateSpellICON;
+    public static BufferedImage[] QSpellICON = new BufferedImage[NUMBER_OF_PLAYABLE_CHARACTERS];
+    public static BufferedImage[] WSpellICON = new BufferedImage[NUMBER_OF_PLAYABLE_CHARACTERS];
+    public static BufferedImage[] ESpellICON = new BufferedImage[NUMBER_OF_PLAYABLE_CHARACTERS];
+    public static BufferedImage[] UltimateSpellICON = new BufferedImage[NUMBER_OF_PLAYABLE_CHARACTERS];
 
     //    Spells Sprites OLD
     public BufferedImage BasicSpellsSpriteSheetViolet;
@@ -103,20 +103,53 @@ public class AssetLoader {
     public static BufferedImage[] ULTWindSpellCastEnd;
 
     AssetLoader() {
-
+        getUserInterfaceIcons();
         championLoader();
-
-
         deBugger();
         getAllBasicSpellsSpriteSheet();
         getSpritesForSpells();
         getSpriteForQSpellViolet();
         getMapObjects();
         getSpritesForUltimateSpells();
+
     }
 
     private void getUserInterfaceIcons() {
+        for (EnumContainer.AllPlayableChampions champion : EnumContainer.AllPlayableChampions.values()) {
+            String filePathsForQIcons = getFilePathsForQIcons(champion);
+            String filePathsForEIcons = getFilePathsForEIcons(champion);
 
+            QSpellICON[champion.ordinal()] = scaleImage(Objects.requireNonNull(loadImage(filePathsForQIcons)), scaleForSpellSprites);
+            ESpellICON[champion.ordinal()] = scaleImage(Objects.requireNonNull(loadImage(filePathsForEIcons)), scaleForSpellSprites);
+            UltimateSpellICON[champion.ordinal()] = scaleImage(Objects.requireNonNull(loadImage(filePathsForQIcons)), scaleForSpellSprites);
+
+        }
+    }
+
+    private String getFilePathsForEIcons(EnumContainer.AllPlayableChampions champion) {
+        String result;
+        switch (champion) {
+
+            case BLUE_HAIR_DUDE -> result = "SpellSprites/Icons/tile008.png";
+            case PINK_HAIR_GIRL -> result = "SpellSprites/Icons/tile006.png";
+            case BLOND_MOHAWK_DUDE -> result = "SpellSprites/Icons/tile007.png";
+            case CAPE_BALDY_DUDE -> result = "SpellSprites/Icons/tile009.png";
+            default -> throw new IllegalStateException("Unexpected value: " + champion);
+        }
+        return result;
+    }
+
+    private String getFilePathsForQIcons(EnumContainer.AllPlayableChampions champion) {
+        String result;
+        switch (champion) {
+
+            case BLUE_HAIR_DUDE -> result = "SpellSprites/icons/tile002.png";
+            case PINK_HAIR_GIRL -> result = "SpellSprites/Icons/tile000.png";
+            case BLOND_MOHAWK_DUDE -> result = "SpellSprites/Icons/tile001.png";
+            case CAPE_BALDY_DUDE -> result = "SpellSprites/Icons/tile003.png";
+            default -> throw new IllegalStateException("Unexpected value: " + champion);
+        }
+        return result;
     }
 
     private void getMapObjects() {

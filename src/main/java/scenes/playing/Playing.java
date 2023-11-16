@@ -4,9 +4,11 @@ import entities.playercharacters.LocalPlayer;
 import entities.playercharacters.OnlinePlayer;
 import entities.spells.basicspells.QSpell;
 import inputs.PlayerMouseInputs;
+import main.MainPanel;
 import networking.Client;
 import networking.PacketManager;
 import scenes.SceneEssentials;
+import scenes.menu.Menu;
 
 import java.awt.*;
 import java.io.IOException;
@@ -32,7 +34,6 @@ public class Playing implements SceneEssentials {
         camera.updateEverythingForCamera();
 
 //        Local player and spells update
-
         localPlayer.moveController();
         localPlayer.currentPlayerSprite = localPlayer.setCurrentPlayerSprite();
         localPlayer.animationController();
@@ -40,6 +41,8 @@ public class Playing implements SceneEssentials {
         localPlayer.updateHealthBarCurrentHealthAndPositionOnScreen();
 //      spellCastController creates spells, but also sends data to server
         localPlayer.spellCastController();
+        localPlayer.updateCooldownsForDrawing();
+
 
         QSpell.updateAllSpells01();
 
@@ -114,6 +117,99 @@ public class Playing implements SceneEssentials {
 
 
 //        USER INTERFACE
+
+        float scaleFactor = 1.5F;  // Set the scale factor for icons and cooldown text
+// Draw the scaled Icons
+        g.drawImage(localPlayer.userInterface.currentQSpellICON,
+                MainPanel.gameSize.width / 2 - (int) (localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor * 2),
+                MainPanel.gameSize.height - (int) (60 * scaleFactor),
+                (int) (localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor),
+                (int) (localPlayer.userInterface.currentQSpellICON.getHeight() * scaleFactor),
+                null);
+
+        g.drawImage(localPlayer.userInterface.currentQSpellICON,
+                MainPanel.gameSize.width / 2 - (int) (localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor),
+                MainPanel.gameSize.height - (int) (60 * scaleFactor),
+                (int) (localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor),
+                (int) (localPlayer.userInterface.currentQSpellICON.getHeight() * scaleFactor),
+                null);
+
+        g.drawImage(localPlayer.userInterface.currentESpellICON,
+                MainPanel.gameSize.width / 2,
+                MainPanel.gameSize.height - (int) (60 * scaleFactor),
+                (int) (localPlayer.userInterface.currentESpellICON.getWidth() * scaleFactor),
+                (int) (localPlayer.userInterface.currentESpellICON.getHeight() * scaleFactor),
+                null);
+
+        g.drawImage(localPlayer.userInterface.currentRSpellICON,
+                MainPanel.gameSize.width / 2 + (int) (localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor),
+                MainPanel.gameSize.height - (int) (60 * scaleFactor),
+                (int) (localPlayer.userInterface.currentRSpellICON.getWidth() * scaleFactor),
+                (int) (localPlayer.userInterface.currentRSpellICON.getHeight() * scaleFactor),
+                null);
+
+
+        g.setColor(new Color(0, 0, 0, 223));
+        g.setFont(Menu.googleExo2.deriveFont(30F * scaleFactor));
+
+// Draw Grey color on spell Icons indicating spell is on cooldown and the cooldown text
+        if (localPlayer.QCurrentCooldown > 0) {
+            g.setColor(new Color(210, 210, 210, 50));
+            g.fillRect(
+                    MainPanel.gameSize.width / 2 - (int) (localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor * 2),
+                    MainPanel.gameSize.height - (int) (60 * scaleFactor),
+                    (int) (localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor),
+                    (int) (localPlayer.userInterface.currentQSpellICON.getHeight() * scaleFactor));
+
+            g.setColor(new Color(0, 0, 0, 192));
+            g.drawString(String.valueOf(localPlayer.QCurrentCooldown / 1000 + 1),
+                    (int) (MainPanel.gameSize.width / 2 - localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor * 2 +
+                            localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor / 2 - 8 * scaleFactor),
+                    MainPanel.gameSize.height - (int) (25 * scaleFactor));
+        }
+        if (localPlayer.WCurrentCooldown > 0) {
+            g.setColor(new Color(210, 210, 210, 50));
+            g.fillRect(
+                    MainPanel.gameSize.width / 2 - (int) (localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor),
+                    MainPanel.gameSize.height - (int) (60 * scaleFactor),
+                    (int) (localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor),
+                    (int) (localPlayer.userInterface.currentQSpellICON.getHeight() * scaleFactor));
+
+            g.setColor(new Color(0, 0, 0, 192));
+            g.drawString(String.valueOf(localPlayer.WCurrentCooldown / 1000 + 1),
+                    (int) (MainPanel.gameSize.width / 2 - localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor +
+                            localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor / 2 - 8 * scaleFactor),
+                    MainPanel.gameSize.height - (int) (25 * scaleFactor));
+        }
+        if (localPlayer.ECurrentCooldown > 0) {
+            g.setColor(new Color(210, 210, 210, 50));
+            g.fillRect(
+                    MainPanel.gameSize.width / 2,
+                    MainPanel.gameSize.height - (int) (60 * scaleFactor),
+                    (int) (localPlayer.userInterface.currentESpellICON.getWidth() * scaleFactor),
+                    (int) (localPlayer.userInterface.currentESpellICON.getHeight() * scaleFactor));
+
+            g.setColor(new Color(0, 0, 0, 192));
+            g.drawString(String.valueOf(localPlayer.ECurrentCooldown / 1000 + 1),
+                    (int) (MainPanel.gameSize.width / 2 +
+                            localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor / 2 - 8 * scaleFactor),
+                    MainPanel.gameSize.height - (int) (25 * scaleFactor));
+        }
+        if (localPlayer.RCurrentCooldown > 0) {
+            g.setColor(new Color(210, 210, 210, 50));
+            g.fillRect(
+                    MainPanel.gameSize.width / 2 + (int) (localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor),
+                    MainPanel.gameSize.height - (int) (60 * scaleFactor),
+                    (int) (localPlayer.userInterface.currentRSpellICON.getWidth() * scaleFactor),
+                    (int) (localPlayer.userInterface.currentRSpellICON.getHeight() * scaleFactor));
+
+            g.setColor(new Color(0, 0, 0, 190));
+            g.drawString(String.valueOf(localPlayer.RCurrentCooldown / 1000 + 1),
+                    (int) (MainPanel.gameSize.width / 2 +
+                            localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor +
+                            localPlayer.userInterface.currentQSpellICON.getWidth() * scaleFactor / 2 - 8 * scaleFactor),
+                    MainPanel.gameSize.height - (int) (25 * scaleFactor));
+        }
 
 
 //        DEBUGGING

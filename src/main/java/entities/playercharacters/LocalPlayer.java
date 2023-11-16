@@ -7,6 +7,7 @@ import inputs.PlayerKeyboardInputs;
 import main.AssetLoader;
 import main.EnumContainer;
 import main.GameEngine;
+import main.UserInterface;
 import networking.Client;
 import networking.PacketManager;
 import scenes.playing.Camera;
@@ -48,6 +49,7 @@ public class LocalPlayer {
 
     public Healthbar healthbar;
     public LocalPlayerHitbox localPlayerHitbox;
+    public UserInterface userInterface;
 
     public static float playerPosXWorld;
     public static float playerPosYWorld;
@@ -82,13 +84,18 @@ public class LocalPlayer {
     private long lastRSpellCastTime;
     private long lastDashCastTime;
 
+    public long QCurrentCooldown;
+    public long WCurrentCooldown;
+    public long ECurrentCooldown;
+    public long RCurrentCooldown;
+    public int DashCurrentCooldown;
+
 
     public LocalPlayer(AssetLoader assetLoader) {
         isPlayerStateLocked = false;
         this.assetLoader = assetLoader;
         this.Current_Player_State = EnumContainer.AllPlayerStates.MOVING_RIGHT;
         currentPlayerSprite = setCurrentPlayerSprite();
-
 
     }
 
@@ -379,6 +386,13 @@ public class LocalPlayer {
 //                throw new RuntimeException(e);
 //            }
 //        }
+    }
+
+    public void updateCooldownsForDrawing() {
+        QCurrentCooldown = (QSpell.SPELLQCOOLDOWN - (System.currentTimeMillis() - lastQSpellCastTime));
+        WCurrentCooldown = (QSpell.SPELLQCOOLDOWN - (System.currentTimeMillis() - lastWSpellCastTime));
+        ECurrentCooldown = (QSpell.SPELLQCOOLDOWN - (System.currentTimeMillis() - lastESpellCastTime));
+        RCurrentCooldown = (Ultimate.ULTIMATESPELLCOOLDOWN - (System.currentTimeMillis() - lastRSpellCastTime));
     }
 
     private boolean isDashOffCooldown() {

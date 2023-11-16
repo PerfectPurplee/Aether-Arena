@@ -181,6 +181,7 @@ public class GameEngine extends Thread {
             }
             case PLAYING -> {
                 this.createClient(this.getHostIpAddress());
+                this.localPlayer.userInterface = new UserInterface(localPlayer);
             }
             case PAUSE -> {
             }
