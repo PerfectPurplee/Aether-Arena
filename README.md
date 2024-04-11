@@ -1,6 +1,6 @@
 # Aether-Arena
 
-Aether-Arena is a multiplayer top-down game where players engage in magical battles. The main goal is to be the last one standing on the map after three rounds. Up to 8 players can join the arena, casting spells, dodging attacks, and strategizing to secure victory.
+Aether-Arena is a multiplayer top-down game where players engage in magical battles. The main goal is to defeat as many players as you can to be on top of the scoreboard as it is a deathmatch mode game. Its all about casting spells, dodging attacks, and strategizing to secure victory.
 
 ## GamePlay Screenshots
 
