@@ -4,13 +4,9 @@ import entities.Healthbar;
 import entities.spells.basicspells.QSpell;
 import entities.spells.basicspells.Ultimate;
 import inputs.PlayerKeyboardInputs;
-import main.AssetLoader;
-import main.EnumContainer;
-import main.GameEngine;
-import main.UserInterface;
+import main.*;
 import networking.Client;
 import networking.PacketManager;
-import scenes.playing.Camera;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -26,13 +22,15 @@ public class LocalPlayer {
 
     public BufferedImage[] currentPlayerSprite;
 
+    public BufferedImage scoreboardICON;
+
     public BufferedImage[] playerSpriteIDLE_RIGHT = new BufferedImage[6];
     public BufferedImage[] playerSpriteIDLE_LEFT = new BufferedImage[6];
 
     public BufferedImage[] playerSpriteMOVE_LEFT = new BufferedImage[8];
     public BufferedImage[] playerSpriteMOVE_RIGHT = new BufferedImage[8];
 
-    public BufferedImage[] playerSpriteDEATH_RIGHT;
+    public BufferedImage[] playerSpriteDEATH_RIGHT = new BufferedImage[10];
     public BufferedImage[] playerSpriteDEATH_LEFT = new BufferedImage[10];
 
     public BufferedImage[] playerSpriteTAKE_DMG_RIGHT = new BufferedImage[3];
@@ -65,18 +63,19 @@ public class LocalPlayer {
     public float distanceToTravel;
     public boolean isPlayerMoving;
     public boolean isPlayerStateLocked;
+    public boolean isPlayerDead;
 
 
     private Graphics2D g2d;
     private AssetLoader assetLoader;
     private int playerMoveSpeed = 2;
-
     private int animationTick;
     private final int animationSpeed = 15;
-    public int animationIndexIdle, animationIndexMoving, animationIndexCasting, animationIndexDashing;
+    public int animationIndexIdle, animationIndexMoving, animationIndexCasting, animationIndexDashing, animationIndexDeath;
 
-    //    This player Spells
+    //    This player Spells and cooldowns
     private final long DASH_COOLDOWN = 3000;   //in milliseconds
+    private final long RESPAWN_COOLDOWN = 5000;  // in milliseconds
     public int counterOfThisPlayerQSpells;
     private long lastQSpellCastTime;
     private long lastWSpellCastTime;
@@ -84,15 +83,25 @@ public class LocalPlayer {
     private long lastRSpellCastTime;
     private long lastDashCastTime;
 
+    private long playerDeathTime;
+
     public long QCurrentCooldown;
     public long WCurrentCooldown;
     public long ECurrentCooldown;
     public long RCurrentCooldown;
-    public int DashCurrentCooldown;
+    public long DashCurrentCooldown;
+
+    public long RespawnCurrentCooldown;
+    public boolean deathAnimationFinished;
+
+    public int scoreboardKills;
 
 
     public LocalPlayer(AssetLoader assetLoader) {
+        scoreboardKills = 0;
+        isPlayerDead = false;
         isPlayerStateLocked = false;
+        deathAnimationFinished = false;
         this.assetLoader = assetLoader;
         this.Current_Player_State = EnumContainer.AllPlayerStates.MOVING_RIGHT;
         currentPlayerSprite = setCurrentPlayerSprite();
@@ -102,7 +111,7 @@ public class LocalPlayer {
     private void setPlayerHealthBar() {
 
         healthbar = new Healthbar(
-                4000, localPlayerHitbox.playerHitboxPosXScreen,
+                500, localPlayerHitbox.playerHitboxPosXScreen,
                 localPlayerHitbox.playerHitboxPosYScreen);
 
 //        PROTOTYPE CODE IF YOU WANT DIFFERENT HEALTH CAPACITY FOR DIFFERENT CHAMPIONS
@@ -116,6 +125,16 @@ public class LocalPlayer {
 //            }
 //        }
 
+    }
+
+    public void setScoreboardICON() {
+        switch (localPlayerChampion) {
+
+            case BLUE_HAIR_DUDE -> scoreboardICON = assetLoader.scoreboardICONS[0];
+            case PINK_HAIR_GIRL -> scoreboardICON = assetLoader.scoreboardICONS[1];
+            case BLOND_MOHAWK_DUDE -> scoreboardICON = assetLoader.scoreboardICONS[2];
+            case CAPE_BALDY_DUDE -> scoreboardICON = assetLoader.scoreboardICONS[3];
+        }
     }
 
     public void setPlayerChampion(EnumContainer.AllPlayableChampions champion) {
@@ -175,10 +194,10 @@ public class LocalPlayer {
             } else {
                 switch (Current_Player_State) {
 
-                    case MOVING_LEFT, CASTING_SPELL_LEFT, DASHING_LEFT -> {
+                    case MOVING_LEFT, CASTING_SPELL_LEFT, DASHING_LEFT, DEATH_LEFT -> {
                         Current_Player_State = EnumContainer.AllPlayerStates.IDLE_LEFT;
                     }
-                    case MOVING_RIGHT, CASTING_SPELL_RIGHT, DASHING_RIGHT -> {
+                    case MOVING_RIGHT, CASTING_SPELL_RIGHT, DASHING_RIGHT, DEATH_RIGHT -> {
                         Current_Player_State = EnumContainer.AllPlayerStates.IDLE_RIGHT;
                     }
 
@@ -187,19 +206,17 @@ public class LocalPlayer {
         }
     }
 
-
     public void setPlayerMovementStartingPosition(float playerPosXWorld, float playerPosYWorld) {
         this.playerMovementStartingPosX = playerPosXWorld + playerFeetX;
         this.playerMovementStartingPosY = playerPosYWorld + playerFeetY;
     }
 
-    public void updatePlayerPositionOnScreenAndPlayerHitbox() {
+    public void updatePlayerPositionOnScreen() {
         playerPosXScreen = playerPosXWorld - Camera.cameraPosX;
         playerPosYScreen = playerPosYWorld - Camera.cameraPosY;
-        updatePlayerHitboxWorldAndPosOnScreen();
+
 
     }
-
 
     private void getPlayerSprites2Directional(EnumContainer.AllPlayableChampions localPlayerChampion) {
 
@@ -263,7 +280,6 @@ public class LocalPlayer {
         return flippedImage;
     }
 
-
     public BufferedImage[] setCurrentPlayerSprite() {
         switch (Current_Player_State) {
             case IDLE_LEFT -> {
@@ -289,6 +305,12 @@ public class LocalPlayer {
             }
             case DASHING_RIGHT -> {
                 return playerSpriteROLL_RIGHT;
+            }
+            case DEATH_LEFT -> {
+                return playerSpriteDEATH_LEFT;
+            }
+            case DEATH_RIGHT -> {
+                return playerSpriteDEATH_RIGHT;
             }
             default -> {
                 return null;
@@ -320,6 +342,13 @@ public class LocalPlayer {
                     setCurrent_Player_State();
                     animationIndexDashing = 0;
                 }
+            } else if ((currentPlayerSprite == playerSpriteDEATH_LEFT || currentPlayerSprite == playerSpriteDEATH_RIGHT) && !deathAnimationFinished) {
+                if (animationIndexDeath < 8) animationIndexDeath++;
+                else {
+                    deathAnimationFinished = true;
+                    animationIndexDeath = 0;
+                }
+
             }
             animationTick = 0;
         }
@@ -334,6 +363,8 @@ public class LocalPlayer {
             return animationIndexCasting;
         else if (currentPlayerSprite == playerSpriteROLL_LEFT || currentPlayerSprite == playerSpriteROLL_RIGHT)
             return animationIndexDashing;
+        else if (currentPlayerSprite == playerSpriteDEATH_LEFT || currentPlayerSprite == playerSpriteDEATH_RIGHT)
+            return animationIndexDeath;
         else return 0;
     }
 
@@ -369,7 +400,7 @@ public class LocalPlayer {
             }
             if (shouldDash) {
                 isPlayerStateLocked = true;
-                Current_Player_State = setDashStateForAnimation();
+                Current_Player_State = setDASHStateForAnimation();
                 playerMoveSpeed = 4;
                 lastDashCastTime = System.currentTimeMillis();
                 Client.socket.send(PacketManager.spellRequestPacket('D', 404, 404));
@@ -393,6 +424,7 @@ public class LocalPlayer {
         WCurrentCooldown = (QSpell.SPELLQCOOLDOWN - (System.currentTimeMillis() - lastWSpellCastTime));
         ECurrentCooldown = (QSpell.SPELLQCOOLDOWN - (System.currentTimeMillis() - lastESpellCastTime));
         RCurrentCooldown = (Ultimate.ULTIMATESPELLCOOLDOWN - (System.currentTimeMillis() - lastRSpellCastTime));
+        DashCurrentCooldown = (DASH_COOLDOWN - (System.currentTimeMillis() - lastDashCastTime));
     }
 
     private boolean isDashOffCooldown() {
@@ -424,7 +456,29 @@ public class LocalPlayer {
 
     }
 
-    private EnumContainer.AllPlayerStates setDashStateForAnimation() {
+    public void updateReviveCooldownAndRespawnPlayer() {
+        RespawnCurrentCooldown = (RESPAWN_COOLDOWN - (System.currentTimeMillis() - playerDeathTime));
+
+        if (RespawnCurrentCooldown <= 0) {
+            isPlayerDead = false;
+            deathAnimationFinished = false;
+            healthbar.currentHealth = healthbar.maxHealth;
+        }
+
+
+    }
+
+    public void checkIsPlayerDead() {
+        if (healthbar.currentHealth <= 0 && System.currentTimeMillis() - playerDeathTime > RESPAWN_COOLDOWN + 2000) {
+            isPlayerDead = true;
+            Current_Player_State = setDEATHStateForAnimation();
+            currentPlayerSprite = setCurrentPlayerSprite();
+            playerDeathTime = System.currentTimeMillis();
+
+        }
+    }
+
+    private EnumContainer.AllPlayerStates setDASHStateForAnimation() {
         switch (Current_Player_State) {
 
             case IDLE_LEFT, MOVING_LEFT, CASTING_SPELL_LEFT -> {
@@ -439,6 +493,20 @@ public class LocalPlayer {
         }
     }
 
+    private EnumContainer.AllPlayerStates setDEATHStateForAnimation() {
+        switch (Current_Player_State) {
+
+            case IDLE_LEFT, MOVING_LEFT, CASTING_SPELL_LEFT, DASHING_LEFT -> {
+                return EnumContainer.AllPlayerStates.DEATH_LEFT;
+            }
+            case IDLE_RIGHT, MOVING_RIGHT, CASTING_SPELL_RIGHT, DASHING_RIGHT -> {
+                return EnumContainer.AllPlayerStates.DEATH_RIGHT;
+            }
+            default -> {
+                return EnumContainer.AllPlayerStates.DEATH_RIGHT;
+            }
+        }
+    }
 
     public void updatePlayerHitboxWorldAndPosOnScreen() {
         localPlayerHitbox.x = playerPosXWorld + hitboxOffsetX;
@@ -453,7 +521,6 @@ public class LocalPlayer {
         healthbar.healthbarPositionOnScreenX = (int) (localPlayerHitbox.playerHitboxPosXScreen);
         healthbar.healthbarPositionOnScreenY = (int) (localPlayerHitbox.playerHitboxPosYScreen - healthbar.offsetY);
     }
-
 
     private final int hitboxOffsetX = 90;
     private final int hitboxOffsetYAbovePlayerSprite = 130;

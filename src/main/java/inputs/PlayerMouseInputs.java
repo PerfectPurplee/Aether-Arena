@@ -1,14 +1,15 @@
 package inputs;
 
 import entities.playercharacters.LocalPlayer;
+import main.Camera;
 import main.EnumContainer;
 import main.GameEngine;
 import main.MainFrame;
 import networking.Client;
 import networking.PacketManager;
-import scenes.championselect.ChampionSelect;
-import scenes.menu.Menu;
-import scenes.playing.Camera;
+import scenes.ChampionSelect;
+import scenes.Menu;
+import scenes.Pause;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -31,11 +32,13 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
     //  Instantiated in GameEngine
     public GameEngine gameEngine;
     public MainFrame mainFrame;
+    public Pause pause;
 
     private int startingPosX;
     private int startingPosY;
 
-    public PlayerMouseInputs(LocalPlayer localPlayer, ChampionSelect championSelect) {
+    public PlayerMouseInputs(LocalPlayer localPlayer, ChampionSelect championSelect, GameEngine gameEngine) {
+        this.gameEngine = gameEngine;
         this.localPlayer = localPlayer;
         this.championSelect = championSelect;
 
@@ -83,15 +86,19 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
             case CHAMPION_SELECT -> {
                 if (e.getSource() == championSelect.championLabels[0]) {
                     localPlayer.setPlayerChampion(EnumContainer.AllPlayableChampions.BLUE_HAIR_DUDE);
+                    localPlayer.setScoreboardICON();
                     gameEngine.changeScene(AllScenes.PLAYING);
                 } else if (e.getSource() == championSelect.championLabels[1]) {
                     localPlayer.setPlayerChampion(EnumContainer.AllPlayableChampions.PINK_HAIR_GIRL);
+                    localPlayer.setScoreboardICON();
                     gameEngine.changeScene(AllScenes.PLAYING);
                 } else if (e.getSource() == championSelect.championLabels[2]) {
                     localPlayer.setPlayerChampion(EnumContainer.AllPlayableChampions.BLOND_MOHAWK_DUDE);
+                    localPlayer.setScoreboardICON();
                     gameEngine.changeScene(AllScenes.PLAYING);
                 } else if (e.getSource() == championSelect.championLabels[3]) {
                     localPlayer.setPlayerChampion(EnumContainer.AllPlayableChampions.CAPE_BALDY_DUDE);
+                    localPlayer.setScoreboardICON();
                     gameEngine.changeScene(AllScenes.PLAYING);
                 }
 
@@ -102,14 +109,25 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
             }
             case PLAYING -> {
                 setCurrentMouseWorldPosition(e);
-                localPlayer.getVectorForPlayerMovement(e);
-                try {
-                    client.socket.send(PacketManager.movementRequestPacket(localPlayer.mouseClickXPos, localPlayer.mouseClickYPos, client.ClientID));
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
+                if (!localPlayer.isPlayerDead) {
+                    localPlayer.getVectorForPlayerMovement(e);
+                    try {
+                        client.socket.send(PacketManager.movementRequestPacket(localPlayer.mouseClickXPos, localPlayer.mouseClickYPos, client.ClientID));
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             }
             case PAUSE -> {
+                if (e.getSource() == pause.changeYourHeroButton) {
+                    gameEngine.changeScene(CHAMPION_SELECT);
+                }
+                if (e.getSource() == pause.settingsButton) {
+
+                }
+                if (e.getSource() == pause.exitToMainMenuButton) {
+                    gameEngine.changeScene(AllScenes.MENU);
+                }
             }
             case SETTINGS -> {
             }
@@ -162,6 +180,17 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
                 }
 
             }
+            case PAUSE -> {
+                if (e.getSource() == pause.changeYourHeroButton) {
+                    pause.changeYourHeroButton.setFont(Menu.googleExo2.deriveFont(28F));
+                }
+                if (e.getSource() == pause.settingsButton) {
+                    pause.settingsButton.setFont(Menu.googleExo2.deriveFont(28F));
+                }
+                if (e.getSource() == pause.exitToMainMenuButton) {
+                    pause.exitToMainMenuButton.setFont(Menu.googleExo2.deriveFont(28F));
+                }
+            }
         }
 
     }
@@ -186,6 +215,17 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
             case CHAMPION_SELECT -> {
                 if (e.getSource() == championSelect.backToMenu) {
                     championSelect.backToMenu.setFont(Menu.googleExo2.deriveFont(30F));
+                }
+            }
+            case PAUSE -> {
+                if (e.getSource() == pause.changeYourHeroButton) {
+                    pause.changeYourHeroButton.setFont(Menu.googleExo2.deriveFont(26F));
+                }
+                if (e.getSource() == pause.settingsButton) {
+                    pause.settingsButton.setFont(Menu.googleExo2.deriveFont(26F));
+                }
+                if (e.getSource() == pause.exitToMainMenuButton) {
+                    pause.exitToMainMenuButton.setFont(Menu.googleExo2.deriveFont(26F));
                 }
             }
         }
@@ -215,6 +255,7 @@ public class PlayerMouseInputs implements MouseListener, MouseMotionListener {
             }
         }
 
+//        DRAGGING WINDOW
         if (e.getY() < 30 && startingPosX != -1 || startingPosY != -1) {
             mainFrame.setLocation(mainFrame.getX() + e.getX() - startingPosX, mainFrame.getY() + e.getY() - startingPosY);
 

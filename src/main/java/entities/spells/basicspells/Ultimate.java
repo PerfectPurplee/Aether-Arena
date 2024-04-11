@@ -17,6 +17,9 @@ public class Ultimate extends QSpell {
 
     public Ultimate(LocalPlayer playerCastingThisSpell) {
         super(playerCastingThisSpell);
+
+
+
     }
 
     public Ultimate(Spell01DTO spell01DTO) {

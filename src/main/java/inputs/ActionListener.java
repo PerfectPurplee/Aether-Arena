@@ -2,7 +2,6 @@ package inputs;
 
 import main.GameEngine;
 import main.MainPanel;
-import scenes.menu.Menu;
 
 import java.awt.event.ActionEvent;
 

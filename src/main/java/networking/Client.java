@@ -29,7 +29,7 @@ public class Client extends Thread {
 
         try {
             socket = new DatagramSocket();
-            Client.serverIPaddress = InetAddress.getByName("89.65.216.42");
+            Client.serverIPaddress = InetAddress.getByName("89.65.23.73");
 //            Client.serverIPaddress = InetAddress.getLocalHost();
         } catch (SocketException | UnknownHostException e) {
             throw new RuntimeException(e);
@@ -97,9 +97,16 @@ public class Client extends Thread {
                     } else if (OptionalOnlinePlayer.isPresent()) {
                         ServerClientConnectionCopyObjects.Current_Player_State_Shared = (AllPlayerStates) objectInputStream.readObject();
                         ServerClientConnectionCopyObjects.PLayer_Champion_Shared = (AllPlayableChampions) objectInputStream.readObject();
-                        if (!OptionalOnlinePlayer.get().isPlayerStateLocked
+
+                            if((OptionalOnlinePlayer.get().Current_Player_State_Online_Player == AllPlayerStates.DEATH_LEFT
+                                    || OptionalOnlinePlayer.get().Current_Player_State_Online_Player == AllPlayerStates.DEATH_RIGHT) && ((ServerClientConnectionCopyObjects.Current_Player_State_Shared != AllPlayerStates.DEATH_LEFT)
+                                    && (ServerClientConnectionCopyObjects.Current_Player_State_Shared != AllPlayerStates.DEATH_RIGHT))) {
+                                OptionalOnlinePlayer.get().deathAnimationFinished = false;
+                            } if (!OptionalOnlinePlayer.get().isPlayerStateLocked
                                 || ServerClientConnectionCopyObjects.Current_Player_State_Shared == AllPlayerStates.DASHING_LEFT
-                                || ServerClientConnectionCopyObjects.Current_Player_State_Shared == AllPlayerStates.DASHING_RIGHT)
+                                || ServerClientConnectionCopyObjects.Current_Player_State_Shared == AllPlayerStates.DASHING_RIGHT
+                                || ServerClientConnectionCopyObjects.Current_Player_State_Shared == AllPlayerStates.DEATH_LEFT
+                                || ServerClientConnectionCopyObjects.Current_Player_State_Shared == AllPlayerStates.DEATH_RIGHT)
                             OptionalOnlinePlayer.get().Current_Player_State_Online_Player = ServerClientConnectionCopyObjects.Current_Player_State_Shared;
 
                         OptionalOnlinePlayer.get().playerPosXWorld = objectInputStream.readFloat();
@@ -120,6 +127,7 @@ public class Client extends Thread {
 
                 }
             }
+//            UPDATE SPELLS PACKET
             if (packetType == 2) {
                 int clientID = objectInputStream.readInt();
 
@@ -150,6 +158,22 @@ public class Client extends Thread {
                     }
 
                 }
+            }
+//            PLAYER CHANGED HERO INFORMATION PACKET
+            if (packetType == 3) {
+                int clientIDThatChangedHero = objectInputStream.readInt();
+                ServerClientConnectionCopyObjects.PLayer_Champion_Shared = (AllPlayableChampions) objectInputStream.readObject();
+                OnlinePlayer.listOfAllConnectedOnlinePLayers.stream()
+                        .filter(onlinePlayer -> onlinePlayer.onlinePlayerID == clientIDThatChangedHero).findFirst().ifPresent(onlinePlayer -> {
+                            onlinePlayer.onlinePlayerChampion = ServerClientConnectionCopyObjects.PLayer_Champion_Shared;
+                            onlinePlayer.getPlayerSprites2Directional(onlinePlayer.onlinePlayerChampion);
+                        });
+
+            }
+//            PLAYER DISCONNECTED PACKET
+            if (packetType == 4) {
+                int disconnectedClientID = objectInputStream.readInt();
+                OnlinePlayer.listOfAllConnectedOnlinePLayers.removeIf(onlinePlayer -> onlinePlayer.onlinePlayerID == disconnectedClientID);
             }
 
             objectInputStream.close();

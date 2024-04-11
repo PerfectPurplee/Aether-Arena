@@ -1,9 +1,9 @@
-package scenes.championselect;
+package scenes;
 
 import main.AssetLoader;
 import main.MainPanel;
 import scenes.SceneEssentials;
-import scenes.menu.Menu;
+import scenes.Menu;
 
 import javax.swing.*;
 import java.awt.*;

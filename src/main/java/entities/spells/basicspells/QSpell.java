@@ -6,7 +6,7 @@ import entities.playercharacters.OnlinePlayer;
 import main.AssetLoader;
 import main.EnumContainer;
 import networking.Client;
-import scenes.playing.Camera;
+import main.Camera;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -31,7 +31,7 @@ public class QSpell {
     private EnumContainer.AllQspellStates current_Spell_State;
 
     public static final int NUMBER_OF_SPRITES = 5;
-    private static final int SPEED = 2;
+    private static final int SPEED = 4;
     public static long SPELLQCOOLDOWN = 1000; // 1 seconds in milliseconds
     private final int RANGE = 1000;
     private float distanceTraveled = 0;

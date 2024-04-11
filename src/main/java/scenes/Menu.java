@@ -1,4 +1,4 @@
-package scenes.menu;
+package scenes;
 
 import inputs.PlayerMouseInputs;
 import main.MainPanel;

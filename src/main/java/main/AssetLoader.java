@@ -24,7 +24,8 @@ public class AssetLoader {
 
     private final double scaleForPlayerSprites = 0.125;
     private final double scaleForSpellSprites = 1.5;
-    private final double ScaleForUltimateSpells = 3;
+    private final double scaleForUltimateSpells = 3;
+    private final double scaleForScoreboardIcons = 0.8;
 
     private int k = 0;
     private String previousName;
@@ -48,6 +49,10 @@ public class AssetLoader {
     public BufferedImage[][] playerSpriteCAST_SPELL_LEFT = new BufferedImage[NUMBER_OF_PLAYABLE_CHARACTERS][5];
     public BufferedImage[][] playerSpriteCAST_SPELL_RIGHT = new BufferedImage[NUMBER_OF_PLAYABLE_CHARACTERS][5];
 
+    //    ScoreBoard Icons
+
+    public BufferedImage[] scoreboardICONS = new BufferedImage[NUMBER_OF_PLAYABLE_CHARACTERS];
+
 
     //    Map Objects Sprites
     public BufferedImage ground2White;
@@ -61,6 +66,7 @@ public class AssetLoader {
     public static BufferedImage[] WSpellICON = new BufferedImage[NUMBER_OF_PLAYABLE_CHARACTERS];
     public static BufferedImage[] ESpellICON = new BufferedImage[NUMBER_OF_PLAYABLE_CHARACTERS];
     public static BufferedImage[] UltimateSpellICON = new BufferedImage[NUMBER_OF_PLAYABLE_CHARACTERS];
+    public static BufferedImage DashSpellICON;
 
     //    Spells Sprites OLD
     public BufferedImage BasicSpellsSpriteSheetViolet;
@@ -102,15 +108,30 @@ public class AssetLoader {
     public static BufferedImage[] ULTWindSpellCastFlying;
     public static BufferedImage[] ULTWindSpellCastEnd;
 
+    //    Spell Sprites For E Spell:
+    //    fireBall
+    public static BufferedImage[] ESpellFireMoltenSpearCastStart;
+    public static BufferedImage[] ESpellFireMoltenSpearCastEnd;
+    //    Water
+    public static BufferedImage[] ESpellWaterGeyserCastStart;
+    public static BufferedImage[] ESpellWaterGeyserCastEnd;
+    //    Rock
+    public static BufferedImage[] ESpellRockEarthSpikeStart;
+    public static BufferedImage[] ESpellRockEarthSpikeCastEnd;
+    //    Wind
+    public static BufferedImage[] ESpellWindTornadoStart;
+    public static BufferedImage[] ESpellWindTornadoCastEnd;
+
     AssetLoader() {
         getUserInterfaceIcons();
         championLoader();
         deBugger();
         getAllBasicSpellsSpriteSheet();
-        getSpritesForSpells();
+        getSpritesForQSpells();
         getSpriteForQSpellViolet();
         getMapObjects();
         getSpritesForUltimateSpells();
+        setSpritesForESpells();
 
     }
 
@@ -119,11 +140,19 @@ public class AssetLoader {
             String filePathsForQIcons = getFilePathsForQIcons(champion);
             String filePathsForEIcons = getFilePathsForEIcons(champion);
 
-            QSpellICON[champion.ordinal()] = scaleImage(Objects.requireNonNull(loadImage(filePathsForQIcons)), scaleForSpellSprites);
-            ESpellICON[champion.ordinal()] = scaleImage(Objects.requireNonNull(loadImage(filePathsForEIcons)), scaleForSpellSprites);
-            UltimateSpellICON[champion.ordinal()] = scaleImage(Objects.requireNonNull(loadImage(filePathsForQIcons)), scaleForSpellSprites);
-
+            QSpellICON[champion.ordinal()] = loadImage(filePathsForQIcons);
+            ESpellICON[champion.ordinal()] = loadImage(filePathsForEIcons);
+            UltimateSpellICON[champion.ordinal()] = loadImage(filePathsForQIcons);
         }
+        try (InputStream is = AssetLoader.class.getClassLoader().getResourceAsStream("SpellSprites/Icons/tile004.png")) {
+            DashSpellICON = ImageIO.read(Objects.requireNonNull(is));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        QSpellICON = scaleImage(QSpellICON, scaleForSpellSprites);
+        ESpellICON = scaleImage(ESpellICON, scaleForSpellSprites);
+        UltimateSpellICON = scaleImage(UltimateSpellICON, scaleForSpellSprites);
     }
 
     private String getFilePathsForEIcons(EnumContainer.AllPlayableChampions champion) {
@@ -143,7 +172,7 @@ public class AssetLoader {
         String result;
         switch (champion) {
 
-            case BLUE_HAIR_DUDE -> result = "SpellSprites/icons/tile002.png";
+            case BLUE_HAIR_DUDE -> result = "SpellSprites/Icons/tile002.png";
             case PINK_HAIR_GIRL -> result = "SpellSprites/Icons/tile000.png";
             case BLOND_MOHAWK_DUDE -> result = "SpellSprites/Icons/tile001.png";
             case CAPE_BALDY_DUDE -> result = "SpellSprites/Icons/tile003.png";
@@ -217,7 +246,7 @@ public class AssetLoader {
         }
     }
 
-    private void getSpritesForSpells() {
+    private void getSpritesForQSpells() {
 
         String spriteImagesCast_Start;
         String spriteImagesCast_Flying;
@@ -323,24 +352,69 @@ public class AssetLoader {
 
         for (int i = 0; i < 5; i++) {
 //            fireball
-            ULTFireSpellCastStart = scaleImage(QSpellFireBallCastStart, ScaleForUltimateSpells);
-            ULTFireSpellCastFlying = scaleImage(QSpellFireballCastFlying, ScaleForUltimateSpells);
-            ULTFireSpellCastEnd = scaleImage(QSpellFireBallCastEnd, ScaleForUltimateSpells);
+            ULTFireSpellCastStart = scaleImage(QSpellFireBallCastStart, scaleForUltimateSpells);
+            ULTFireSpellCastFlying = scaleImage(QSpellFireballCastFlying, scaleForUltimateSpells);
+            ULTFireSpellCastEnd = scaleImage(QSpellFireBallCastEnd, scaleForUltimateSpells);
             //    waterBall
-            ULTWaterSpellCastStart = scaleImage(QSpellWaterBallCastStart, ScaleForUltimateSpells);
-            ULTWaterSpellCastFlying = scaleImage(QSpellWaterBallCastFlying, ScaleForUltimateSpells);
-            ULTWaterSpellCastEnd = scaleImage(QSpellWaterBallCastEnd, ScaleForUltimateSpells);
+            ULTWaterSpellCastStart = scaleImage(QSpellWaterBallCastStart, scaleForUltimateSpells);
+            ULTWaterSpellCastFlying = scaleImage(QSpellWaterBallCastFlying, scaleForUltimateSpells);
+            ULTWaterSpellCastEnd = scaleImage(QSpellWaterBallCastEnd, scaleForUltimateSpells);
             //    rockBall
-            ULTRockSpellCastStart = scaleImage(QSpellRockBallCastStart, ScaleForUltimateSpells);
-            ULTRockSpellCastFlying = scaleImage(QSpellRockBallCastFlying, ScaleForUltimateSpells);
-            ULTRockSpellCastEnd = scaleImage(QSpellRockBallCastEnd, ScaleForUltimateSpells);
+            ULTRockSpellCastStart = scaleImage(QSpellRockBallCastStart, scaleForUltimateSpells);
+            ULTRockSpellCastFlying = scaleImage(QSpellRockBallCastFlying, scaleForUltimateSpells);
+            ULTRockSpellCastEnd = scaleImage(QSpellRockBallCastEnd, scaleForUltimateSpells);
             //    windBall
-            ULTWindSpellCastStart = scaleImage(QSpellWindBallCastStart, ScaleForUltimateSpells);
-            ULTWindSpellCastFlying = scaleImage(QSpellWindBallCastFlying, ScaleForUltimateSpells);
-            ULTWindSpellCastEnd = scaleImage(QSpellWindBallCastEnd, ScaleForUltimateSpells);
+            ULTWindSpellCastStart = scaleImage(QSpellWindBallCastStart, scaleForUltimateSpells);
+            ULTWindSpellCastFlying = scaleImage(QSpellWindBallCastFlying, scaleForUltimateSpells);
+            ULTWindSpellCastEnd = scaleImage(QSpellWindBallCastEnd, scaleForUltimateSpells);
         }
 //        System.out.println("ULTIMATE: " + " W " + ULTFireSpellCastFlying[1].getWidth() + " H " + ULTFireSpellCastFlying[1].getHeight());
 //        System.out.println("ULTIMATE: " + " W " + ULTRockSpellCastEnd[1].getWidth() + " H " + ULTRockSpellCastEnd[1].getHeight());
+    }
+
+    private void setSpritesForESpells() {
+
+        for (EnumContainer.AllPlayableChampions champion : EnumContainer.AllPlayableChampions.values()) {
+
+            switch (champion) {
+
+                case BLUE_HAIR_DUDE -> {
+                    String folderPath = "SpellSprites/Water_Geyser/";
+                    ESpellWaterGeyserCastEnd = new BufferedImage[13];
+                    for (int i = 0; i < ESpellWaterGeyserCastEnd.length; i++) {
+                        ESpellWaterGeyserCastEnd[i] = scaleImage
+                                (Objects.requireNonNull(loadImage(folderPath + i + ".png")), scaleForSpellSprites);
+                    }
+
+                }
+                case PINK_HAIR_GIRL -> {
+                    String folderPath = "SpellSprites/Molten_Spear/";
+                    ESpellFireMoltenSpearCastEnd = new BufferedImage[12];
+                    for (int i = 0; i < ESpellFireMoltenSpearCastEnd.length; i++) {
+                        ESpellFireMoltenSpearCastEnd[i] = scaleImage
+                                (Objects.requireNonNull(loadImage(folderPath + i + ".png")), scaleForSpellSprites);
+                    }
+
+                }
+                case BLOND_MOHAWK_DUDE -> {
+                    String folderPath = "SpellSprites/Earth_Spike/";
+                    ESpellRockEarthSpikeCastEnd = new BufferedImage[9];
+                    for (int i = 0; i < ESpellRockEarthSpikeCastEnd.length; i++) {
+                        ESpellRockEarthSpikeCastEnd[i] = scaleImage
+                                (Objects.requireNonNull(loadImage(folderPath + i + ".png")), scaleForSpellSprites);
+                    }
+                }
+                case CAPE_BALDY_DUDE -> {
+                    String folderPath = "SpellSprites/Tornado/";
+                    ESpellWindTornadoCastEnd = new BufferedImage[9];
+                    for (int i = 0; i < ESpellWindTornadoCastEnd.length; i++) {
+                        ESpellWindTornadoCastEnd[i] = scaleImage
+                                (Objects.requireNonNull(loadImage(folderPath + i + ".png")), scaleForSpellSprites);
+                    }
+                }
+            }
+        }
+
     }
 
     private BufferedImage[] loadImagesFromFolder(String folderPath, ArrayList<String> imagesNames) {
@@ -552,9 +626,9 @@ public class AssetLoader {
         };
     }
 
-    private static BufferedImage loadImage(String path) {
+    private BufferedImage loadImage(String path) {
         try {
-            URL imageURL = AssetLoader.class.getClassLoader().getResource(path);
+            URL imageURL = getClass().getClassLoader().getResource(path);
             if (imageURL != null) {
                 return ImageIO.read(imageURL);
             } else {
@@ -614,8 +688,7 @@ public class AssetLoader {
             for (int typeOfAnimation = 0; typeOfAnimation < 6; typeOfAnimation++) {
                 String fileNameBeginsWith = setFileBeginName(typeOfAnimation);
                 for (int imageIndex = 0; imageIndex < NumberOfIndexesForAnimation(fileNameBeginsWith); imageIndex++) {
-                    BufferedImage image = loadImage
-                            (championFolder + fileNameBeginsWith + imageIndex + ".png");
+                    BufferedImage image = loadImage(championFolder + fileNameBeginsWith + imageIndex + ".png");
                     if (image == null) {
                         System.out.println("Not WORKING IMG NULL");
                     }
@@ -636,6 +709,10 @@ public class AssetLoader {
                         case "roll_" -> {
                             playerSpriteROLL_RIGHT[i][imageIndex] = addShadowToPlayerSprite(scaleImage(image, scaleForPlayerSprites));
                             playerSpriteROLL_LEFT[i][imageIndex] = addShadowToPlayerSprite(flipImageHorizontally(image, scaleForPlayerSprites));
+                            if (imageIndex == 4) {
+                                scoreboardICONS[i] = image;
+                            }
+
                         }
                         case "walk_" -> {
                             playerSpriteMOVE_RIGHT[i][imageIndex] = addShadowToPlayerSprite(scaleImage(image, scaleForPlayerSprites));
@@ -650,6 +727,7 @@ public class AssetLoader {
                 }
             }
         }
+
     }
 
 

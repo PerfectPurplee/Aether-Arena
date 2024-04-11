@@ -10,6 +10,8 @@ public class UserInterface {
     public BufferedImage currentWSpellICON;
     public BufferedImage currentESpellICON;
     public BufferedImage currentRSpellICON;
+    //    There is only one dash icon for all characters
+    public BufferedImage dashICON;
 
     EnumContainer.AllPlayableChampions currentlyPlayedChampion;
 
@@ -24,6 +26,7 @@ public class UserInterface {
         currentWSpellICON = AssetLoader.QSpellICON[currentlyPlayedChampion.ordinal()];
         currentESpellICON = AssetLoader.ESpellICON[currentlyPlayedChampion.ordinal()];
         currentRSpellICON = AssetLoader.UltimateSpellICON[currentlyPlayedChampion.ordinal()];
+        dashICON = AssetLoader.DashSpellICON;
     }
 
     public void setCurrentlyPlayedChampionForUI(EnumContainer.AllPlayableChampions currentlyPlayedChampion) {

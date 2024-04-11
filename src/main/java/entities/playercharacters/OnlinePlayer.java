@@ -2,8 +2,8 @@ package entities.playercharacters;
 
 import entities.Healthbar;
 import main.AssetLoader;
+import main.Camera;
 import main.EnumContainer;
-import scenes.playing.Camera;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -11,11 +11,13 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class OnlinePlayer {
+
+
+    public BufferedImage[] currentPlayerSpriteOnlinePlayer;
+    public BufferedImage scoreboardICON;
 
 
     public BufferedImage[] playerSpriteIDLE_RIGHT = new BufferedImage[6];
@@ -27,7 +29,6 @@ public class OnlinePlayer {
     public BufferedImage[] playerSpriteDEATH_RIGHT = new BufferedImage[10];
     public BufferedImage[] playerSpriteDEATH_LEFT = new BufferedImage[10];
 
-
     public BufferedImage[] playerSpriteTAKE_DMG_RIGHT = new BufferedImage[3];
     public BufferedImage[] playerSpriteTAKE_DMG_LEFT = new BufferedImage[3];
 
@@ -37,7 +38,7 @@ public class OnlinePlayer {
     public BufferedImage[] playerSpriteCAST_SPELL_LEFT = new BufferedImage[5];
     public BufferedImage[] playerSpriteCAST_SPELL_RIGHT = new BufferedImage[5];
 
-    public BufferedImage[] currentPlayerSpriteOnlinePlayer;
+
 
     public EnumContainer.AllPlayerStates Current_Player_State_Online_Player;
     public EnumContainer.AllPlayableChampions onlinePlayerChampion;
@@ -50,18 +51,25 @@ public class OnlinePlayer {
 
     private Graphics2D g2d;
     private int animationTick, animationSpeed = 15;
-    public int animationIndexMoving, animationIndexIdle, animationIndexCasting, animationIndexDashing;
+    public int animationIndexMoving, animationIndexIdle, animationIndexCasting, animationIndexDashing, animationIndexDeath;
 
     public final int onlinePlayerID;
     public boolean isPlayerMoving;
     public boolean isPlayerStateLocked;
+    public boolean deathAnimationFinished;
 
     public static CopyOnWriteArrayList<OnlinePlayer> listOfAllConnectedOnlinePLayers = new CopyOnWriteArrayList<>();
     //    Assigned in a GameEngine
     public static AssetLoader assetLoader;
 
+    private final long RESPAWN_COOLDOWN = 5000;  // in milliseconds
+    public boolean isPlayerDead;
+
+    public int scoreboardKills;
 
     public OnlinePlayer(int onlinePlayerID) {
+        scoreboardKills = 0;
+        isPlayerDead = false;
         isPlayerStateLocked = false;
         onlinePlayerChampion = EnumContainer.ServerClientConnectionCopyObjects.PLayer_Champion_Shared;
         getPlayerSprites2Directional(onlinePlayerChampion);
@@ -70,15 +78,26 @@ public class OnlinePlayer {
         currentPlayerSpriteOnlinePlayer = setCurrentOnlinePlayerSprite();
         onlinePlayerHitbox = new OnlinePlayerHitbox();
         setPlayerHealthBar();
+        setScoreboardICON();
 
 
         listOfAllConnectedOnlinePLayers.add(this);
 
     }
 
+    public void setScoreboardICON() {
+        switch (onlinePlayerChampion) {
+
+            case BLUE_HAIR_DUDE -> scoreboardICON = assetLoader.scoreboardICONS[0];
+            case PINK_HAIR_GIRL -> scoreboardICON = assetLoader.scoreboardICONS[1];
+            case BLOND_MOHAWK_DUDE -> scoreboardICON = assetLoader.scoreboardICONS[2];
+            case CAPE_BALDY_DUDE -> scoreboardICON = assetLoader.scoreboardICONS[3];
+        }
+    }
+
     private void setPlayerHealthBar() {
 
-        healthbar = new Healthbar(4000, onlinePlayerHitbox.playerHitboxPosXScreen, onlinePlayerHitbox.playerHitboxPosYScreen);
+        healthbar = new Healthbar(500, onlinePlayerHitbox.playerHitboxPosXScreen, onlinePlayerHitbox.playerHitboxPosYScreen);
 
 //        PROTOTYPE CODE IF YOU WANT DIFFERENT HEALTH CAPACITY FOR DIFFERENT CHAMPIONS
 //        switch (localPlayerChampion) {
@@ -141,7 +160,7 @@ public class OnlinePlayer {
     public void updatePlayerPositionOnScreenAndHitbox() {
         playerPosXScreen = playerPosXWorld - Camera.cameraPosX;
         playerPosYScreen = playerPosYWorld - Camera.cameraPosY;
-        updatePlayerHitboxWorldAndPosOnScreen();
+
     }
 
 
@@ -172,6 +191,12 @@ public class OnlinePlayer {
                 return playerSpriteROLL_RIGHT;
             }
 
+            case DEATH_LEFT -> {
+                return playerSpriteDEATH_LEFT;
+            }
+            case DEATH_RIGHT -> {
+                return playerSpriteDEATH_RIGHT;
+            }
             default -> {
                 return null;
             }
@@ -216,23 +241,27 @@ public class OnlinePlayer {
                     isPlayerStateLocked = false;
                     animationIndexDashing = 0;
                 }
+            } else if ((currentPlayerSpriteOnlinePlayer == playerSpriteDEATH_LEFT || currentPlayerSpriteOnlinePlayer == playerSpriteDEATH_RIGHT) && !deathAnimationFinished) {
+                if (animationIndexDeath < 8) animationIndexDeath++;
+                else {
+                    animationIndexDeath = 0;
+                    deathAnimationFinished = true;
+
+                }
+
             }
             animationTick = 0;
         }
     }
 
-//    public void checkIsOnlinePlayerMoving() {
-//
-//        switch (Current_Player_State_Online_Player) {
-//            case IDLE_RIGHT, IDLE_LEFT -> {
-//                isPlayerMoving = false;
-//            }
-//            case MOVING_LEFT, MOVING_RIGHT -> {
-//                isPlayerMoving = true;
-//            }
-//            default -> throw new IllegalStateException("Unexpected value: " + Current_Player_State_Online_Player);
-//        }
-//    }
+    // On death and on revive
+    public void checkIsPlayerDead() {
+        if (healthbar.currentHealth <= 0) {
+            isPlayerDead = true;
+        }
+        if (healthbar.currentHealth > 0)
+            isPlayerDead = false;
+    }
 
     public int currentIndexerForAnimation() {
         if (currentPlayerSpriteOnlinePlayer == playerSpriteIDLE_LEFT || currentPlayerSpriteOnlinePlayer == playerSpriteIDLE_RIGHT)
@@ -243,6 +272,8 @@ public class OnlinePlayer {
             return animationIndexCasting;
         else if (currentPlayerSpriteOnlinePlayer == playerSpriteROLL_LEFT || currentPlayerSpriteOnlinePlayer == playerSpriteROLL_RIGHT)
             return animationIndexDashing;
+        else if (currentPlayerSpriteOnlinePlayer == playerSpriteDEATH_LEFT || currentPlayerSpriteOnlinePlayer == playerSpriteDEATH_RIGHT)
+            return animationIndexDeath;
         else return 0;
     }
 

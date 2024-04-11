@@ -1,4 +1,4 @@
-package scenes.mapeditor;
+package scenes;
 
 public class MapEditor {
 

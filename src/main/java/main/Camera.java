@@ -1,7 +1,4 @@
-package scenes.playing;
-
-import main.MainPanel;
-import main.MapGenerator;
+package main;
 
 import javax.imageio.ImageIO;
 import java.awt.event.MouseEvent;

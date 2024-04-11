@@ -7,14 +7,16 @@ import inputs.ActionListener;
 import inputs.PlayerKeyboardInputs;
 import inputs.PlayerMouseInputs;
 import networking.Client;
-import scenes.championselect.ChampionSelect;
-import scenes.menu.Menu;
-import scenes.playing.Camera;
-import scenes.playing.Playing;
+import networking.PacketManager;
+import scenes.ChampionSelect;
+import scenes.Menu;
+import scenes.Pause;
+import scenes.Playing;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import static main.EnumContainer.AllScenes.Current_Scene;
 
@@ -35,12 +37,13 @@ public class GameEngine extends Thread {
     Camera camera;
     //    Server server;
     Client client;
+    Pause pause;
 
 
     private final int FPS_SET = 120;
     private final int UPS_SET = 128;
 
-//    Global cooldown after using each spell given in milliseconds;
+    //    Global cooldown after using each spell given in milliseconds;
     public static final int GCD = 200;
 
     public static BufferedImage BasicSpellsSpriteSheet;
@@ -55,18 +58,20 @@ public class GameEngine extends Thread {
         championSelect = new ChampionSelect(assetLoader);
         OnlinePlayer.assetLoader = assetLoader;
 
-        playerKeyboardInputs = new PlayerKeyboardInputs(localPlayer);
-        playerMouseInputs = new PlayerMouseInputs(localPlayer, championSelect);
+        playerKeyboardInputs = new PlayerKeyboardInputs(localPlayer, this);
+        playerMouseInputs = new PlayerMouseInputs(localPlayer, championSelect, this);
         mainPanel = new MainPanel(playerKeyboardInputs, playerMouseInputs);
         actionListener = new ActionListener(mainPanel, this);
         menu = new Menu(mainPanel, playerMouseInputs);
         camera = new Camera(mapGenerator);
-        playing = new Playing(localPlayer, camera);
+        pause = new Pause(playerMouseInputs, playerKeyboardInputs, mainPanel);
+        playing = new Playing(localPlayer, camera, pause);
         mainFrame = new MainFrame(mainPanel);
+
 
         championSelect.mainPanel = mainPanel;
         playerMouseInputs.mainFrame = mainFrame;
-        playerMouseInputs.gameEngine = this;
+        playerMouseInputs.pause = pause;
 
         this.start();
     }
@@ -74,7 +79,7 @@ public class GameEngine extends Thread {
     private void update() {
 
         switch (Current_Scene) {
-            case PLAYING -> playing.update();
+            case PLAYING, PAUSE -> playing.update();
             case CHAMPION_SELECT -> championSelect.update();
         }
     }
@@ -83,13 +88,11 @@ public class GameEngine extends Thread {
 
         switch (Current_Scene) {
 
-            case PLAYING -> {
+            case PLAYING, PAUSE -> {
                 playing.draw(g);
             }
             case MENU -> {
                 menu.draw(g);
-            }
-            case PAUSE -> {
             }
             case CHAMPION_SELECT -> {
                 championSelect.draw(g);
@@ -149,7 +152,6 @@ public class GameEngine extends Thread {
     }
 
 
-
 //    public void createServer() {
 //        server = new Server(onlinePlayer);
 //    }
@@ -169,33 +171,51 @@ public class GameEngine extends Thread {
     }
 
     public void changeScene(EnumContainer.AllScenes scene) {
-        mainPanel.removeAll();
-
 //        SCENE WE WANT CHANGE TO
-        switch (scene) {
-            case MENU -> {
-                menu.addComponentsToMainPanel();
-            }
-            case CHAMPION_SELECT -> {
-                championSelect.addComponentsToMainPanel();
-            }
-            case PLAYING -> {
-                this.createClient(this.getHostIpAddress());
-                this.localPlayer.userInterface = new UserInterface(localPlayer);
-            }
-            case PAUSE -> {
-            }
-            case SETTINGS -> {
-            }
-            case MAP_EDITOR -> {
-            }
-        }
-        EnumContainer.AllScenes.Current_Scene = scene;
+        if (Current_Scene != scene) {
+            mainPanel.removeAll();
 
+            switch (scene) {
+                case MENU -> {
+                    if (Current_Scene == EnumContainer.AllScenes.PAUSE) {
+                        client = null;
+                        try {
+                            Client.socket.send(PacketManager.disconnectPacket(localPlayer));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    menu.addComponentsToMainPanel();
+                }
+                case CHAMPION_SELECT -> {
+                    championSelect.addComponentsToMainPanel();
+                }
+                case PLAYING -> {
+                    if (this.client == null) {
+                        this.createClient(this.getHostIpAddress());
+                    } else {
+                        try {
+                            Client.socket.send(PacketManager.ChampionChangedPacket(localPlayer));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    this.localPlayer.userInterface = new UserInterface(localPlayer);
+                }
+                case PAUSE -> {
+                    pause.initNewPanel();
+                }
+                case SETTINGS -> {
+                }
+                case MAP_EDITOR -> {
+                }
+            }
+            EnumContainer.AllScenes.Current_Scene = scene;
+        }
     }
 
     public static boolean isOffGCD() {
-        return   System.currentTimeMillis() - QSpell.LastLocalSpellCreationTime >= GCD;
+        return System.currentTimeMillis() - QSpell.LastLocalSpellCreationTime >= GCD;
     }
 
 }
