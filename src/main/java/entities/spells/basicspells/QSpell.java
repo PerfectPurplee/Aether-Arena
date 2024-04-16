@@ -118,7 +118,7 @@ public class QSpell {
         spellPosXScreen = spellPosXWorld - Camera.cameraPosX;
         spellPosYScreen = spellPosYWorld - Camera.cameraPosY;
 //        this is for debugging, and for server to scale
-        System.out.println("Width: " + (float) spellSprites_FLYING[0].getHeight() / 2 + " Height:  " + (float) (spellSprites_FLYING[0].getWidth() / 2));
+//        System.out.println("Width: " + (float) spellSprites_FLYING[0].getHeight() / 2 + " Height:  " + (float) (spellSprites_FLYING[0].getWidth() / 2));
     }
 
     private void setPlayerCastingThisSpellStateLocalPlayer() {

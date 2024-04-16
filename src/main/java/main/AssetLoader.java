@@ -125,7 +125,7 @@ public class AssetLoader {
     AssetLoader() {
         getUserInterfaceIcons();
         championLoader();
-        deBugger();
+//        deBugger();
         getAllBasicSpellsSpriteSheet();
         getSpritesForQSpells();
         getSpriteForQSpellViolet();
@@ -337,8 +337,8 @@ public class AssetLoader {
                     QSpellWindBallCastStart = scaleImage(sprite_Start, scaleForSpellSprites);
                     QSpellWindBallCastFlying = scaleImage(sprite_Flying, scaleForSpellSprites);
                     QSpellWindBallCastEnd = scaleImage(sprite_End, scaleForSpellSprites);
-                    System.out.println("BASIC: " + " W " + QSpellFireballCastFlying[1].getWidth() + " H " + QSpellFireballCastFlying[1].getHeight());
-                    System.out.println("BASIC: " + " W " + QSpellWindBallCastFlying[1].getWidth() + " H " + QSpellWaterBallCastFlying[1].getHeight());
+//                    System.out.println("BASIC: " + " W " + QSpellFireballCastFlying[1].getWidth() + " H " + QSpellFireballCastFlying[1].getHeight());
+//                    System.out.println("BASIC: " + " W " + QSpellWindBallCastFlying[1].getWidth() + " H " + QSpellWaterBallCastFlying[1].getHeight());
                 }
             }
 
