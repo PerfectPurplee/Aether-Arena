@@ -164,10 +164,7 @@ public class GameEngine extends Thread {
 
 
     public String getHostIpAddress() {
-
-        String serverIPaddress = JOptionPane.showInputDialog(mainPanel, "Type in your host IP address to connect: ");
-
-        return serverIPaddress;
+        return JOptionPane.showInputDialog(mainPanel, "Type in your host IP address to connect: ");
     }
 
     public void changeScene(EnumContainer.AllScenes scene) {

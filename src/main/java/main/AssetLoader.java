@@ -126,9 +126,9 @@ public class AssetLoader {
         getUserInterfaceIcons();
         championLoader();
 //        deBugger();
-        getAllBasicSpellsSpriteSheet();
+//        getAllBasicSpellsSpriteSheet();
         getSpritesForQSpells();
-        getSpriteForQSpellViolet();
+//        getSpriteForQSpellViolet();
         getMapObjects();
         getSpritesForUltimateSpells();
         setSpritesForESpells();
