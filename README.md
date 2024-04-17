@@ -16,8 +16,8 @@ Aether-Arena is a multiplayer top-down game where players engage in magical batt
 ## Setup
 You can run this chain of commands to open a game directly from you terminal:
 ```
-git clone git@github.com:PerfectPurplee/Aether-Arena.git && 
-cd Aether-Arena && mvn clean package && 
+git clone git@github.com:PerfectPurplee/Aether-Arena.git &&
+cd Aether-Arena && mvn clean package &&
 java -jar target/AetherArena.jar
 
 ```
