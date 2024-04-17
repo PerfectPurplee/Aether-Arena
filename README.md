@@ -4,7 +4,7 @@ Aether-Arena is a multiplayer top-down game where players engage in magical batt
 
 ## GamePlay Screenshots
 
-![Alt Text](previewGif.gif)
+![Alt Text](https://raw.githubusercontent.com/PerfectPurplee/Aether-Arena/previewGif.gif)
 
 ## Technologies Used
 - Project doesnt really use any frameworks or libraries other than what is available in the Java standard library.
