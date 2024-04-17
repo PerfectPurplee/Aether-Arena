@@ -2,9 +2,10 @@
 
 Aether-Arena is a multiplayer top-down game where players engage in magical battles. The main goal is to defeat as many players as you can to be on top of the scoreboard as it is a deathmatch mode game. Its all about casting spells, dodging attacks, and strategizing to secure victory.
 
-## GamePlay Screenshots
+## GamePlay preview:
+![ArenaGif](https://github.com/PerfectPurplee/Aether-Arena/assets/121458315/e2e5d276-8769-436e-93c2-a8a7ccd233b8)
 
-![Alt Text](https://raw.githubusercontent.com/PerfectPurplee/Aether-Arena/previewGif.gif)
+
 
 ## Technologies Used
 - Project doesnt really use any frameworks or libraries other than what is available in the Java standard library.
